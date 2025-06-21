@@ -1,6 +1,6 @@
-version: '3'
 services:
   escaner_red:
+    ontainer_name: EscanerRedLAN
     build: .
     ports:
       - "5000:5000"
