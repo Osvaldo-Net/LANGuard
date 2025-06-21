@@ -1,9 +1,9 @@
 services:
   escaner_red:
-    ontainer_name: EscanerRedLAN
+    container_name: Red-Monitor
     build: .
     ports:
-      - "5000:5000"
+      - "5555:5555"
     network_mode: "host"
     cap_add:
       - NET_RAW
