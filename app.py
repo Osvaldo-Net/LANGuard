@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import subprocess
 import re
@@ -84,6 +83,11 @@ def escaneo_background():
     while True:
         actualizar_cache()
         time.sleep(CACHE_INTERVALO)
+
+@app.route('/api/scan')
+def api_scan():
+    actualizar_cache()  # Ejecuta el escaneo ahora mismo
+    return jsonify(CACHE_RESULTADO)
 
 
 @app.route('/')
