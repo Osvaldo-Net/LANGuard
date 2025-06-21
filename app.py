@@ -3,6 +3,8 @@ import subprocess
 import re
 import json
 import os
+import socket
+import ipaddress
 
 app = Flask(__name__)
 
@@ -24,8 +26,23 @@ def guardar_lista():
         json.dump(LISTA_CONFIABLES, f)
 
 
+def obtener_red_local():
+    # Obtener la IP local del host de forma segura
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip_local = s.getsockname()[0]
+    finally:
+        s.close()
+
+    # Suponemos máscara /24 para la red local
+    red = ipaddress.IPv4Interface(f"{ip_local}/24").network
+    return str(red)
+
+
 def escanear_red():
-    salida = subprocess.check_output(["nmap", "-n", "-sn", "192.168.150.0/24"]).decode()
+    red = obtener_red_local()
+    salida = subprocess.check_output(["nmap", "-n", "-sn", red]).decode()
     dispositivos = []
     ip = mac = None
     for linea in salida.splitlines():
@@ -70,5 +87,6 @@ def eliminar(prefijo):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5555)
+
 
