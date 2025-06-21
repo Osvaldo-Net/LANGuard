@@ -182,6 +182,11 @@ function actualizarTabla(dispositivos) {
   });
 }
 
+// Refrescar automáticamente cada 60 segundos
+setInterval(() => {
+  escanearAhora();
+}, 60000); // 60000 ms = 60 segundos
+
   </script>
 </body>
 </html>
