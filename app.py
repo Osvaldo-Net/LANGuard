@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import subprocess
 import re
 import json
@@ -12,7 +13,7 @@ app = Flask(__name__)
 
 LISTA_CONF_FILE = "lista_confiables.json"
 
-# Cargar lista confiables desde archivo JSON
+# Cargar lista confiables
 if os.path.exists(LISTA_CONF_FILE):
     with open(LISTA_CONF_FILE, "r") as f:
         try:
@@ -22,7 +23,6 @@ if os.path.exists(LISTA_CONF_FILE):
 else:
     LISTA_CONFIABLES = []
 
-# Variables de caché
 CACHE_RESULTADO = []
 CACHE_TIMESTAMP = 0
 CACHE_INTERVALO = 60  # segundos
@@ -50,32 +50,39 @@ def escanear_red():
         salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", red], timeout=30).decode()
         dispositivos = []
         ip = mac = None
+        macs_confiables = [p.strip().lower().replace('-', ':') for p in LISTA_CONFIABLES]
+
         for linea in salida.splitlines():
             if "Nmap scan report for" in linea:
                 ip = linea.split()[-1]
             elif "MAC Address:" in linea:
                 mac_match = re.search(r"MAC Address: ([\w:]+)", linea)
                 if mac_match:
-                    mac = mac_match.group(1).lower()
-                    fabricante = mac[:8].replace(":", "")
-                    confiable = any(mac.endswith(p.lower()) for p in LISTA_CONFIABLES)
-                    dispositivos.append({
-                        "ip": ip,
-                        "mac": mac,
-                        "fabricante": fabricante,
-                        "confiable": confiable
-                    })
+                    mac = mac_match.group(1).strip().lower().replace('-', ':')
+                    if len(mac.split(':')) == 6:
+                        fabricante = mac[:8].replace(":", "")
+                        confiable = mac in macs_confiables
+                        dispositivos.append({
+                            "ip": ip,
+                            "mac": mac,
+                            "fabricante": fabricante,
+                            "confiable": confiable
+                        })
         return dispositivos
     except Exception as e:
         print(f"[!] Error escaneando red: {e}")
         return []
 
 
-def escaneo_background():
+def actualizar_cache():
     global CACHE_RESULTADO, CACHE_TIMESTAMP
+    CACHE_RESULTADO = escanear_red()
+    CACHE_TIMESTAMP = time.time()
+
+
+def escaneo_background():
     while True:
-        CACHE_RESULTADO = escanear_red()
-        CACHE_TIMESTAMP = time.time()
+        actualizar_cache()
         time.sleep(CACHE_INTERVALO)
 
 
@@ -84,24 +91,34 @@ def index():
     return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
 
 
-@app.route('/agregar', methods=['POST'])
-def agregar():
-    prefijo = request.form.get("prefijo", "").strip().lower()
-    if prefijo and prefijo not in LISTA_CONFIABLES:
-        LISTA_CONFIABLES.append(prefijo)
+@app.route('/api/agregar', methods=['POST'])
+def api_agregar():
+    data = request.get_json()
+    mac = data.get("mac", "").strip().lower().replace('-', ':')
+
+    if len(mac.split(':')) == 6 and mac not in LISTA_CONFIABLES:
+        LISTA_CONFIABLES.append(mac)
         guardar_lista()
-    return redirect(url_for('index'))
+        actualizar_cache()
+        return jsonify({"success": True, "message": "MAC agregada correctamente."})
+
+    return jsonify({"success": False, "message": "MAC inválida o ya existe."})
 
 
-@app.route('/eliminar/<prefijo>')
-def eliminar(prefijo):
-    if prefijo in LISTA_CONFIABLES:
-        LISTA_CONFIABLES.remove(prefijo)
+@app.route('/api/eliminar', methods=['POST'])
+def api_eliminar():
+    data = request.get_json()
+    mac = data.get("mac", "").strip().lower().replace('-', ':')
+
+    if mac in LISTA_CONFIABLES:
+        LISTA_CONFIABLES.remove(mac)
         guardar_lista()
-    return redirect(url_for('index'))
+        actualizar_cache()
+        return jsonify({"success": True, "message": "MAC eliminada correctamente."})
+
+    return jsonify({"success": False, "message": "MAC no encontrada."})
 
 
 if __name__ == '__main__':
-    thread = threading.Thread(target=escaneo_background, daemon=True)
-    thread.start()
+    threading.Thread(target=escaneo_background, daemon=True).start()
     app.run(host='0.0.0.0', port=5555)
