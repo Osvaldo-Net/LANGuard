@@ -9,10 +9,13 @@ app = Flask(__name__)
 
 LISTA_CONF_FILE = "lista_confiables.json"
 
-# Cargar lista blanca de archivo
+# Cargar lista blanca de archivo de forma segura
 if os.path.exists(LISTA_CONF_FILE):
     with open(LISTA_CONF_FILE, "r") as f:
-        LISTA_CONFIABLES = json.load(f)
+        try:
+            LISTA_CONFIABLES = json.load(f)
+        except json.JSONDecodeError:
+            LISTA_CONFIABLES = []
 else:
     LISTA_CONFIABLES = []
 
@@ -52,9 +55,9 @@ def index():
 
 @app.route('/agregar', methods=['POST'])
 def agregar():
-    prefijo = request.form.get("prefijo")
-    if prefijo and prefijo.lower() not in LISTA_CONFIABLES:
-        LISTA_CONFIABLES.append(prefijo.lower())
+    prefijo = request.form.get("prefijo", "").strip().lower()
+    if prefijo and prefijo not in LISTA_CONFIABLES:
+        LISTA_CONFIABLES.append(prefijo)
         guardar_lista()
     return redirect(url_for('index'))
 
