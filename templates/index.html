@@ -5,58 +5,80 @@
   <title>Escaneo de Red</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 p-4">
-  <h1 class="text-2xl font-bold mb-4">Dispositivos en la Red</h1>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800 p-6">
 
-  <form method="GET" action="/" class="mb-4">
-    <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-      🔄 Refrescar escaneo
-    </button>
-  </form>
+  <div class="max-w-6xl mx-auto">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold text-blue-700 mb-2">📡 Escaneo de Red Local</h1>
+      <p class="text-gray-600">Lista de dispositivos detectados en la red y su estado de confianza.</p>
+    </header>
 
-  <table class="table-auto w-full bg-white shadow-md rounded p-4 mb-6">
-    <thead>
-      <tr>
-        <th class="px-4 py-2">IP</th>
-        <th class="px-4 py-2">MAC</th>
-        <th class="px-4 py-2">Fabricante</th>
-        <th class="px-4 py-2">¿Confiable?</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for d in dispositivos %}
-      <tr class="border-t">
-        <td class="px-4 py-2">{{ d.ip }}</td>
-        <td class="px-4 py-2">{{ d.mac }}</td>
-        <td class="px-4 py-2">{{ d.fabricante }}</td>
-        <td class="px-4 py-2">
-          {% if d.confiable %}
-            <span class="text-green-600 font-semibold">Sí</span>
-          {% else %}
-            <span class="text-red-600 font-semibold">No</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <div class="flex justify-between items-center mb-6">
+      <form method="GET" action="/">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow">
+          🔄 Refrescar escaneo
+        </button>
+      </form>
+    </div>
 
-  <h2 class="text-xl font-semibold mb-2">Agregar MAC confiable (prefijo, ej: b8:27:eb)</h2>
-  <form method="POST" action="/agregar" class="mb-4">
-    <input name="prefijo" placeholder="00:11:22" class="p-2 border border-gray-300 rounded" required>
-    <button type="submit" class="ml-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-      Agregar
-    </button>
-  </form>
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-10">
+      <table class="min-w-full table-auto">
+        <thead class="bg-blue-100 text-blue-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold">IP</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">MAC</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Fabricante</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">¿Confiable?</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for d in dispositivos %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4">{{ d.ip }}</td>
+            <td class="px-6 py-4">{{ d.mac }}</td>
+            <td class="px-6 py-4">{{ d.fabricante }}</td>
+            <td class="px-6 py-4">
+              {% if d.confiable %}
+                <span class="inline-flex items-center bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">
+                  ✔️ Confiable
+                </span>
+              {% else %}
+                <span class="inline-flex items-center bg-red-100 text-red-700 text-sm font-medium px-3 py-1 rounded-full">
+                  ❌ No confiable
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-  <h2 class="text-xl font-semibold mb-2">Lista actual de dispositivos confiables</h2>
-  <ul class="list-disc ml-6">
-    {% for prefijo in lista_confiables %}
-      <li class="mb-1">
-        {{ prefijo }}
-        <a href="/eliminar/{{ prefijo }}" class="text-red-500 ml-4">🗑️ Eliminar</a>
-      </li>
-    {% endfor %}
-  </ul>
+    <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">➕ Agregar dispositivo confiable</h2>
+      <form method="POST" action="/agregar" class="flex flex-wrap items-center gap-4">
+        <input name="prefijo" placeholder="Ej: c0:00:08:c0:00:08" required
+               class="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+        <button type="submit"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow">
+          Agregar
+        </button>
+      </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">✅ Lista de MACs confiables</h2>
+      <ul class="space-y-2">
+        {% for prefijo in lista_confiables %}
+        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg hover:bg-gray-100">
+          <span class="text-gray-800">{{ prefijo }}</span>
+          <a href="/eliminar/{{ prefijo }}" class="text-red-500 hover:text-red-700 font-medium">
+            🗑️ Eliminar
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 </body>
 </html>
