@@ -1,0 +1,10 @@
+version: '3'
+services:
+  escaner_red:
+    build: .
+    ports:
+      - "5000:5000"
+    network_mode: "host"
+    cap_add:
+      - NET_RAW
+    restart: unless-stopped
