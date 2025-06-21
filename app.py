@@ -34,7 +34,7 @@ def escanear_red():
             if mac_match:
                 mac = mac_match.group(1).lower()
                 fabricante = mac[:8].replace(":", "")
-                confiable = any(mac.startswith(p.lower()) for p in LISTA_CONFIABLES)
+                confiable = any(mac.endswith(p.lower()) for p in LISTA_CONFIABLES)
                 dispositivos.append({
                     "ip": ip,
                     "mac": mac,
