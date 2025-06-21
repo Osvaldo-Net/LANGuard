@@ -7,10 +7,12 @@ import socket
 import ipaddress
 import threading
 import time
+import requests
 
 app = Flask(__name__)
 
 LISTA_CONF_FILE = "lista_confiables.json"
+VENDOR_CACHE_FILE = "cache_vendors.json"
 
 # Cargar lista confiables
 if os.path.exists(LISTA_CONF_FILE):
@@ -22,15 +24,46 @@ if os.path.exists(LISTA_CONF_FILE):
 else:
     LISTA_CONFIABLES = []
 
+# Cargar caché de fabricantes
+if os.path.exists(VENDOR_CACHE_FILE):
+    with open(VENDOR_CACHE_FILE, "r") as f:
+        try:
+            VENDOR_CACHE = json.load(f)
+        except json.JSONDecodeError:
+            VENDOR_CACHE = {}
+else:
+    VENDOR_CACHE = {}
+
 CACHE_RESULTADO = []
 CACHE_TIMESTAMP = 0
 CACHE_INTERVALO = 60  # segundos
-
 
 def guardar_lista():
     with open(LISTA_CONF_FILE, "w") as f:
         json.dump(LISTA_CONFIABLES, f)
 
+def guardar_cache_vendors():
+    with open(VENDOR_CACHE_FILE, "w") as f:
+        json.dump(VENDOR_CACHE, f)
+
+def obtener_fabricante(mac):
+    oui = mac.lower().replace(":", "")[:6]
+    if oui in VENDOR_CACHE:
+        return VENDOR_CACHE[oui]
+
+    try:
+        response = requests.get(f"https://api.maclookup.app/v2/macs/{mac}")
+        if response.status_code == 200:
+            data = response.json()
+            fabricante = data.get("company", "Desconocido")
+        else:
+            fabricante = "Desconocido"
+    except:
+        fabricante = "Desconocido"
+
+    VENDOR_CACHE[oui] = fabricante
+    guardar_cache_vendors()
+    return fabricante
 
 def obtener_red_local():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -41,7 +74,6 @@ def obtener_red_local():
         s.close()
     red = ipaddress.IPv4Interface(f"{ip_local}/24").network
     return str(red)
-
 
 def escanear_red():
     try:
@@ -59,7 +91,7 @@ def escanear_red():
                 if mac_match:
                     mac = mac_match.group(1).strip().lower().replace('-', ':')
                     if len(mac.split(':')) == 6:
-                        fabricante = mac[:8].replace(":", "")
+                        fabricante = obtener_fabricante(mac)
                         confiable = mac in macs_confiables
                         dispositivos.append({
                             "ip": ip,
@@ -72,12 +104,10 @@ def escanear_red():
         print(f"[!] Error escaneando red: {e}")
         return []
 
-
 def actualizar_cache():
     global CACHE_RESULTADO, CACHE_TIMESTAMP
     CACHE_RESULTADO = escanear_red()
     CACHE_TIMESTAMP = time.time()
-
 
 def escaneo_background():
     while True:
@@ -89,11 +119,9 @@ def api_scan():
     actualizar_cache()  # Ejecuta el escaneo ahora mismo
     return jsonify(CACHE_RESULTADO)
 
-
 @app.route('/')
 def index():
     return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
-
 
 @app.route('/api/agregar', methods=['POST'])
 def api_agregar():
@@ -108,7 +136,6 @@ def api_agregar():
 
     return jsonify({"success": False, "message": "MAC inválida o ya existe."})
 
-
 @app.route('/api/eliminar', methods=['POST'])
 def api_eliminar():
     data = request.get_json()
@@ -122,7 +149,7 @@ def api_eliminar():
 
     return jsonify({"success": False, "message": "MAC no encontrada."})
 
-
 if __name__ == '__main__':
     threading.Thread(target=escaneo_background, daemon=True).start()
     app.run(host='0.0.0.0', port=5555)
+
