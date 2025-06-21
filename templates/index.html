@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Escaneo de Red</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4">
+  <h1 class="text-2xl font-bold mb-4">Dispositivos en la Red</h1>
+
+  <form method="GET" action="/" class="mb-4">
+    <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+      🔄 Refrescar escaneo
+    </button>
+  </form>
+
+  <table class="table-auto w-full bg-white shadow-md rounded p-4 mb-6">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">IP</th>
+        <th class="px-4 py-2">MAC</th>
+        <th class="px-4 py-2">Fabricante</th>
+        <th class="px-4 py-2">¿Confiable?</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in dispositivos %}
+      <tr class="border-t">
+        <td class="px-4 py-2">{{ d.ip }}</td>
+        <td class="px-4 py-2">{{ d.mac }}</td>
+        <td class="px-4 py-2">{{ d.fabricante }}</td>
+        <td class="px-4 py-2">
+          {% if d.confiable %}
+            <span class="text-green-600 font-semibold">Sí</span>
+          {% else %}
+            <span class="text-red-600 font-semibold">No</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2 class="text-xl font-semibold mb-2">Agregar MAC confiable (prefijo, ej: b8:27:eb)</h2>
+  <form method="POST" action="/agregar" class="mb-4">
+    <input name="prefijo" placeholder="00:11:22" class="p-2 border border-gray-300 rounded" required>
+    <button type="submit" class="ml-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+      Agregar
+    </button>
+  </form>
+
+  <h2 class="text-xl font-semibold mb-2">Lista actual de dispositivos confiables</h2>
+  <ul class="list-disc ml-6">
+    {% for prefijo in lista_confiables %}
+      <li class="mb-1">
+        {{ prefijo }}
+        <a href="/eliminar/{{ prefijo }}" class="text-red-500 ml-4">🗑️ Eliminar</a>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
