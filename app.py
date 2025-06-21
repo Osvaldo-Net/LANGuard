@@ -26,7 +26,7 @@ def guardar_lista():
 
 
 def escanear_red():
-    salida = subprocess.check_output(["nmap", "-sn", "192.168.1.0/24"]).decode()
+    salida = subprocess.check_output(["nmap", "-n", "-sn", "192.168.150.0/24"]).decode()
     dispositivos = []
     ip = mac = None
     for linea in salida.splitlines():
