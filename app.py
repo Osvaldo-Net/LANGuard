@@ -5,12 +5,14 @@ import json
 import os
 import socket
 import ipaddress
+import threading
+import time
 
 app = Flask(__name__)
 
 LISTA_CONF_FILE = "lista_confiables.json"
 
-# Cargar lista blanca de archivo de forma segura
+# Cargar lista confiables desde archivo JSON
 if os.path.exists(LISTA_CONF_FILE):
     with open(LISTA_CONF_FILE, "r") as f:
         try:
@@ -20,6 +22,11 @@ if os.path.exists(LISTA_CONF_FILE):
 else:
     LISTA_CONFIABLES = []
 
+# Variables de caché
+CACHE_RESULTADO = []
+CACHE_TIMESTAMP = 0
+CACHE_INTERVALO = 60  # segundos
+
 
 def guardar_lista():
     with open(LISTA_CONF_FILE, "w") as f:
@@ -27,46 +34,54 @@ def guardar_lista():
 
 
 def obtener_red_local():
-    # Obtener la IP local del host de forma segura
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("8.8.8.8", 80))
         ip_local = s.getsockname()[0]
     finally:
         s.close()
-
-    # Suponemos máscara /24 para la red local
     red = ipaddress.IPv4Interface(f"{ip_local}/24").network
     return str(red)
 
 
 def escanear_red():
-    red = obtener_red_local()
-    salida = subprocess.check_output(["nmap", "-n", "-sn", red]).decode()
-    dispositivos = []
-    ip = mac = None
-    for linea in salida.splitlines():
-        if "Nmap scan report for" in linea:
-            ip = linea.split()[-1]
-        elif "MAC Address:" in linea:
-            mac_match = re.search(r"MAC Address: ([\w:]+)", linea)
-            if mac_match:
-                mac = mac_match.group(1).lower()
-                fabricante = mac[:8].replace(":", "")
-                confiable = any(mac.endswith(p.lower()) for p in LISTA_CONFIABLES)
-                dispositivos.append({
-                    "ip": ip,
-                    "mac": mac,
-                    "fabricante": fabricante,
-                    "confiable": confiable
-                })
-    return dispositivos
+    try:
+        red = obtener_red_local()
+        salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", red], timeout=30).decode()
+        dispositivos = []
+        ip = mac = None
+        for linea in salida.splitlines():
+            if "Nmap scan report for" in linea:
+                ip = linea.split()[-1]
+            elif "MAC Address:" in linea:
+                mac_match = re.search(r"MAC Address: ([\w:]+)", linea)
+                if mac_match:
+                    mac = mac_match.group(1).lower()
+                    fabricante = mac[:8].replace(":", "")
+                    confiable = any(mac.endswith(p.lower()) for p in LISTA_CONFIABLES)
+                    dispositivos.append({
+                        "ip": ip,
+                        "mac": mac,
+                        "fabricante": fabricante,
+                        "confiable": confiable
+                    })
+        return dispositivos
+    except Exception as e:
+        print(f"[!] Error escaneando red: {e}")
+        return []
+
+
+def escaneo_background():
+    global CACHE_RESULTADO, CACHE_TIMESTAMP
+    while True:
+        CACHE_RESULTADO = escanear_red()
+        CACHE_TIMESTAMP = time.time()
+        time.sleep(CACHE_INTERVALO)
 
 
 @app.route('/')
 def index():
-    dispositivos = escanear_red()
-    return render_template("index.html", dispositivos=dispositivos, lista_confiables=LISTA_CONFIABLES)
+    return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
 
 
 @app.route('/agregar', methods=['POST'])
@@ -87,6 +102,6 @@ def eliminar(prefijo):
 
 
 if __name__ == '__main__':
+    thread = threading.Thread(target=escaneo_background, daemon=True)
+    thread.start()
     app.run(host='0.0.0.0', port=5555)
-
-
