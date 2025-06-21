@@ -21,3 +21,4 @@ EXPOSE 5555
 
 # Comando de inicio
 CMD ["python", "app.py"]
+
