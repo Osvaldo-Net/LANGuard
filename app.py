@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 LISTA_CONF_FILE = "lista_confiables.json"
 VENDOR_CACHE_FILE = "cache_vendors.json"
+DETECCIONES_FILE = "detecciones_mac.json"
 
 # Cargar lista confiables
 if os.path.exists(LISTA_CONF_FILE):
@@ -34,6 +35,16 @@ if os.path.exists(VENDOR_CACHE_FILE):
 else:
     VENDOR_CACHE = {}
 
+# Cargar conteo de detecciones
+if os.path.exists(DETECCIONES_FILE):
+    with open(DETECCIONES_FILE, "r") as f:
+        try:
+            DETECCIONES_MAC = json.load(f)
+        except json.JSONDecodeError:
+            DETECCIONES_MAC = {}
+else:
+    DETECCIONES_MAC = {}
+
 CACHE_RESULTADO = []
 CACHE_TIMESTAMP = 0
 CACHE_INTERVALO = 60  # segundos
@@ -45,6 +56,10 @@ def guardar_lista():
 def guardar_cache_vendors():
     with open(VENDOR_CACHE_FILE, "w") as f:
         json.dump(VENDOR_CACHE, f)
+
+def guardar_detecciones():
+    with open(DETECCIONES_FILE, "w") as f:
+        json.dump(DETECCIONES_MAC, f)
 
 def obtener_fabricante(mac):
     oui = mac.lower().replace(":", "")[:6]
@@ -99,6 +114,17 @@ def escanear_red():
                             "fabricante": fabricante,
                             "confiable": confiable
                         })
+
+                        # Conteo y notificación
+                        if not confiable:
+                            DETECCIONES_MAC.setdefault(mac, {"count": 0, "notificado": False})
+                            DETECCIONES_MAC[mac]["count"] += 1
+
+                            if DETECCIONES_MAC[mac]["count"] >= 10 and not DETECCIONES_MAC[mac]["notificado"]:
+                                enviar_telegram(mac, ip, fabricante)
+                                DETECCIONES_MAC[mac]["notificado"] = True
+
+        guardar_detecciones()
         return dispositivos
     except Exception as e:
         print(f"[!] Error escaneando red: {e}")
@@ -149,7 +175,28 @@ def api_eliminar():
 
     return jsonify({"success": False, "message": "MAC no encontrada."})
 
+def enviar_telegram(mac, ip, fabricante):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if not token or not chat_id:
+        print("[!] Token o ChatID no configurado")
+        return
+
+    mensaje = f"🚨 Dispositivo *NO CONFIABLE* detectado 10 veces:\n\n*IP:* {ip}\n*MAC:* `{mac}`\n*Fabricante:* {fabricante}"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = {
+        "chat_id": chat_id,
+        "text": mensaje,
+        "parse_mode": "Markdown"
+    }
+
+    try:
+        response = requests.post(url, data=data)
+        if response.status_code != 200:
+            print("[!] Error al enviar mensaje Telegram:", response.text)
+    except Exception as e:
+        print("[!] Error Telegram:", e)
+
 if __name__ == '__main__':
     threading.Thread(target=escaneo_background, daemon=True).start()
     app.run(host='0.0.0.0', port=5555)
-
