@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión | LANGuard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f4a261',
+            highlight: '#e76f51',
+            bgBone: '#f8f6f2',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
+</head>
+<body class="bg-bgBone font-sans text-gray-800 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md border border-gray-200">
+    <h2 class="text-2xl font-bold text-highlight mb-6 text-center flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 11h14v10H5V11z" />
+      </svg>
+      Iniciar Sesión en <span class="text-accent">LANGuard</span>
+    </h2>
+
+    {% if error %}
+      <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+      <input type="text" name="usuario" placeholder="Usuario" required
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+
+      <input type="password" name="contrasena" placeholder="Contraseña" required
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+
+      <button type="submit"
+        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
+        Entrar
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>
