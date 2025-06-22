@@ -1,4 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from auth import iniciar_archivo_usuarios, verificar_login, cambiar_contrasena_usuario, es_contrasena_por_defecto
+from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+
+iniciar_archivo_usuarios()
+
 import subprocess
 import re
 import json
@@ -11,10 +15,48 @@ import requests
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 
-LISTA_CONF_FILE = "lista_confiables.json"
-VENDOR_CACHE_FILE = "cache_vendors.json"
-DETECCIONES_FILE = "detecciones_mac.json"
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        contrasena = request.form['contrasena']
+        if verificar_login(usuario, contrasena):
+            session['usuario'] = usuario
+            if es_contrasena_por_defecto(usuario):
+                return redirect(url_for('cambiar_contrasena'))
+            return redirect(url_for('index'))
+        else:
+            return 'Credenciales incorrectas 🛑'
+    return render_template('login.html')
+
+@app.route('/cambiar-contrasena', methods=['GET', 'POST'])
+def cambiar_contrasena():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        nueva = request.form['nueva']
+        confirmar = request.form['confirmar']
+        if nueva != confirmar:
+            return 'Las contraseñas no coinciden ❌'
+        cambiar_contrasena_usuario(session['usuario'], nueva)  # <-- aquí
+        return redirect(url_for('index'))
+
+    return render_template('cambiar_contrasena.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
+
+DATA_PATH = "data"
+LISTA_CONF_FILE = os.path.join(DATA_PATH, "lista_confiables.json")
+VENDOR_CACHE_FILE = os.path.join(DATA_PATH, "cache_vendors.json")
+DETECCIONES_FILE = os.path.join(DATA_PATH, "detecciones_mac.json")
 
 # Cargar lista confiables
 if os.path.exists(LISTA_CONF_FILE):
@@ -153,7 +195,10 @@ def api_scan():
 
 @app.route('/')
 def index():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
     return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
+
 
 @app.route('/api/puertos', methods=['POST'])
 def api_puertos():
