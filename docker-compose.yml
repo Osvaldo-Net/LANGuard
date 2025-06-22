@@ -4,6 +4,9 @@ services:
     build: .
     ports:
       - "5555:5555"
+    environment:
+      TELEGRAM_BOT_TOKEN: "tu_bot_token"
+      TELEGRAM_CHAT_ID: "tu_chat_id"
     network_mode: "host"
     cap_add:
       - NET_RAW
