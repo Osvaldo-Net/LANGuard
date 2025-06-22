@@ -155,6 +155,25 @@ def api_scan():
 def index():
     return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
 
+@app.route('/api/puertos', methods=['POST'])
+def api_puertos():
+    data = request.get_json()
+    ip = data.get("ip", "").strip()
+
+    if not ip:
+        return jsonify({"success": False, "message": "IP no proporcionada"})
+
+    try:
+        salida = subprocess.check_output(["nmap", "-T4", "-sT", "--top-ports", "100", "--open", ip], timeout=20).decode()
+        puertos = []
+        for linea in salida.splitlines():
+            if "/tcp" in linea and "open" in linea:
+                partes = linea.split()
+                puertos.append({"puerto": partes[0], "servicio": partes[-1]})
+        return jsonify({"success": True, "puertos": puertos})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
 @app.route('/api/agregar', methods=['POST'])
 def api_agregar():
     data = request.get_json()
