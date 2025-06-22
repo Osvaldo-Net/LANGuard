@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cambiar Contraseña | LANGuard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f4a261',
+            highlight: '#e76f51',
+            bgBone: '#f8f6f2',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
+</head>
+<body class="bg-bgBone font-sans text-gray-800 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md border border-gray-200">
+    <h2 class="text-2xl font-bold text-highlight mb-6 text-center flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.656 0 3-1.567 3-3.5S13.656 4 12 4s-3 1.567-3 3.5 1.344 3.5 3 3.5zm0 2c-2.667 0-8 1.333-8 4v1h16v-1c0-2.667-5.333-4-8-4z"/>
+      </svg>
+      Cambiar Contraseña
+    </h2>
+
+    {% if error %}
+      <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+      <input type="password" name="nueva" placeholder="Nueva contraseña" required
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+
+      <input type="password" name="confirmar" placeholder="Confirmar contraseña" required
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+
+      <button type="submit"
+        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
+        Cambiar
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>
