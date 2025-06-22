@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, jsonify
 import subprocess
 import re
 import json
@@ -8,6 +8,7 @@ import ipaddress
 import threading
 import time
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -35,7 +36,7 @@ if os.path.exists(VENDOR_CACHE_FILE):
 else:
     VENDOR_CACHE = {}
 
-# Cargar conteo de detecciones
+# Cargar detecciones
 if os.path.exists(DETECCIONES_FILE):
     with open(DETECCIONES_FILE, "r") as f:
         try:
@@ -96,6 +97,7 @@ def escanear_red():
         salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", red], timeout=30).decode()
         dispositivos = []
         ip = mac = None
+        ahora = time.time()
         macs_confiables = [p.strip().lower().replace('-', ':') for p in LISTA_CONFIABLES]
 
         for linea in salida.splitlines():
@@ -115,10 +117,14 @@ def escanear_red():
                             "confiable": confiable
                         })
 
-                        # Conteo y notificación
                         if not confiable:
-                            DETECCIONES_MAC.setdefault(mac, {"count": 0, "notificado": False})
-                            DETECCIONES_MAC[mac]["count"] += 1
+                            DETECCIONES_MAC.setdefault(mac, {"count": 0, "notificado": False, "ultima_vista": ahora})
+
+                            if ahora - DETECCIONES_MAC[mac]["ultima_vista"] > 86400:
+                                DETECCIONES_MAC[mac] = {"count": 1, "notificado": False, "ultima_vista": ahora}
+                            else:
+                                DETECCIONES_MAC[mac]["count"] += 1
+                                DETECCIONES_MAC[mac]["ultima_vista"] = ahora
 
                             if DETECCIONES_MAC[mac]["count"] >= 10 and not DETECCIONES_MAC[mac]["notificado"]:
                                 enviar_telegram(mac, ip, fabricante)
@@ -142,7 +148,7 @@ def escaneo_background():
 
 @app.route('/api/scan')
 def api_scan():
-    actualizar_cache()  # Ejecuta el escaneo ahora mismo
+    actualizar_cache()
     return jsonify(CACHE_RESULTADO)
 
 @app.route('/')
@@ -157,6 +163,9 @@ def api_agregar():
     if len(mac.split(':')) == 6 and mac not in LISTA_CONFIABLES:
         LISTA_CONFIABLES.append(mac)
         guardar_lista()
+        if mac in DETECCIONES_MAC:
+            del DETECCIONES_MAC[mac]
+            guardar_detecciones()
         actualizar_cache()
         return jsonify({"success": True, "message": "MAC agregada correctamente."})
 
@@ -182,7 +191,13 @@ def enviar_telegram(mac, ip, fabricante):
         print("[!] Token o ChatID no configurado")
         return
 
-    mensaje = f"🚨 Dispositivo *NO CONFIABLE* detectado 10 veces:\n\n*IP:* {ip}\n*MAC:* `{mac}`\n*Fabricante:* {fabricante}"
+    hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    mensaje = f"""🚨 *Dispositivo NO CONFIABLE detectado 10 veces*\n
+*Hora:* `{hora_actual}`
+*IP:* {ip}
+*MAC:* `{mac}`
+*Fabricante:* {fabricante}
+"""
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = {
         "chat_id": chat_id,
