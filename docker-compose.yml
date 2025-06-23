@@ -2,12 +2,9 @@ services:
   escaner_red:
     container_name: LANGuard
     build: .
-    ports:
-      - "5555:5555"
     environment:
       TELEGRAM_BOT_TOKEN: "tu_bot_token"
       TELEGRAM_CHAT_ID: "tu_chat_id"
-      #openssl rand -hex 32 Para generar la secret key
       SECRET_KEY: "tu_llave_secreta"
     volumes:
       - /etc/localtime:/etc/localtime:ro
