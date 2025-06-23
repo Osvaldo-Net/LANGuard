@@ -109,27 +109,24 @@ def guardar_detecciones():
     with open(DETECCIONES_FILE, "w") as f:
         json.dump(DETECCIONES_MAC, f)
 
-def obtener_fabricante(mac, ip):
+def obtener_fabricante(mac):
     oui = mac.lower().replace(":", "")[:6]
     if oui in VENDOR_CACHE:
         return VENDOR_CACHE[oui]
 
     try:
-        resultado = subprocess.check_output(["nmap", "-sn", ip], stderr=subprocess.DEVNULL).decode("utf-8")
-        patron = rf"MAC Address: {mac.upper()} \((.*?)\)"
-        match = re.search(patron, resultado)
-        if match:
-            fabricante = match.group(1)
+        response = requests.get(f"https://api.maclookup.app/v2/macs/{mac}")
+        if response.status_code == 200:
+            data = response.json()
+            fabricante = data.get("company", "Desconocido")
         else:
             fabricante = "Desconocido"
-    except Exception as e:
-        print(f"Error al obtener fabricante con Nmap: {e}")
+    except:
         fabricante = "Desconocido"
 
     VENDOR_CACHE[oui] = fabricante
     guardar_cache_vendors()
     return fabricante
-
 
 def obtener_red_local():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -158,7 +155,7 @@ def escanear_red():
                 if mac_match:
                     mac = mac_match.group(1).strip().lower().replace('-', ':')
                     if len(mac.split(':')) == 6:
-                        fabricante = obtener_fabricante(mac, ip)
+                        fabricante = obtener_fabricante(mac)
                         confiable = mac in macs_confiables
                         dispositivos.append({
                             "ip": ip,
