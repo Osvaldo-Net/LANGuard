@@ -20,6 +20,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
         usuario = request.form['usuario']
         contrasena = request.form['contrasena']
@@ -29,23 +30,27 @@ def login():
                 return redirect(url_for('cambiar_contrasena'))
             return redirect(url_for('index'))
         else:
-            return 'Credenciales incorrectas 🛑'
-    return render_template('login.html')
+            error = "Credenciales incorrectas 🛑"
+    return render_template('login.html', error=error)
+
 
 @app.route('/cambiar-contrasena', methods=['GET', 'POST'])
 def cambiar_contrasena():
     if 'usuario' not in session:
         return redirect(url_for('login'))
 
+    error = None
     if request.method == 'POST':
         nueva = request.form['nueva']
         confirmar = request.form['confirmar']
         if nueva != confirmar:
-            return 'Las contraseñas no coinciden ❌'
-        cambiar_contrasena_usuario(session['usuario'], nueva)  # <-- aquí
-        return redirect(url_for('index'))
+            error = "❌ Las contraseñas no coinciden"
+        else:
+            cambiar_contrasena_usuario(session['usuario'], nueva)
+            return redirect(url_for('index'))
 
-    return render_template('cambiar_contrasena.html')
+    return render_template('cambiar_contrasena.html', error=error)
+
 
 @app.route('/logout')
 def logout():
