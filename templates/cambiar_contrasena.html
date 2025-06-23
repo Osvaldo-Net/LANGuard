@@ -33,11 +33,12 @@
       Cambiar Contraseña
     </h2>
 
-    {% if error %}
-      <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm text-center">
-        {{ error }}
-      </div>
-    {% endif %}
+  {% if error %}
+<div class="mb-4 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow">
+  <strong class="font-semibold">Error:</strong> {{ error }}
+</div>
+{% endif %}
+
 
     <form method="POST" class="space-y-4">
       <input type="password" name="nueva" placeholder="Nueva contraseña" required
