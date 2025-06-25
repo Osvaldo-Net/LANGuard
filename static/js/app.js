@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     noti.innerHTML = mensaje;
     noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
     noti.classList.remove("hidden");
-    setTimeout(() => noti.classList.add("hidden"), 3000);
+    setTimeout(() => noti.classList.add("hidden"), 15000);
   }
 
   document.getElementById("form-agregar").addEventListener("submit", async (e) => {
