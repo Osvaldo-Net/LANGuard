@@ -169,8 +169,4 @@ document.addEventListener("DOMContentLoaded", () => {
 		                    .catch(() => mostrarNotificacion("❌ Error al consultar puertos", "error"));
 		                }
 	
-						function toggleDarkMode() {
- 					 document.body.classList.toggle('dark-mode');
- 					 const label = document.getElementById('modo-label');
- 				 label.textContent = document.body.classList.contains('dark-mode') ? 'Modo Día' : 'Modo Noche';
-				}
+	
