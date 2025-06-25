@@ -30,7 +30,7 @@ def login():
                 return redirect(url_for('cambiar_contrasena'))
             return redirect(url_for('index'))
         else:
-            error = "Credenciales incorrectas 🛑"
+            error = "Credenciales incorrectas"
     return render_template('login.html', error=error)
 
 
@@ -44,7 +44,7 @@ def cambiar_contrasena():
         nueva = request.form['nueva']
         confirmar = request.form['confirmar']
         if nueva != confirmar:
-            error = "❌ Las contraseñas no coinciden"
+            error = "Las contraseñas no coinciden"
         else:
             cambiar_contrasena_usuario(session['usuario'], nueva)
             return redirect(url_for('index'))
@@ -261,7 +261,7 @@ def enviar_telegram(mac, ip, fabricante):
         return
 
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    mensaje = f"""🚨 *Dispositivo NO CONFIABLE detectado 10 veces*\n
+    mensaje = f"""🚨 *Dispositivo NO CONFIABLE detectado*\n
 *Hora:* `{hora_actual}`
 *IP:* {ip}
 *MAC:* `{mac}`
