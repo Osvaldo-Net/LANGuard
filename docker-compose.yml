@@ -5,6 +5,7 @@ services:
     environment:
       TELEGRAM_BOT_TOKEN: "tu_bot_token"
       TELEGRAM_CHAT_ID: "tu_chat_id"
+      #openssl rand -hex 32
       SECRET_KEY: "tu_llave_secreta"
     volumes:
       - /etc/localtime:/etc/localtime:ro
