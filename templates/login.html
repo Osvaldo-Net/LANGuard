@@ -24,32 +24,31 @@
   </script>
   <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
 </head>
-<body class="bg-bgBone font-sans text-gray-800 min-h-screen flex items-center justify-center">
+<body class="bg-bgBone font-sans text-gray-800 min-h-screen flex items-center justify-center px-4">
 
-  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md border border-gray-200">
-    <h2 class="text-2xl font-bold text-highlight mb-6 text-center flex items-center justify-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <div class="bg-white shadow-xl rounded-2xl p-6 sm:p-8 w-full max-w-md border border-gray-200">
+    <h2 class="text-xl sm:text-2xl font-bold text-highlight mb-6 text-center flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 sm:w-7 h-6 sm:h-7 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 11h14v10H5V11z" />
       </svg>
       Iniciar Sesión en <span class="text-accent">LANGuard</span>
     </h2>
 
-   {% if error %}
-<div class="mb-4 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow">
-  <strong class="font-semibold">Error:</strong> {{ error }}
-</div>
-{% endif %}
-
+    {% if error %}
+    <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
+      <strong class="font-semibold">Error:</strong> {{ error }}
+    </div>
+    {% endif %}
 
     <form method="POST" class="space-y-4">
       <input type="text" name="usuario" placeholder="Usuario" required
-        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base">
 
       <input type="password" name="contrasena" placeholder="Contraseña" required
-        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base">
 
       <button type="submit"
-        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
+        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition duration-300 hover:scale-105 text-sm sm:text-base">
         Entrar
       </button>
     </form>
