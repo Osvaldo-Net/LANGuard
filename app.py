@@ -1,3 +1,4 @@
+
 from auth import iniciar_archivo_usuarios, verificar_login, cambiar_contrasena_usuario, es_contrasena_por_defecto
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
 
@@ -51,6 +52,19 @@ def cambiar_contrasena():
 
     return render_template('cambiar_contrasena.html', error=error)
 
+@app.route('/api/nombrar', methods=['POST'])
+def api_nombrar():
+    data = request.get_json()
+    mac = data.get("mac", "").strip().lower()
+    nombre = data.get("nombre", "").strip()
+
+    if len(mac.split(":")) == 6 and nombre:
+        NOMBRES_DISPOSITIVOS[mac] = nombre
+        guardar_nombres()
+        return jsonify({"success": True, "message": "Nombre guardado."})
+
+    return jsonify({"success": False, "message": "Datos inválidos"})
+
 
 @app.route('/logout')
 def logout():
@@ -62,6 +76,22 @@ DATA_PATH = "data"
 LISTA_CONF_FILE = os.path.join(DATA_PATH, "lista_confiables.json")
 VENDOR_CACHE_FILE = os.path.join(DATA_PATH, "cache_vendors.json")
 DETECCIONES_FILE = os.path.join(DATA_PATH, "detecciones_mac.json")
+
+#Nombres de dispositivos
+NOMBRES_FILE = os.path.join(DATA_PATH, "nombres_dispositivos.json")
+if os.path.exists(NOMBRES_FILE):
+    with open(NOMBRES_FILE, "r") as f:
+        try:
+            NOMBRES_DISPOSITIVOS = json.load(f)
+        except json.JSONDecodeError:
+            NOMBRES_DISPOSITIVOS = {}
+else:
+    NOMBRES_DISPOSITIVOS = {}
+
+def guardar_nombres():
+    with open(NOMBRES_FILE, "w") as f:
+        json.dump(NOMBRES_DISPOSITIVOS, f)
+
 
 # Cargar lista confiables
 if os.path.exists(LISTA_CONF_FILE):
@@ -161,7 +191,8 @@ def escanear_red():
                             "ip": ip,
                             "mac": mac,
                             "fabricante": fabricante,
-                            "confiable": confiable
+                            "confiable": confiable,
+                            "nombre": NOMBRES_DISPOSITIVOS.get(mac)
                         })
 
                         if not confiable:
@@ -196,13 +227,18 @@ def escaneo_background():
 @app.route('/api/scan')
 def api_scan():
     actualizar_cache()
+    for d in CACHE_RESULTADO:
+        mac = d.get("mac", "").lower()
+        d["nombre"] = NOMBRES_DISPOSITIVOS.get(mac)
     return jsonify(CACHE_RESULTADO)
+
 
 @app.route('/')
 def index():
     if 'usuario' not in session:
         return redirect(url_for('login'))
-    return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES)
+    return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES, nombres_dispositivos=NOMBRES_DISPOSITIVOS)
+
 
 
 @app.route('/api/puertos', methods=['POST'])
