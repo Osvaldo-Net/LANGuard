@@ -2,42 +2,43 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LANGuard</title>
-    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-                                                                theme: {
-                                                                  extend: {
-                                                                    colors: {
-                                                                      accent: '#f4a261',
-                                                                      highlight: '#e76f51',
-                                                                      bgBone: '#f8f6f2',
-                                                                    },
-                                                                    fontFamily: {
-                                                                      sans: ['Inter', 'sans-serif'],
-                                                                        },
-                                                              }
-                                                            }
-                                                          }
-    </script>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>LANGuard</title>
+	<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
+	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+		                                                                theme: {
+		                                                                  extend: {
+		                                                                    colors: {
+		                                                                      accent: '#f4a261',
+		                                                                      highlight: '#e76f51',
+		                                                                      bgBone: '#f8f6f2',
+		                                                                    },
+		                                                                    fontFamily: {
+		                                                                      sans: ['Inter', 'sans-serif'],
+		                                                                        },
+		                                                              }
+		                                                            }
+		                                                          }
+		
+	</script>
 </head>
 
 <body class="bg-bgBone text-gray-800 font-sans antialiased">
-    <nav class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-            <h1 class="flex items-center gap-2 text-2xl sm:text-4xl font-bold tracking-tight text-highlight">
+	<nav class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+			<h1 class="flex items-center gap-2 text-2xl sm:text-4xl font-bold tracking-tight text-highlight">
   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 sm:w-8 h-6 sm:h-8 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 11h14v10H5V11z" />
   </svg>
   <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
 </h1>
 
-            <div class="flex flex-row items-center gap-2 sm:gap-4 ml-auto">
-                <button onclick="escanearAhora()" class="w-10 h-10 sm:w-auto sm:h-auto bg-accent hover:bg-highlight text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105 flex items-center justify-center gap-2">
+			<div class="flex flex-row items-center gap-2 sm:gap-4 ml-auto">
+				<button onclick="escanearAhora()" class="w-10 h-10 sm:w-auto sm:h-auto bg-accent hover:bg-highlight text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105 flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M4 10a9 9 0 0115.5-6.364M20 14a9 9 0 01-15.5 6.364" />
                     </svg>
@@ -46,103 +47,107 @@
 
 
 
-                <a href="/logout" class="w-10 h-10 sm:w-auto sm:h-auto inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<a href="/logout" class="w-10 h-10 sm:w-auto sm:h-auto inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
                     </svg>
-                    <span class="hidden sm:inline">Cerrar sesión</span>
-                </a>
-            </div>
+					<span class="hidden sm:inline">Cerrar sesión</span>
+				</a>
+			</div>
 
-    </nav>
+	</nav>
 
-    <main class="max-w-7xl mx-auto px-4 py-10">
-        <header class="text-center mb-10">
+	<main class="max-w-7xl mx-auto px-4 py-10">
+		<header class="text-center mb-10">
 
-            <p class="text-lg sm:text-xl text-gray-600">Escaneo de red con enfoque en seguridad: identifica dispositivos y detecta accesos no autorizados.
-            </p>
-        </header>
+			<p class="text-lg sm:text-xl text-gray-600">Escaneo de red con enfoque en seguridad: identifica dispositivos y detecta accesos no autorizados.
+			</p>
+		</header>
 
-<p class="text-gray-600 mb-4 flex items-center gap-2">
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		<p class="text-gray-600 mb-4 flex items-center gap-2">
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
-  </svg>
-  Dispositivos detectados: <strong class="ml-1">{{ dispositivos|length }}</strong>
-</p>
+  </svg> Dispositivos detectados: <strong class="ml-1">{{ dispositivos|length }}</strong>
+		</p>
 
 
-        <section class="overflow-x-auto rounded-xl shadow border border-gray-200 mb-12">
-            <table class="min-w-full text-sm sm:text-base">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-4 py-3 text-left font-medium">IP</th>
-                        <th class="px-4 py-3 text-left font-medium">MAC</th>
-                        <th class="px-4 py-3 text-left font-medium">Fabricante</th>
-                        <th class="px-4 py-3 text-left font-medium">Confianza</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100" id="tabla-dispositivos">
-                    {% for d in dispositivos %}
-                    <tr class="hover:bg-orange-50">
-                        <td class="px-4 py-3">{{ d.ip }}</td>
-                        <td class="px-4 py-3">{{ d.mac }}</td>
-                        <td class="px-4 py-3">{{ d.fabricante }}</td>
-                        <td class="px-4 py-3">
-                            {% if d.confiable %}
-                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">✔️ Confiable</span> {% else %}
-                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">❌ No confiable</span> {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
+		<section class="overflow-x-auto rounded-xl shadow border border-gray-200 mb-12">
+			<table class="min-w-full text-sm sm:text-base">
+				<thead class="bg-gray-100 text-gray-700">
+					<tr>
+						<th class="px-4 py-3 text-left font-medium">IP</th>
+						<th class="px-4 py-3 text-left font-medium">MAC</th>
+						<th class="px-4 py-3 text-left font-medium">Nombre</th>
+						<th class="px-4 py-3 text-left font-medium">Fabricante</th>
+						<th class="px-4 py-3 text-left font-medium">Confianza</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-gray-100" id="tabla-dispositivos">
+					{% for d in dispositivos %}
+					<tr class="hover:bg-orange-50">
+						<td class="px-4 py-3">{{ d.ip }}</td>
+						<td class="px-4 py-3">
+							<span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 hover:underline">
+    {{ nombres_dispositivos[d.mac]|default(d.mac) }}
+  </span>
+						</td>
+						<td class="px-4 py-3">{{ d.fabricante }}</td>
+						<td class="px-4 py-3">
+							{% if d.confiable %}
+							<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">✔️ Confiable</span> {% else %}
+							<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">❌ No confiable</span> {% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</section>
 
-        <div class="grid gap-8 grid-cols-1 sm:grid-cols-2">
-            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
-                <h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
+		<div class="grid gap-8 grid-cols-1 sm:grid-cols-2">
+			<div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+				<h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
   </svg>
   Agregar MAC confiable
 </h2>
 
-                <form id="form-agregar" class="space-y-4">
-                    <input type="text" id="input-mac" name="prefijo" placeholder="Ej: f0:09:0d:a3:df:a4" required class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
-                    <button type="submit" class="w-full sm:w-auto mt-3 sm:mt-0 bg-accent hover:bg-highlight text-white font-semibold py-2 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
+				<form id="form-agregar" class="space-y-4">
+					<input type="text" id="input-mac" name="prefijo" placeholder="Ej: f0:09:0d:a3:df:a4" required class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
+					<button type="submit" class="w-full sm:w-auto mt-3 sm:mt-0 bg-accent hover:bg-highlight text-white font-semibold py-2 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
                         Agregar
                     </button>
 
-                </form>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
-                <h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
+				</form>
+			</div>
+			<div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+				<h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
   </svg>
   MACs Confiables
 </h2>
-                <ul id="lista-macs" class="space-y-3">
-                    {% for prefijo in lista_confiables %}
-                    <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg hover:bg-gray-100 flex-wrap sm:flex-nowrap">
-                        <span class="text-gray-800 break-all mr-2">{{ prefijo }}</span>
-                        <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
+				<ul id="lista-macs" class="space-y-3">
+					{% for prefijo in lista_confiables %}
+					<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg hover:bg-gray-100 flex-wrap sm:flex-nowrap">
+						<span class="text-gray-800 break-all mr-2">{{ prefijo }}</span>
+						<button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500 hover:text-red-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-6 0V5a1 1 0 011-1h4a1 1 0 011 1v2" />
                             </svg>
                             Eliminar
                         </button>
 
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </main>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</main>
 
-    <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full"></div>
+	<div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full"></div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
 </body>
 
