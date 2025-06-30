@@ -74,6 +74,27 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(() => mostrarNotificacion("Error de conexión", "error"));
   };
 
+window.editarNombre = function(mac) {
+  const nuevoNombre = prompt("Ingresa un nombre para el dispositivo:", mac);
+  if (!nuevoNombre || nuevoNombre.trim() === "") return;
+
+  fetch("/api/nombrar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mac: mac, nombre: nuevoNombre })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      mostrarNotificacion("✅ Nombre guardado", "success");
+      location.reload();
+    } else {
+      mostrarNotificacion("❌ " + data.message, "error");
+    }
+  })
+  .catch(() => mostrarNotificacion("❌ Error al guardar nombre", "error"));
+};
+
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -135,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(() => mostrarNotificacion("❌ Error al consultar puertos", "error"));
   };
 
+
   function actualizarTabla(dispositivos) {
     const tabla = document.getElementById("tabla-dispositivos");
     tabla.innerHTML = "";
@@ -145,6 +167,12 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td class="px-4 py-3">${d.ip}</td>
         <td class="px-4 py-3">${d.mac}</td>
+<td class="px-4 py-3">
+  <span onclick="editarNombre('${d.mac}')" class="text-blue-600 hover:underline cursor-pointer">
+    ${d.nombre ? d.nombre : "N/A"}
+  </span>
+</td>
+
         <td class="px-4 py-3">${d.fabricante}</td>
         <td class="px-4 py-3">
           ${d.confiable
@@ -173,6 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Escaneo automático cada 60 segundos
+//Escaneo automático cada 60 segundos
   setInterval(() => window.escanearAhora(), 60000);
 });
