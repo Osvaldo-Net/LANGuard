@@ -198,7 +198,9 @@ window.editarNombre = function(mac) {
         </td>
       `;
       tabla.appendChild(row);
+
     });
+    document.getElementById("contador-dispositivos").textContent = dispositivos.length;
   }
 
 //Escaneo automático cada 60 segundos
