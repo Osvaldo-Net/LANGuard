@@ -171,7 +171,7 @@ def obtener_red_local():
 def escanear_red():
     try:
         red = obtener_red_local()
-        salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", red], timeout=30).decode()
+        salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", "-PR", "--max-retries", "3", red], timeout=30).decode()
         dispositivos = []
         ip = mac = None
         ahora = time.time()
