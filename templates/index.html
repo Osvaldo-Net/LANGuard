@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -125,18 +127,25 @@
       </div>
       <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
         <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-          <i data-lucide="check"></i> MACs Confiables
+          <i data-lucide="check"></i> Dispositivos Confiables
         </h2>
         <ul id="lista-macs" class="space-y-3">
-          {% for prefijo in lista_confiables %}
-          <li class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-            <span class="break-all text-gray-800 dark:text-gray-100">{{ prefijo }}</span>
-            <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-              <i data-lucide="trash-2"></i> Eliminar
-            </button>
-          </li>
-          {% endfor %}
-        </ul>
+  {% for prefijo in lista_confiables %}
+  <li class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+    <div>
+      <span class="font-semibold text-gray-800 dark:text-white">
+        {{ nombres_dispositivos[prefijo]|default("Sin nombre") }}
+      </span><br>
+      <span class="text-xs text-gray-500 dark:text-gray-400">{{ prefijo }}</span>
+    </div>
+    <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
+      <i data-lucide="trash-2"></i> Eliminar
+    </button>
+  </li>
+  {% endfor %}
+</ul>
+
+
       </div>
     </div>
   </main>
@@ -153,7 +162,6 @@
     }
   </script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-  <!-- Modal de Puertos -->
 <div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
   <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
     <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
@@ -163,7 +171,6 @@
       <i data-lucide="network"></i> Puertos Abiertos
     </h2>
     <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2">
-      <!-- Contenido dinámico aquí -->
     </div>
   </div>
 </div>
