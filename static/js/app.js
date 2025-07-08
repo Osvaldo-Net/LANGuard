@@ -10,8 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
     noti.innerHTML = mensaje;
     noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
     noti.classList.remove("hidden");
+    lucide.createIcons();
     setTimeout(() => noti.classList.add("hidden"), 10000);
   }
+
+  window.cerrarModal = function () {
+    document.getElementById("modal-puertos").classList.add("hidden");
+  };
 
   document.getElementById("form-agregar").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -20,10 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
-        <svg class="w-4 h-4 animate-spin text-orange-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"></path>
-        </svg>
+        <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
         Agregando MAC...
       </span>
     `, "info");
@@ -36,23 +38,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const data = await res.json();
       if (data.success) {
-        mostrarNotificacion(`✅ ${data.message}`, "success");
+        mostrarNotificacion(`<i data-lucide='check' class='w-4 h-4'></i> ${data.message}`, "success");
         setTimeout(() => location.reload(), 1000);
       } else {
-        mostrarNotificacion(`❌ ${data.message}`, "error");
+        mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
       }
     } catch (error) {
-      mostrarNotificacion("Error de conexión", "error");
+      mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error de conexión", "error");
     }
   });
 
   window.eliminarMAC = function (mac) {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
-        <svg class="w-4 h-4 animate-spin text-orange-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"></path>
-        </svg>
+        <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
         Eliminando MAC...
       </span>
     `, "info");
@@ -65,60 +64,57 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          mostrarNotificacion(`✅ ${data.message}`, "success");
+          mostrarNotificacion(`<i data-lucide='check' class='w-4 h-4'></i> ${data.message}`, "success");
           setTimeout(() => location.reload(), 1000);
         } else {
-          mostrarNotificacion(`❌ ${data.message}`, "error");
+          mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
         }
       })
-      .catch(() => mostrarNotificacion("Error de conexión", "error"));
+      .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error de conexión", "error"));
   };
 
-window.editarNombre = function(mac) {
-  const nuevoNombre = prompt("Ingresa un nombre para el dispositivo:", mac);
-  if (!nuevoNombre || nuevoNombre.trim() === "") return;
+  window.editarNombre = function(mac) {
+    const nuevoNombre = prompt("Ingresa un nombre para el dispositivo:", mac);
+    if (!nuevoNombre || nuevoNombre.trim() === "") return;
 
-  fetch("/api/nombrar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mac: mac, nombre: nuevoNombre })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      mostrarNotificacion("✅ Nombre guardado", "success");
-      location.reload();
-    } else {
-      mostrarNotificacion("❌ " + data.message, "error");
-    }
-  })
-  .catch(() => mostrarNotificacion("❌ Error al guardar nombre", "error"));
-};
+    fetch("/api/nombrar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mac: mac, nombre: nuevoNombre })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        mostrarNotificacion("<i data-lucide='check' class='w-4 h-4'></i> Nombre guardado", "success");
+        location.reload();
+      } else {
+        mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
+      }
+    })
+    .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error al guardar nombre", "error"));
+  };
 
-function actualizarHoraActual() {
-  const ahora = new Date();
-  const formateada = ahora.toLocaleString('es-CO', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  });
-  document.getElementById("horaActual").textContent = formateada;
-}
+  function actualizarHoraActual() {
+    const ahora = new Date();
+    const formateada = ahora.toLocaleString('es-CO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    document.getElementById("horaActual").textContent = formateada;
+  }
 
-setInterval(actualizarHoraActual, 1000);
-actualizarHoraActual();
+  setInterval(actualizarHoraActual, 1000);
+  actualizarHoraActual();
 
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
-        <svg class="w-4 h-4 animate-spin text-orange-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"></path>
-        </svg>
+        <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
         Escaneando red...
       </span>
     `, "info");
@@ -128,21 +124,16 @@ actualizarHoraActual();
       .then(data => {
         mostrarNotificacion(`
           <span class="inline-flex items-center gap-2">
-            <svg class="w-4 h-4 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <i data-lucide="check" class="w-4 h-4 text-green-700"></i>
             Escaneo completo
           </span>
         `, "success");
-
         actualizarTabla(data);
       })
       .catch(() => {
         mostrarNotificacion(`
           <span class="inline-flex items-center gap-2">
-            <svg class="w-4 h-4 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i data-lucide="x-circle" class="w-4 h-4 text-red-700"></i>
             Error al escanear
           </span>
         `, "error");
@@ -150,7 +141,17 @@ actualizarHoraActual();
   };
 
   window.verPuertos = function (ip) {
-    mostrarNotificacion(`🔍 Escaneando puertos de ${ip}...`, "info");
+    const modal = document.getElementById("modal-puertos");
+    const contenido = document.getElementById("contenido-puertos");
+
+    contenido.innerHTML = `
+      <div class="flex items-center gap-2 text-orange-800 dark:text-orange-400">
+        <i data-lucide="loader" class="animate-spin w-4 h-4"></i>
+        Escaneando puertos en <strong>${ip}</strong>...
+      </div>
+    `;
+    modal.classList.remove("hidden");
+    lucide.createIcons();
 
     fetch("/api/puertos", {
       method: "POST",
@@ -161,18 +162,26 @@ actualizarHoraActual();
       .then(data => {
         if (data.success) {
           if (data.puertos.length === 0) {
-            mostrarNotificacion(`✅ No se encontraron puertos abiertos en ${ip}`, "success");
+            contenido.innerHTML = `
+              <p class="text-gray-600 dark:text-gray-300 text-center">No se encontraron puertos abiertos en <strong>${ip}</strong>.</p>
+            `;
           } else {
-            const lista = data.puertos.map(p => `${p.puerto} (${p.servicio})`).join(", ");
-            mostrarNotificacion(`<strong>Puertos abiertos en ${ip}:</strong><br>${lista}`, "success");
+            const lista = data.puertos.map(p => `<li>${p.puerto} (${p.servicio})</li>`).join('');
+            contenido.innerHTML = `
+              <p class="mb-2">Host: <strong>${ip}</strong></p>
+              <ul class="list-disc list-inside space-y-1">${lista}</ul>
+            `;
           }
         } else {
-          mostrarNotificacion(`❌ Error: ${data.message}`, "error");
+          contenido.innerHTML = `<p class="text-red-600 dark:text-red-400">${data.message}</p>`;
         }
+        lucide.createIcons();
       })
-      .catch(() => mostrarNotificacion("❌ Error al consultar puertos", "error"));
+      .catch(() => {
+        contenido.innerHTML = `<p class="text-red-600 dark:text-red-400">Error al consultar puertos para ${ip}</p>`;
+        lucide.createIcons();
+      });
   };
-
 
   function actualizarTabla(dispositivos) {
     const tabla = document.getElementById("tabla-dispositivos");
@@ -184,42 +193,34 @@ actualizarHoraActual();
       row.innerHTML = `
         <td class="px-4 py-3">${d.ip}</td>
         <td class="px-4 py-3">${d.mac}</td>
-<td class="px-4 py-3">
-    <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline">
-    ${d.nombre ? d.nombre : "N/A"} ✎
-  </span>
-</td>
-
+        <td class="px-4 py-3">
+          <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
+            ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
+          </span>
+        </td>
         <td class="px-4 py-3">${d.fabricante}</td>
         <td class="px-4 py-3">
           ${d.confiable
             ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
                 Confiable
               </span>`
             : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
                 No confiable
               </span>`}
           <br/>
           <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
             Ver puertos
           </button>
         </td>
       `;
       tabla.appendChild(row);
-
     });
     document.getElementById("contador-dispositivos").textContent = dispositivos.length;
+    lucide.createIcons();
   }
 
-//Escaneo automático cada 60 segundos
   setInterval(() => window.escanearAhora(), 60000);
 });
