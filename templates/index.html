@@ -1,164 +1,151 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>LANGuard</title>
-        <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
-        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-                tailwind.config = {
-                                                                                                theme: {
-                                                                                                  extend: {
-                                                                                                    colors: {
-                                                                                                      accent: '#f4a261',
-                                                                                                      highlight: '#e76f51',
-                                                                                                      bgBone: '#f8f6f2',
-                                                                                                    },
-                                                                                                    fontFamily: {
-                                                                                                      sans: ['Inter', 'sans-serif'],
-                                                                                                        },
-                                                                                              }
-                                                                                            }
-                                                                                          }
-
-
-        </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAN Guard</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f4a261',
+            highlight: '#e76f51',
+            bgBone: '#f8f6f2',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body class="bg-bgBone text-gray-800 font-sans antialiased">
-        <nav class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
-                <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-                        <h1 class="flex items-center gap-2 text-2xl sm:text-4xl font-bold tracking-tight text-highlight">
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 sm:w-8 h-6 sm:h-8 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 11h14v10H5V11z" />
-  </svg>
-  <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
-</h1>
+<body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gray-900 dark:text-white">
+  <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+      <h1 class="flex items-center gap-2 text-3xl font-bold tracking-tight text-highlight">
+        <i data-lucide="shield-check" class="w-7 h-7 text-highlight"></i>
+        <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
+      </h1>
+      <div class="flex items-center gap-3 ml-auto">
+        <button onclick="escanearAhora()" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-lg backdrop-blur transition transform hover:scale-105 flex items-center gap-2">
+          <i data-lucide="scan"></i><span>Escanear</span>
+        </button>
+        <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-5 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
+          <i data-lucide="log-out"></i><span>Cerrar sesión</span>
+        </a>
+        <button onclick="toggleDarkMode()" class="text-highlight hover:text-accent">
+          <i id="icono-tema" data-lucide="moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-                        <div class="flex flex-row items-center gap-2 sm:gap-4 ml-auto">
-                                <button onclick="escanearAhora()" class="w-10 h-10 sm:w-auto sm:h-auto bg-accent hover:bg-highlight text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M4 10a9 9 0 0115.5-6.364M20 14a9 9 0 01-15.5 6.364" />
-                    </svg>
-                    <span class="hidden sm:inline">Escanear ahora</span>
-                </button>
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <header class="text-center mb-10">
+      <p class="text-xl text-gray-600 dark:text-gray-300">Escaneo de red con enfoque en seguridad: identifica dispositivos y detecta accesos no autorizados.</p>
+    </header>
 
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+      <p class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+        <i data-lucide="list" class="w-5 h-5 text-accent"></i>
+        Dispositivos detectados: <strong id="contador-dispositivos">{{ dispositivos|length }}</strong>
+      </p>
+      <div class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+        <i data-lucide="clock" class="w-5 h-5 text-accent"></i>
+        <span id="horaActual">--:--:--</span>
+      </div>
+    </div>
 
+    <section class="overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">IP</th>
+            <th class="px-4 py-3 text-left font-medium">MAC</th>
+            <th class="px-4 py-3 text-left font-medium">Nombre</th>
+            <th class="px-4 py-3 text-left font-medium">Fabricante</th>
+            <th class="px-4 py-3 text-left font-medium">Confianza</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
+          {% for d in dispositivos %}
+       <tr class="transition-all duration-300 ease-in-out
+  {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }}
+  hover:shadow-lg hover:backdrop-blur-md hover:bg-white/90 dark:hover:bg-white/10">
+            <td class="px-4 py-3">{{ d.ip }}</td>
+            <td class="px-4 py-3">{{ d.mac }}</td>
+            <td class="px-4 py-3">
+              <span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline">{{ nombres_dispositivos[d.mac]|default("N/A") }} ✎</span>
+            </td>
+            <td class="px-4 py-3">{{ d.fabricante }}</td>
+            <td class="px-4 py-3">
+              {% if d.confiable %}
+              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">✔️ Confiable</span>
+              {% else %}
+              <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">❌ No confiable</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
 
-                                <a href="/logout" class="w-10 h-10 sm:w-auto sm:h-auto inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold sm:py-2 sm:px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-                    </svg>
-                                        <span class="hidden sm:inline">Cerrar sesión</span>
-                                </a>
-                        </div>
+    <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
+      <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
+        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
+          <i data-lucide="plus"></i> Agregar MAC confiable
+        </h2>
+  <form id="form-agregar" class="space-y-4">
+  <input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required
+    class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
 
-        </nav>
+  <button type="submit"
+    class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">
+    Agregar
+  </button>
+</form>
 
-        <main class="max-w-7xl mx-auto px-4 py-10">
-                <header class="text-center mb-10">
+      </div>
+      <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
+        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
+          <i data-lucide="check"></i> MACs Confiables
+        </h2>
+        <ul id="lista-macs" class="space-y-3">
+          {% for prefijo in lista_confiables %}
+          <li class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+            <span class="break-all text-gray-800 dark:text-gray-100">{{ prefijo }}</span>
+            <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
+              <i data-lucide="trash-2"></i> Eliminar
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </main>
 
-                        <p class="text-lg sm:text-xl text-gray-600">Escaneo de red con enfoque en seguridad: identifica dispositivos y detecta accesos no autorizados.
-                        </p>
-                </header>
+  <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
 
-                <p class="text-gray-600 mb-4 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
-  </svg> Dispositivos detectados: <strong class="ml-1" id="contador-dispositivos">{{ dispositivos|length }}</strong>
-
-                </p>
-
-
-                <section class="overflow-x-auto rounded-xl shadow border border-gray-200 mb-12">
-                        <table class="min-w-full text-sm sm:text-base">
-                                <thead class="bg-gray-100 text-gray-700">
-                                        <tr>
-                                                <th class="px-4 py-3 text-left font-medium">IP</th>
-                                                <th class="px-4 py-3 text-left font-medium">MAC</th>
-                                                <th class="px-4 py-3 text-left font-medium">Nombre</th>
-                                                <th class="px-4 py-3 text-left font-medium">Fabricante</th>
-                                                <th class="px-4 py-3 text-left font-medium">Confianza</th>
-                                        </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100" id="tabla-dispositivos">
-                                        {% for d in dispositivos %}
-                                        <tr class="hover:bg-orange-50">
-                                                <td class="px-4 py-3">{{ d.ip }}</td>
-
-                                                <td class="px-4 py-3">{{ d.mac }}</td>
-                                                <!-- Columna MAC -->
-
-                                                <td class="px-4 py-3">
-                                                        <!-- Columna Nombre -->
-                                                        <span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 hover:underline">
-        {{ nombres_dispositivos[d.mac]|default("N/A") }}
-      </span>
-                                                </td>
-
-                                                <td class="px-4 py-3">{{ d.fabricante }}</td>
-
-                                                <td class="px-4 py-3">
-                                                        {% if d.confiable %}
-                                                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">✔️ Confiable</span> {% else %}
-                                                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">❌ No confiable</span> {% endif %}
-                                                </td>
-                                        </tr>
-                                        {% endfor %}
-
-                                </tbody>
-                        </table>
-                </section>
-
-                <div class="grid gap-8 grid-cols-1 sm:grid-cols-2">
-                        <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
-                                <h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-  </svg>
-  Agregar MAC confiable
-</h2>
-
-                                <form id="form-agregar" class="space-y-4">
-                                        <input type="text" id="input-mac" name="prefijo" placeholder="Ej: f0:09:0d:a3:df:a4" required class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none">
-                                        <button type="submit" class="w-full sm:w-auto mt-3 sm:mt-0 bg-accent hover:bg-highlight text-white font-semibold py-2 px-5 rounded-full shadow-md transition duration-300 hover:scale-105">
-                        Agregar
-                    </button>
-
-                                </form>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
-                                <h2 class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-700 mb-4">
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-  </svg>
-  MACs Confiables
-</h2>
-                                <ul id="lista-macs" class="space-y-3">
-                                        {% for prefijo in lista_confiables %}
-                                        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg hover:bg-gray-100 flex-wrap sm:flex-nowrap">
-                                                <span class="text-gray-800 break-all mr-2">{{ prefijo }}</span>
-                                                <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500 hover:text-red-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-6 0V5a1 1 0 011-1h4a1 1 0 011 1v2" />
-                            </svg>
-                            Eliminar
-                        </button>
-
-                                        </li>
-                                        {% endfor %}
-                                </ul>
-                        </div>
-                </div>
-        </main>
-
-        <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full"></div>
-
-        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-
+  <script>
+    lucide.createIcons();
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      const icono = document.getElementById('icono-tema');
+      icono.setAttribute('data-lucide', document.documentElement.classList.contains('dark') ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 
 </html>
