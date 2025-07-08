@@ -95,6 +95,23 @@ window.editarNombre = function(mac) {
   .catch(() => mostrarNotificacion("❌ Error al guardar nombre", "error"));
 };
 
+function actualizarHoraActual() {
+  const ahora = new Date();
+  const formateada = ahora.toLocaleString('es-CO', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+  document.getElementById("horaActual").textContent = formateada;
+}
+
+setInterval(actualizarHoraActual, 1000);
+actualizarHoraActual();
+
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -163,13 +180,13 @@ window.editarNombre = function(mac) {
 
     dispositivos.forEach(d => {
       const row = document.createElement("tr");
-      row.className = "hover:bg-orange-50";
+      row.className = "transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
       row.innerHTML = `
         <td class="px-4 py-3">${d.ip}</td>
         <td class="px-4 py-3">${d.mac}</td>
 <td class="px-4 py-3">
-  <span onclick="editarNombre('${d.mac}')" class="text-blue-600 hover:underline cursor-pointer">
-    ${d.nombre ? d.nombre : "N/A"}
+    <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline">
+    ${d.nombre ? d.nombre : "N/A"} ✎
   </span>
 </td>
 
