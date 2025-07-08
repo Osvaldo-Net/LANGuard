@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -84,14 +83,22 @@
             <td class="px-4 py-3">{{ d.ip }}</td>
             <td class="px-4 py-3">{{ d.mac }}</td>
             <td class="px-4 py-3">
-              <span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline">{{ nombres_dispositivos[d.mac]|default("N/A") }} ✎</span>
+            <span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline inline-flex items-center gap-1">
+  {{ nombres_dispositivos[d.mac]|default("N/A") }}
+  <i data-lucide="pencil" class="w-4 h-4"></i>
+</span>
             </td>
             <td class="px-4 py-3">{{ d.fabricante }}</td>
             <td class="px-4 py-3">
               {% if d.confiable %}
-              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">✔️ Confiable</span>
+            <span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
+  <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
+</span>
               {% else %}
-              <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">❌ No confiable</span>
+            <span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
+  <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
+</span>
+
               {% endif %}
             </td>
           </tr>
@@ -146,6 +153,21 @@
     }
   </script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <!-- Modal de Puertos -->
+<div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
+    <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-highlight">
+      <i data-lucide="network"></i> Puertos Abiertos
+    </h2>
+    <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2">
+      <!-- Contenido dinámico aquí -->
+    </div>
+  </div>
+</div>
+
 </body>
 
 </html>
