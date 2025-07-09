@@ -1,6 +1,6 @@
-
 from auth import iniciar_archivo_usuarios, verificar_login, cambiar_contrasena_usuario, es_contrasena_por_defecto
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+from collections import defaultdict
 
 iniciar_archivo_usuarios()
 
@@ -15,6 +15,14 @@ import time
 import requests
 from datetime import datetime
 
+
+# Variables globales para seguridad
+
+INTENTOS_FALLIDOS = defaultdict(int)
+BLOQUEOS = {}
+TIEMPO_BLOQUEO = 300  # 5 minutos en segundos
+
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 
@@ -22,17 +30,41 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    ip_origen = request.remote_addr  # IP del visitante
+
+    # Verificar si la IP está bloqueada
+    if ip_origen in BLOQUEOS:
+        tiempo_restante = BLOQUEOS[ip_origen] - time.time()
+        if tiempo_restante > 0:
+            minutos = int(tiempo_restante // 60)
+            segundos = int(tiempo_restante % 60)
+            error = f"Demasiados intentos fallidos. Intenta en {minutos}m {segundos}s."
+            return render_template('login.html', error=error)
+        else:
+            # El tiempo ya pasó, quitar bloqueo y resetear intentos
+            BLOQUEOS.pop(ip_origen)
+            INTENTOS_FALLIDOS[ip_origen] = 0
+
     if request.method == 'POST':
         usuario = request.form['usuario']
         contrasena = request.form['contrasena']
         if verificar_login(usuario, contrasena):
             session['usuario'] = usuario
+            INTENTOS_FALLIDOS[ip_origen] = 0  # Éxito: limpiar intentos
             if es_contrasena_por_defecto(usuario):
                 return redirect(url_for('cambiar_contrasena'))
             return redirect(url_for('index'))
         else:
-            error = "Credenciales incorrectas"
+            INTENTOS_FALLIDOS[ip_origen] += 1
+            if INTENTOS_FALLIDOS[ip_origen] >= 3:
+                BLOQUEOS[ip_origen] = time.time() + TIEMPO_BLOQUEO
+                error = "Demasiados intentos fallidos. Tu IP ha sido bloqueada por 5 minutos."
+            else:
+                restantes = 3 - INTENTOS_FALLIDOS[ip_origen]
+                error = f"Credenciales incorrectas. Intentos restantes: {restantes}"
+
     return render_template('login.html', error=error)
+
 
 
 @app.route('/cambiar-contrasena', methods=['GET', 'POST'])
