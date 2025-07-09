@@ -273,6 +273,9 @@ def escaneo_background():
 
 @app.route('/api/scan')
 def api_scan():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+
     actualizar_cache()
     for d in CACHE_RESULTADO:
         mac = d.get("mac", "").lower()
