@@ -98,5 +98,36 @@
       lucide.createIcons();
     });
   </script>
+
+  {% if tiempo_restante %}
+  <script>
+    let tiempo = {{ tiempo_restante }};
+    const mensajeError = document.querySelector(".bg-red-100");
+    const boton = document.querySelector("button[type='submit']");
+    const usuarioInput = document.querySelector("input[name='usuario']");
+    const contrasenaInput = document.querySelector("input[name='contrasena']");
+
+    // Desactiva campos
+    usuarioInput.disabled = true;
+    contrasenaInput.disabled = true;
+    boton.disabled = true;
+    boton.classList.add("opacity-50", "cursor-not-allowed");
+
+    function actualizarContador() {
+      if (tiempo > 0) {
+        const minutos = Math.floor(tiempo / 60);
+        const segundos = tiempo % 60;
+        mensajeError.innerHTML = `<strong class="font-semibold">Bloqueado:</strong> Intenta en ${minutos}m ${segundos}s.`;
+        tiempo--;
+        setTimeout(actualizarContador, 1000);
+      } else {
+        location.reload();
+      }
+    }
+
+    actualizarContador();
+  </script>
+  {% endif %}
+
 </body>
 </html>
