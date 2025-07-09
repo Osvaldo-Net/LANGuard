@@ -41,18 +41,21 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    ip_origen = request.remote_addr
+    tiempo_restante = None
+    ip_origen = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+
 
     # Verificar si la IP está bloqueada
     if ip_origen in BLOQUEOS:
-        tiempo_restante = BLOQUEOS[ip_origen] - time.time()
+        tiempo_restante = int(BLOQUEOS[ip_origen] - time.time())
         if tiempo_restante > 0:
-            minutos = int(tiempo_restante // 60)
-            segundos = int(tiempo_restante % 60)
+            minutos = tiempo_restante // 60
+            segundos = tiempo_restante % 60
             error = f"Demasiados intentos fallidos. Intenta en {minutos}m {segundos}s."
             registrar_log(f"IP BLOQUEADA - {ip_origen} intentó acceder estando bloqueada.")
-            return render_template('login.html', error=error)
+            return render_template('login.html', error=error, tiempo_restante=tiempo_restante)
         else:
+            # Desbloquear IP y reiniciar intentos
             BLOQUEOS.pop(ip_origen)
             INTENTOS_FALLIDOS[ip_origen] = 0
 
@@ -71,14 +74,15 @@ def login():
             INTENTOS_FALLIDOS[ip_origen] += 1
             if INTENTOS_FALLIDOS[ip_origen] >= 3:
                 BLOQUEOS[ip_origen] = time.time() + TIEMPO_BLOQUEO
-                registrar_log(f"IP BLOQUEADA - {ip_origen} por 5 minutos")
-                error = "Demasiados intentos fallidos. Tu IP ha sido bloqueada por 5 minutos."
+                tiempo_restante = TIEMPO_BLOQUEO
+                registrar_log(f"IP BLOQUEADA - {ip_origen} por {TIEMPO_BLOQUEO // 60} minutos")
+                error = f"Demasiados intentos fallidos. Tu IP ha sido bloqueada por {TIEMPO_BLOQUEO // 60} minutos."
             else:
                 restantes = 3 - INTENTOS_FALLIDOS[ip_origen]
                 registrar_log(f"LOGIN FALLIDO - IP: {ip_origen} - Usuario: {usuario}")
                 error = f"Credenciales incorrectas. Intentos restantes: {restantes}"
 
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, tiempo_restante=tiempo_restante)
 
 
 
