@@ -58,6 +58,8 @@ def login():
             # Desbloquear IP y reiniciar intentos
             BLOQUEOS.pop(ip_origen)
             INTENTOS_FALLIDOS[ip_origen] = 0
+            return redirect(url_for('login'))
+
 
     if request.method == 'POST':
         usuario = request.form['usuario']
