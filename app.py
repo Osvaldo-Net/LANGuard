@@ -13,11 +13,22 @@ import ipaddress
 import threading
 import time
 import requests
+import logging
 from datetime import datetime
+
+LOG_PATH = "data/accesos.log"
+logger = logging.getLogger("accesos")
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    handler = logging.FileHandler(LOG_PATH)
+    formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+def registrar_log(mensaje):
+    logger.info(mensaje)
 
 
 # Variables globales para seguridad
-
 INTENTOS_FALLIDOS = defaultdict(int)
 BLOQUEOS = {}
 TIEMPO_BLOQUEO = 300  # 5 minutos en segundos
@@ -30,7 +41,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    ip_origen = request.remote_addr  # IP del visitante
+    ip_origen = request.remote_addr
 
     # Verificar si la IP está bloqueada
     if ip_origen in BLOQUEOS:
@@ -39,18 +50,20 @@ def login():
             minutos = int(tiempo_restante // 60)
             segundos = int(tiempo_restante % 60)
             error = f"Demasiados intentos fallidos. Intenta en {minutos}m {segundos}s."
+            registrar_log(f"IP BLOQUEADA - {ip_origen} intentó acceder estando bloqueada.")
             return render_template('login.html', error=error)
         else:
-            # El tiempo ya pasó, quitar bloqueo y resetear intentos
             BLOQUEOS.pop(ip_origen)
             INTENTOS_FALLIDOS[ip_origen] = 0
 
     if request.method == 'POST':
         usuario = request.form['usuario']
         contrasena = request.form['contrasena']
+
         if verificar_login(usuario, contrasena):
             session['usuario'] = usuario
-            INTENTOS_FALLIDOS[ip_origen] = 0  # Éxito: limpiar intentos
+            INTENTOS_FALLIDOS[ip_origen] = 0
+            registrar_log(f"LOGIN EXITOSO - IP: {ip_origen} - Usuario: {usuario}")
             if es_contrasena_por_defecto(usuario):
                 return redirect(url_for('cambiar_contrasena'))
             return redirect(url_for('index'))
@@ -58,9 +71,11 @@ def login():
             INTENTOS_FALLIDOS[ip_origen] += 1
             if INTENTOS_FALLIDOS[ip_origen] >= 3:
                 BLOQUEOS[ip_origen] = time.time() + TIEMPO_BLOQUEO
+                registrar_log(f"IP BLOQUEADA - {ip_origen} por 5 minutos")
                 error = "Demasiados intentos fallidos. Tu IP ha sido bloqueada por 5 minutos."
             else:
                 restantes = 3 - INTENTOS_FALLIDOS[ip_origen]
+                registrar_log(f"LOGIN FALLIDO - IP: {ip_origen} - Usuario: {usuario}")
                 error = f"Credenciales incorrectas. Intentos restantes: {restantes}"
 
     return render_template('login.html', error=error)
