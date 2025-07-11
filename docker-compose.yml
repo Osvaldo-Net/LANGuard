@@ -1,7 +1,7 @@
 services:
   escaner_red:
     container_name: LANGuard
-    build: .
+    image: netosvaltools/languard:latest
     environment:
       TELEGRAM_BOT_TOKEN: "tu_bot_token"
       TELEGRAM_CHAT_ID: "tu_chat_id"
