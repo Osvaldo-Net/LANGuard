@@ -2,173 +2,153 @@
 <html lang="es">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>LAN Guard</title>
-	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-	<script src="https://cdn.tailwindcss.com"></script>
-	<script>
-		tailwind.config = {
-		      darkMode: 'class',
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: '#f4a261',
-		            highlight: '#e76f51',
-		            bgBone: '#f8f6f2',
-		          },
-		          fontFamily: {
-		            sans: ['Inter', 'sans-serif'],
-		          },
-		        }
-		      }
-		    }
-		
-	</script>
-	<script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAN Guard</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f4a261',
+            highlight: '#e76f51',
+            bgBone: '#f8f6f2',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gray-900 dark:text-white">
-	<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70">
-		<div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-			<h1 class="flex items-center gap-2 text-3xl font-bold tracking-tight text-highlight">
-  <img src="{{ url_for('static', filename='languard.png') }}" alt="Logo" class="w-10 h-10">
-  <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
-</h1>
-			<div class="flex items-center gap-3 ml-auto">
-				<button onclick="escanearAhora()" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-lg backdrop-blur transition transform hover:scale-105 flex items-center gap-2">
+  <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+      <h1 class="flex items-center gap-2 text-3xl font-bold tracking-tight text-highlight">
+        <img src="{{ url_for('static', filename='languard.png') }}" alt="Logo" class="w-10 h-10">
+        <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
+      </h1>
+      <div class="flex items-center gap-3 ml-auto">
+        <button onclick="escanearAhora()" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-lg backdrop-blur transition transform hover:scale-105 flex items-center gap-2">
           <i data-lucide="scan"></i><span>Escanear</span>
         </button>
-				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-5 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
-					<i data-lucide="log-out"></i><span>Cerrar sesión</span>
-				</a>
-				<button onclick="toggleDarkMode()" class="text-highlight hover:text-accent">
+        <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-5 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
+          <i data-lucide="log-out"></i><span>Cerrar sesión</span>
+        </a>
+        <button onclick="toggleDarkMode()" class="text-highlight hover:text-accent">
           <i id="icono-tema" data-lucide="moon"></i>
         </button>
-			</div>
-		</div>
-	</nav>
+      </div>
+    </div>
+  </nav>
 
-	<main class="max-w-7xl mx-auto px-4 py-10">
-		<header class="text-center mb-10">
-			<p class="text-xl text-gray-600 dark:text-gray-300">Escaneo avanzado de red LAN: detecta accesos no autorizados y evalúa la confianza de cada dispositivo conectado.</p>
-		</header>
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <header class="text-center mb-10">
+      <p class="text-xl text-gray-600 dark:text-gray-300">Escaneo avanzado de red LAN: detecta accesos no autorizados y evalúa la confianza de cada dispositivo conectado.</p>
+    </header>
 
-		<div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-			<p class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-				<i data-lucide="list" class="w-5 h-5 text-accent"></i> Dispositivos detectados: <strong id="contador-dispositivos">{{ dispositivos|length }}</strong>
-			</p>
-			<div class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-				<i data-lucide="clock" class="w-5 h-5 text-accent"></i>
-				<span id="horaActual">--:--:--</span>
-			</div>
-		</div>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+      <p class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+        <i data-lucide="list" class="w-5 h-5 text-accent"></i> Dispositivos detectados: <strong id="contador-dispositivos">{{ dispositivos|length }}</strong>
+      </p>
+      <div class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+        <i data-lucide="clock" class="w-5 h-5 text-accent"></i>
+        <span id="horaActual">--:--:--</span>
+      </div>
+    </div>
 
-		<section class="overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
-			<table class="min-w-full text-sm">
-				<thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100">
-					<tr>
-						<th class="px-4 py-3 text-left font-medium">IP</th>
-						<th class="px-4 py-3 text-left font-medium">MAC</th>
-						<th class="px-4 py-3 text-left font-medium">Nombre</th>
-						<th class="px-4 py-3 text-left font-medium">Fabricante</th>
-						<th class="px-4 py-3 text-left font-medium">Confianza</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
-					{% for d in dispositivos %}
-					<tr class="transition-all duration-300 ease-in-out
-  {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }}
-  hover:shadow-lg hover:backdrop-blur-md hover:bg-white/90 dark:hover:bg-white/10">
-						<td class="px-4 py-3">{{ d.ip }}</td>
-						<td class="px-4 py-3">{{ d.mac }}</td>
-						<td class="px-4 py-3">
-							<span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline inline-flex items-center gap-1">
-  {{ nombres_dispositivos[d.mac]|default("N/A") }}
-  <i data-lucide="pencil" class="w-4 h-4"></i>
-</span>
-						</td>
-						<td class="px-4 py-3">{{ d.fabricante }}</td>
-						<td class="px-4 py-3">
-							{% if d.confiable %}
-							<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
-  <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
-</span> {% else %}
-							<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
-  <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
-</span> {% endif %}
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</section>
+    <section class="overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">IP</th>
+            <th class="px-4 py-3 text-left font-medium">MAC</th>
+            <th class="px-4 py-3 text-left font-medium">Nombre</th>
+            <th class="px-4 py-3 text-left font-medium">Fabricante</th>
+            <th class="px-4 py-3 text-left font-medium">Confianza</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
+          {% for d in dispositivos %}
+          <tr class="transition-all duration-300 ease-in-out {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }} hover:shadow-lg hover:backdrop-blur-md hover:bg-white/90 dark:hover:bg-white/10">
+            <td class="px-4 py-3">{{ d.ip }}</td>
+            <td class="px-4 py-3">{{ d.mac }}</td>
+            <td class="px-4 py-3">
+              <span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline inline-flex items-center gap-1">
+                {{ nombres_dispositivos[d.mac]|default("N/A") }}
+                <i data-lucide="pencil" class="w-4 h-4"></i>
+              </span>
+            </td>
+            <td class="px-4 py-3">{{ d.fabricante }}</td>
+            <td class="px-4 py-3">
+              {% if d.confiable %}
+              <span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
+              </span>
+              {% else %}
+              <span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
+                <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
+              </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
 
-		<div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
-			<div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
-				<h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
+    <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
+      <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
+        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
           <i data-lucide="plus"></i> Agregar MAC confiable
         </h2>
-				<form id="form-agregar" class="space-y-4">
-					<input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
-
-					<button type="submit" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">
-    Agregar
-  </button>
-				</form>
-
-			</div>
-			<div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
-				<h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
+        <form id="form-agregar" class="space-y-4">
+          <input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+          <button type="submit" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">Agregar</button>
+        </form>
+      </div>
+      <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border border-gray-200 dark:bg-gray-800/60">
+        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
           <i data-lucide="check"></i> Dispositivos Confiables
         </h2>
-				<ul id="lista-macs" class="space-y-3">
-					{% for prefijo in lista_confiables %}
-					<li class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-						<div>
-							<span class="font-semibold text-gray-800 dark:text-white">
-        {{ nombres_dispositivos[prefijo]|default("Sin nombre") }}
-      </span><br>
-							<span class="text-xs text-gray-500 dark:text-gray-400">{{ prefijo }}</span>
-						</div>
-						<button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-      <i data-lucide="trash-2"></i> Eliminar
-    </button>
-					</li>
-					{% endfor %}
-				</ul>
+        <ul id="lista-macs" class="space-y-3">
+          {% for prefijo in lista_confiables %}
+          <li class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+            <div>
+              <span class="font-semibold text-gray-800 dark:text-white">{{ nombres_dispositivos[prefijo]|default("Sin nombre") }}</span><br>
+              <span class="text-xs text-gray-500 dark:text-gray-400">{{ prefijo }}</span>
+            </div>
+            <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
+              <i data-lucide="trash-2"></i> Eliminar
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </main>
 
+  <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
 
-			</div>
-		</div>
-	</main>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-	<div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
-
-	<script>
-		lucide.createIcons();
-		    function toggleDarkMode() {
-		      document.documentElement.classList.toggle('dark');
-		      const icono = document.getElementById('icono-tema');
-		      icono.setAttribute('data-lucide', document.documentElement.classList.contains('dark') ? 'sun' : 'moon');
-		      lucide.createIcons();
-		    }
-		
-	</script>
-	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
-	<div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-		<div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
-			<button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-			<h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-highlight">
-      <i data-lucide="network"></i> Puertos Abiertos
-    </h2>
-			<div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2">
-			</div>
-		</div>
-	</div>
-
+  <div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
+      <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-highlight">
+        <i data-lucide="network"></i> Puertos Abiertos
+      </h2>
+      <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
+    </div>
+  </div>
 </body>
 
 </html>
