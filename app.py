@@ -28,7 +28,6 @@ def registrar_log(mensaje):
     logger.info(mensaje)
 
 
-# Variables globales para seguridad
 INTENTOS_FALLIDOS = defaultdict(int)
 BLOQUEOS = {}
 TIEMPO_BLOQUEO = 300  # 5 minutos en segundos
@@ -45,7 +44,6 @@ def login():
     ip_origen = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
 
 
-    # Verificar si la IP está bloqueada
     if ip_origen in BLOQUEOS:
         tiempo_restante = int(BLOQUEOS[ip_origen] - time.time())
         if tiempo_restante > 0:
@@ -130,7 +128,6 @@ LISTA_CONF_FILE = os.path.join(DATA_PATH, "lista_confiables.json")
 VENDOR_CACHE_FILE = os.path.join(DATA_PATH, "cache_vendors.json")
 DETECCIONES_FILE = os.path.join(DATA_PATH, "detecciones_mac.json")
 
-#Nombres de dispositivos
 NOMBRES_FILE = os.path.join(DATA_PATH, "nombres_dispositivos.json")
 if os.path.exists(NOMBRES_FILE):
     with open(NOMBRES_FILE, "r") as f:
@@ -257,7 +254,7 @@ def escanear_red():
                                 DETECCIONES_MAC[mac]["count"] += 1
                                 DETECCIONES_MAC[mac]["ultima_vista"] = ahora
 
-                            if DETECCIONES_MAC[mac]["count"] >= 10 and not DETECCIONES_MAC[mac]["notificado"]:
+                            if DETECCIONES_MAC[mac]["count"] >= 3 and not DETECCIONES_MAC[mac]["notificado"]:
                                 enviar_telegram(mac, ip, fabricante)
                                 DETECCIONES_MAC[mac]["notificado"] = True
 
@@ -359,20 +356,3 @@ def enviar_telegram(mac, ip, fabricante):
 *MAC:* `{mac}`
 *Fabricante:* {fabricante}
 """
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = {
-        "chat_id": chat_id,
-        "text": mensaje,
-        "parse_mode": "Markdown"
-    }
-
-    try:
-        response = requests.post(url, data=data)
-        if response.status_code != 200:
-            print("[!] Error al enviar mensaje Telegram:", response.text)
-    except Exception as e:
-        print("[!] Error Telegram:", e)
-
-if __name__ == '__main__':
-    threading.Thread(target=escaneo_background, daemon=True).start()
-    app.run(host='0.0.0.0', port=5555)
