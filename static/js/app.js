@@ -1,4 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // === Modo oscuro persistente ===
+  const root = document.documentElement;
+  const iconoTema = document.getElementById("icono-tema");
+
+  function aplicarTemaDesdeStorage() {
+    const modoOscuro = localStorage.getItem("modoOscuro") === "true";
+    root.classList.toggle("dark", modoOscuro);
+    actualizarIconoTema();
+  }
+
+  function actualizarIconoTema() {
+    if (iconoTema) {
+      iconoTema.setAttribute("data-lucide", root.classList.contains("dark") ? "sun" : "moon");
+      lucide.createIcons();
+    }
+  }
+
+  window.toggleDarkMode = function () {
+    root.classList.toggle("dark");
+    localStorage.setItem("modoOscuro", root.classList.contains("dark"));
+    actualizarIconoTema();
+  };
+
+  aplicarTemaDesdeStorage();
+
+  // === Notificaciones ===
   function mostrarNotificacion(mensaje, tipo = "info") {
     const noti = document.getElementById("notificacion");
     const colores = {
@@ -14,10 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => noti.classList.add("hidden"), 10000);
   }
 
+  // === Modal ===
   window.cerrarModal = function () {
     document.getElementById("modal-puertos").classList.add("hidden");
   };
 
+  // === Agregar MAC ===
   document.getElementById("form-agregar").addEventListener("submit", async (e) => {
     e.preventDefault();
     const mac = document.getElementById("input-mac").value.trim();
@@ -48,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // === Eliminar MAC ===
   window.eliminarMAC = function (mac) {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -73,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error de conexión", "error"));
   };
 
+  // === Editar nombre ===
   window.editarNombre = function(mac) {
     const nuevoNombre = prompt("Ingresa un nombre para el dispositivo:", mac);
     if (!nuevoNombre || nuevoNombre.trim() === "") return;
@@ -94,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error al guardar nombre", "error"));
   };
 
+  // === Hora actual ===
   function actualizarHoraActual() {
     const ahora = new Date();
     const formateada = ahora.toLocaleString('es-CO', {
@@ -111,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(actualizarHoraActual, 1000);
   actualizarHoraActual();
 
+  // === Escanear red ===
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -140,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 
+  // === Ver puertos ===
   window.verPuertos = function (ip) {
     const modal = document.getElementById("modal-puertos");
     const contenido = document.getElementById("contenido-puertos");
@@ -183,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 
+  // === Actualizar tabla ===
   function actualizarTabla(dispositivos) {
     const tabla = document.getElementById("tabla-dispositivos");
     tabla.innerHTML = "";
@@ -222,5 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
   }
 
+  // Autoescanear cada minuto
   setInterval(() => window.escanearAhora(), 60000);
 });
