@@ -1,5 +1,5 @@
 services:
-  escaner_red:
+  LANGuard:
     container_name: LANGuard
     image: netosvaltools/languard:latest
     environment:
