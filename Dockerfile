@@ -2,7 +2,6 @@ FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instala librerías necesarias del sistema para bcrypt
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
