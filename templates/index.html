@@ -9,20 +9,22 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-		      darkMode: 'class',
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: '#f4a261',
-		            highlight: '#e76f51',
-		            bgBone: '#f8f6f2',
-		          },
-		          fontFamily: {
-		            sans: ['Inter', 'sans-serif'],
-		          },
-		        }
-		      }
-		    }
+		                      darkMode: 'class',
+		                      theme: {
+		                        extend: {
+		                          colors: {
+		                            accent: '#f4a261',
+		                            highlight: '#e76f51',
+		                            bgBone: '#f8f6f2',
+		                          },
+		                          fontFamily: {
+		                            sans: ['Inter', 'sans-serif'],
+		                          },
+		                        }
+		                      }
+		                    }
+		
+		
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
@@ -30,26 +32,50 @@
 
 <body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gray-900 dark:text-white">
 	<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70">
-		<div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-			<h1 class="flex items-center gap-2 text-3xl font-bold tracking-tight text-highlight">
-        <img src="{{ url_for('static', filename='languard.png') }}" alt="Logo" class="w-10 h-10">
-        <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
-      </h1>
-			<div class="flex items-center gap-3 ml-auto">
-				<button onclick="escanearAhora()" class="bg-accent hover:bg-highlight text-white py-2 px-5 rounded-full shadow-lg backdrop-blur transition transform hover:scale-105 flex items-center gap-2">
-          <i data-lucide="scan"></i><span>Escanear</span>
-        </button>
-				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-5 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
+		<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+			<!-- Logo -->
+			<h1 class="flex items-center gap-2 text-2xl font-bold tracking-tight text-highlight">
+      <img src="{{ url_for('static', filename='languard.png') }}" alt="Logo" class="w-10 h-10">
+      <span class="uppercase">LAN</span><span class="text-accent">Guard</span>
+    </h1>
+
+			<!-- Botón hamburguesa en móviles -->
+			<button id="menu-toggle" class="sm:hidden text-highlight focus:outline-none" aria-label="Abrir menú">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+
+			<!-- Menú en pantallas grandes -->
+			<div class="hidden sm:flex items-center gap-3" id="menu-desktop">
+				<button onclick="escanearAhora()" class="bg-accent hover:bg-highlight text-white py-2 px-4 rounded-full shadow-lg flex items-center gap-2 text-sm">
+        <i data-lucide="scan"></i><span>Escanear</span>
+      </button>
+				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full shadow-lg flex items-center gap-2 text-sm">
 					<i data-lucide="log-out"></i><span>Cerrar sesión</span>
 				</a>
 				<button onclick="toggleDarkMode()" class="text-highlight hover:text-accent flex items-center" aria-label="Cambiar tema">
-  <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
-  <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
-</button>
-
+        <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
+        <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
+      </button>
 			</div>
 		</div>
+
+		<!-- Menú móvil desplegable -->
+		<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in">
+			<button onclick="escanearAhora()" class="w-full bg-accent hover:bg-highlight text-white py-2 px-4 rounded-xl shadow flex items-center gap-2 text-sm">
+      <i data-lucide="scan"></i> Escanear
+    </button>
+			<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow flex items-center gap-2 text-sm">
+				<i data-lucide="log-out"></i> Cerrar sesión
+			</a>
+			<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow flex items-center gap-2 text-sm border border-accent">
+      <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
+      <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
+      Cambiar tema
+    </button>
+		</div>
 	</nav>
+
+
 
 	<main class="max-w-7xl mx-auto px-4 py-10">
 		<header class="text-center mb-10">
