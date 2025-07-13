@@ -30,13 +30,32 @@ def verificar_login(usuario, contrasena):
         if u["usuario"] == usuario and bcrypt.checkpw(contrasena.encode(), u["contrasena"].encode()):
             return True
     return False
-
+    
+def es_contrasena_segura(contra):
+    # Debe tener al menos:
+    # - 8 caracteres
+    # - una mayúscula
+    # - una minúscula
+    # - un número
+    # - un símbolo
+    if len(contra) < 8:
+        return False
+    if not re.search(r"[A-Z]", contra):
+        return False
+    if not re.search(r"[a-z]", contra):
+        return False
+    if not re.search(r"[0-9]", contra):
+        return False
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=/\\[\]~`]", contra):
+        return False
+    return True
+    
 def cambiar_contrasena_usuario(usuario, nueva):
     if nueva.lower() == "admin":
         raise ValueError("La contraseña no puede ser 'admin'.")
 
-    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$', nueva):
-        raise ValueError("La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo especial.")
+    if es_contrasena_por_defecto(usuario) and not es_contrasena_segura(nueva):
+        raise ValueError("La nueva contraseña debe tener mínimo 8 caracteres, incluyendo mayúsculas, minúsculas, números y símbolos.")
 
     with open(RUTA_JSON) as f:
         data = json.load(f)
@@ -46,6 +65,7 @@ def cambiar_contrasena_usuario(usuario, nueva):
             break
     with open(RUTA_JSON, "w") as f:
         json.dump(data, f, indent=4)
+
 
 def es_contrasena_por_defecto(usuario):
     with open(RUTA_JSON) as f:
