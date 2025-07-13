@@ -51,11 +51,8 @@ def es_contrasena_segura(contra):
     return True
     
 def cambiar_contrasena_usuario(usuario, nueva):
-    if nueva.lower() == "admin":
-        raise ValueError("La contraseña no puede ser 'admin'.")
-
     if es_contrasena_por_defecto(usuario) and not es_contrasena_segura(nueva):
-        raise ValueError("La nueva contraseña debe tener mínimo 8 caracteres, incluyendo mayúsculas, minúsculas, números y símbolos.")
+        raise ValueError("La nueva contraseña no cumple con los requisitos mínimos de seguridad.")
 
     with open(RUTA_JSON) as f:
         data = json.load(f)
