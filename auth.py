@@ -1,6 +1,8 @@
 import os
 import json
 import bcrypt
+import re
+
 
 RUTA_JSON = "data/usuarios.json"
 
@@ -31,7 +33,10 @@ def verificar_login(usuario, contrasena):
 
 def cambiar_contrasena_usuario(usuario, nueva):
     if nueva.lower() == "admin":
-        raise ValueError("La contraseña no puede ser 'admin' (en ninguna forma).")
+        raise ValueError("La contraseña no puede ser 'admin'.")
+
+    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$', nueva):
+        raise ValueError("La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo especial.")
 
     with open(RUTA_JSON) as f:
         data = json.load(f)
