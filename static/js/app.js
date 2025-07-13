@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   // === Modo oscuro persistente ===
   const root = document.documentElement;
@@ -14,6 +13,13 @@ function actualizarIconoTema() {
   const esOscuro = root.classList.contains("dark");
   document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
   document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
+
+  const iconoLunaMobile = document.getElementById("icono-luna-mobile");
+  const iconoSolMobile = document.getElementById("icono-sol-mobile");
+  if (iconoLunaMobile && iconoSolMobile) {
+    iconoLunaMobile.classList.toggle("hidden", esOscuro);
+    iconoSolMobile.classList.toggle("hidden", !esOscuro);
+  }
 }
 
   window.toggleDarkMode = function () {
@@ -24,6 +30,18 @@ function actualizarIconoTema() {
 
   aplicarTemaDesdeStorage();
   lucide.createIcons();
+
+// === Menú móvil ===
+const btnToggle = document.getElementById("menu-toggle");
+const menuMobile = document.getElementById("menu-mobile");
+
+btnToggle.addEventListener("click", () => {
+  menuMobile.classList.toggle("hidden");
+  btnToggle.innerHTML = menuMobile.classList.contains("hidden")
+    ? `<i data-lucide="menu" class="w-6 h-6"></i>`
+    : `<i data-lucide="x" class="w-6 h-6"></i>`;
+  lucide.createIcons();
+});
 
 
   // === Notificaciones ===
@@ -261,4 +279,3 @@ function actualizarIconoTema() {
   // Autoescanear cada minuto
   setInterval(() => window.escanearAhora(), 60000);
 });
-
