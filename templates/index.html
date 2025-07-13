@@ -10,40 +10,42 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-		      darkMode: 'class',
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: '#f4a261',
-		            highlight: '#e76f51',
-		            bgBone: '#f8f6f2',
-		          },
-		          fontFamily: {
-		            sans: ['Urbanist', 'sans-serif'],
-		          },
-		        }
-		      }
-		    }
+				      darkMode: 'class',
+				      theme: {
+				        extend: {
+				          colors: {
+				            accent: '#f4a261',
+				            highlight: '#e76f51',
+				            bgBone: '#f8f6f2',
+				          },
+				          fontFamily: {
+				            sans: ['Urbanist', 'sans-serif'],
+				          },
+				        }
+				      }
+				    }
+				
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
 
 	<style>
 		@keyframes fade-in {
-		      from {
-		        opacity: 0;
-		        transform: translateY(10px);
-		      }
-		
-		      to {
-		        opacity: 1;
-		        transform: translateY(0);
-		      }
-		    }
-		
-		    .animate-fade-in {
-		      animation: fade-in 0.6s ease-out forwards;
-		    }
+				      from {
+				        opacity: 0;
+				        transform: translateY(10px);
+				      }
+				
+				      to {
+				        opacity: 1;
+				        transform: translateY(0);
+				      }
+				    }
+				
+				    .animate-fade-in {
+				      animation: fade-in 0.6s ease-out forwards;
+				    }
+				
 		
 	</style>
 </head>
@@ -108,9 +110,9 @@
 			</div>
 		</div>
 
-		<section class="overflow-x-auto sm:overflow-visible rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
-			<div class="min-w-full overflow-hidden">
-				<table class="w-full table-auto text-sm">
+		<section class="sm:overflow-visible overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
+			<div class="inline-block min-w-full align-middle">
+				<table class="min-w-[640px] w-full table-auto text-sm">
 					<thead class="sticky top-0 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 z-10">
 						<tr>
 							<th class="px-4 py-3 text-left font-medium">IP</th>
