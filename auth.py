@@ -30,8 +30,8 @@ def verificar_login(usuario, contrasena):
     return False
 
 def cambiar_contrasena_usuario(usuario, nueva):
-    if usuario == "admin" and nueva.lower() == "admin":
-        raise ValueError("La contraseña no puede ser 'admin' para el usuario admin.")
+    if nueva.lower() == "admin":
+        raise ValueError("La contraseña no puede ser 'admin' (en ninguna forma).")
 
     with open(RUTA_JSON) as f:
         data = json.load(f)
