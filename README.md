@@ -10,6 +10,8 @@ Aplicación web autlojada con funciones de escaneo avanzado de tu red LAN, con e
 Usuario por defecto: admin
 Contraseña por defecto: admin
 
+La aplicación obligara a que la nueva contraseña tenga mas de 8 digitos entre numeros letras minusculas y mayusculas y simbolos especiales.
+
 Cambie SECRET_KEY generando uno nuevo usando openssl rand -hex 32 en su terminal.
 
 Visite la interfaz web de LANGuard visitando la IP del servidor en el puerto 5555
