@@ -46,9 +46,17 @@
 
     <form method="POST" class="space-y-4">
       <div class="relative">
-        <input type="password" name="nueva" placeholder="Nueva contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base">
+        <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base">
         <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
       </div>
+
+      <ul id="requisitos" class="text-sm bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-gray-700">
+        <li data-id="length" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Mínimo 8 caracteres</li>
+        <li data-id="upper" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Una letra mayúscula</li>
+        <li data-id="lower" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Una letra minúscula</li>
+        <li data-id="digit" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Un número</li>
+        <li data-id="symbol" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Un símbolo especial</li>
+      </ul>
 
       <div class="relative">
         <input type="password" name="confirmar" placeholder="Confirmar contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base">
@@ -65,6 +73,26 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
+
+      const input = document.getElementById("nueva");
+      const reglas = {
+        length: v => v.length >= 8,
+        upper: v => /[A-Z]/.test(v),
+        lower: v => /[a-z]/.test(v),
+        digit: v => /\d/.test(v),
+        symbol: v => /[^A-Za-z0-9]/.test(v)
+      };
+
+      input.addEventListener("input", () => {
+        Object.entries(reglas).forEach(([id, fn]) => {
+          const li = document.querySelector(`li[data-id="${id}"]`);
+          const icon = li.querySelector("i");
+          const cumple = fn(input.value);
+          icon.setAttribute("data-lucide", cumple ? "check-circle" : "x-circle");
+          icon.className = `w-4 h-4 ${cumple ? 'text-green-500' : 'text-red-500'}`;
+        });
+        lucide.createIcons();
+      });
     });
   </script>
 </body>
