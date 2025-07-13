@@ -100,8 +100,11 @@ def cambiar_contrasena():
         if nueva != confirmar:
             error = "Las contraseñas no coinciden"
         else:
-            cambiar_contrasena_usuario(session['usuario'], nueva)
-            return redirect(url_for('index'))
+            try:
+                cambiar_contrasena_usuario(session['usuario'], nueva)
+                return redirect(url_for('index'))
+            except ValueError as e:
+                error = str(e)
 
     return render_template('cambiar_contrasena.html', error=error)
 
