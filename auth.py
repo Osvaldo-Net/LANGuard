@@ -6,7 +6,7 @@ RUTA_JSON = "data/usuarios.json"
 
 def iniciar_archivo_usuarios():
     if not os.path.exists(RUTA_JSON):
-        print("🛠️  Creando archivo de usuarios por defecto...")
+        print("Creando archivo de usuarios por defecto...")
         hashed = bcrypt.hashpw(b"admin", bcrypt.gensalt()).decode()
         data = {
             "usuarios": [
@@ -30,6 +30,9 @@ def verificar_login(usuario, contrasena):
     return False
 
 def cambiar_contrasena_usuario(usuario, nueva):
+    if usuario == "admin" and nueva == "admin":
+        raise ValueError("La contraseña no puede ser 'admin' para el usuario admin.")
+
     with open(RUTA_JSON) as f:
         data = json.load(f)
     for u in data["usuarios"]:
