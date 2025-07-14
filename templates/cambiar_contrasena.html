@@ -23,6 +23,7 @@
     };
   </script>
   <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center font-sans bg-white">
@@ -43,11 +44,7 @@
       <div class="relative">
         <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required
           class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
-        </svg>
+        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
       </div>
 
       <ul id="requisitos" class="text-sm bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-gray-700">
@@ -91,20 +88,12 @@
       <div class="relative">
         <input type="password" name="confirmar" placeholder="Confirmar contraseña" required
           class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
-        </svg>
+        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
       </div>
 
       <button type="submit"
         class="w-full bg-accent text-white font-semibold py-3 px-5 rounded-full shadow-md transition hover:scale-105 flex justify-center items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
-        </svg>
+        <i data-lucide="key-round" class="w-5 h-5"></i>
         Cambiar
       </button>
     </form>
@@ -134,6 +123,8 @@
           icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
         });
       });
+
+      lucide.createIcons();
     });
   </script>
 </body>
