@@ -4,79 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LANGuard - Aplicación de Seguridad LAN</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      padding: 20px;
-      margin: 0;
-      line-height: 1.6;
-    }
 
-    h1, h2 {
-      color: #1a73e8;
-      margin-top: 30px;
-    }
-
-    .intro {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .intro img {
-      max-width: 220px;
-      margin: 0 auto 20px;
-      display: block;
-      border-radius: 10px;
-    }
-
-    .section {
-      background-color: #ffffff;
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    .section img {
-      display: block;
-      width: 70%;
-      max-width: 100%;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    code {
-      background-color: #eee;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 0.95em;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #121212;
-        color: #ddd;
-      }
-      .section {
-        background-color: #1e1e1e;
-        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
-      }
-      h1, h2 {
-        color: #66aaff;
-      }
-      code {
-        background-color: #333;
-        color: #fff;
-      }
-    }
-  </style>
 </head>
 <body>
 
