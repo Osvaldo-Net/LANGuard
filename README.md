@@ -37,7 +37,7 @@
 
   <div class="section">
     <h2>Modo Oscuro</h2>
-    <p>LANGuard se adapta automáticamente al modo oscuro del sistema operativo.</p>
+    <p>LANGuard cuenta con una opción para cambiar al modo oscuro.</p>
     <img src="https://github.com/user-attachments/assets/e9494277-d249-4287-9fd0-bae11aa110c0" alt="Modo oscuro" />
   </div>
 
