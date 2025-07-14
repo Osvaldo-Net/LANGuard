@@ -46,8 +46,19 @@
     <p>Visualice el estado de los puertos de los dispositivos conectados a la red LAN.</p>
     <img src="https://github.com/user-attachments/assets/3e3185b3-1ef3-47eb-8e40-5f145c23f18b" alt="Escaneo de puertos" />
   </div>
-<img width="644" height="165" alt="image" src="https://github.com/user-attachments/assets/b6a89c68-cfd2-43d2-8da7-5ba18fc541a2" />
+
+  <div class="section">
+    <h2>Registro de accesos</h2>
+    <p>Registro de accesos exitosos y fallidos en el archivo: /ruta/del/contenedor/app/accesos.log</p>
+    <img src="https://github.com/user-attachments/assets/b6a89c68-cfd2-43d2-8da7-5ba18fc541a2" alt="Registro de accesos" />
+  </div>
+
+
 
 </body>
 </html>
+
+
+
+
 
