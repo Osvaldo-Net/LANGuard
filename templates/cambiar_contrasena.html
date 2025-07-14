@@ -5,7 +5,6 @@
   <title>Cambiar Contraseña | LAN Guard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -23,9 +22,7 @@
       },
     };
   </script>
-
   <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center font-sans bg-white">
@@ -44,35 +41,70 @@
 
     <form method="POST" class="space-y-4">
       <div class="relative">
-        <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+        <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required
+          class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
+        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
+        </svg>
       </div>
 
       <ul id="requisitos" class="text-sm bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-gray-700">
         <li data-id="length" class="flex items-center gap-2">
-          <i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Mínimo 8 caracteres
+          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Mínimo 8 caracteres
         </li>
         <li data-id="upper" class="flex items-center gap-2">
-          <i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Una letra mayúscula
+          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Una letra mayúscula
         </li>
         <li data-id="lower" class="flex items-center gap-2">
-          <i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Una letra minúscula
+          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Una letra minúscula
         </li>
         <li data-id="digit" class="flex items-center gap-2">
-          <i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Un número
+          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Un número
         </li>
         <li data-id="symbol" class="flex items-center gap-2">
-          <i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Un símbolo especial
+          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          Un símbolo especial
         </li>
       </ul>
 
       <div class="relative">
-        <input type="password" name="confirmar" placeholder="Confirmar contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+        <input type="password" name="confirmar" placeholder="Confirmar contraseña" required
+          class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
+        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
+        </svg>
       </div>
 
-      <button type="submit" class="w-full bg-accent text-white font-semibold py-3 px-5 rounded-full shadow-md transition hover:scale-105 flex justify-center items-center gap-2">
-        <i data-lucide="key-round" class="w-5 h-5"></i>
+      <button type="submit"
+        class="w-full bg-accent text-white font-semibold py-3 px-5 rounded-full shadow-md transition hover:scale-105 flex justify-center items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 11c0-.667 0-2 0-2a4 4 0 118 0c0 1.333 0 2 0 2m-8 0v4m0 0h8m-8 0v4" />
+        </svg>
         Cambiar
       </button>
     </form>
@@ -80,9 +112,8 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      lucide.createIcons();
-
       const input = document.getElementById("nueva");
+
       const reglas = {
         length: v => v.length >= 8,
         upper: v => /[A-Z]/.test(v),
@@ -92,18 +123,16 @@
       };
 
       input.addEventListener("input", () => {
-        Object.entries(reglas).forEach(([id, fn]) => {
+        Object.entries(reglas).forEach(([id, validar]) => {
           const li = document.querySelector(`li[data-id="${id}"]`);
-          const icon = li.querySelector("i.icon");
-          const cumple = fn(input.value);
+          if (!li) return;
 
-          // Limpiar el icono actual y reemplazar su data-lucide + clase
-          icon.setAttribute("data-lucide", cumple ? "check-circle" : "x-circle");
-          icon.className = `icon w-4 h-4 ${cumple ? "text-green-500" : "text-red-500"}`;
+          const icon = li.querySelector("svg.icon");
+          if (!icon) return;
+
+          icon.classList.remove("text-gray-400", "text-green-500", "text-red-500");
+          icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
         });
-
-        // Re-renderizar los íconos nuevos
-        lucide.createIcons();
       });
     });
   </script>
