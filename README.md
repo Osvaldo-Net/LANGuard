@@ -13,7 +13,7 @@ Contraseña por defecto: admin
 Cambie SECRET_KEY generando uno nuevo usando openssl rand -hex 32 en su terminal.
 
 Visite la interfaz web de LANGuard visitando la IP del servidor en el puerto 5555
-<img width="1065" height="291" alt="image" src="https://github.com/user-attachments/assets/acec27ec-06a8-4d48-91ba-ca05616c9723" />
+<img width="1265" height="291" alt="image" src="https://github.com/user-attachments/assets/acec27ec-06a8-4d48-91ba-ca05616c9723" />
 
 
 
