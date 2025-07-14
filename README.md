@@ -1,56 +1,35 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-<body>
-
-  <div class="intro">
-    <img src="https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5" alt="Logo LANGuard" />
-    <h1>LANGuard</h1>
-    <p>Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.</p>
-    <p>Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.</p>
-  </div>
-
-  <div class="section">
-    <h2>Credenciales por defecto</h2>
-    <ul>
-      <li><strong>Usuario:</strong> <code>admin</code></li>
-      <li><strong>Contraseña:</strong> <code>admin</code></li>
-    </ul>
-    <p>⚠️ Por seguridad, cambie la <code>SECRET_KEY</code> generando una nueva con:</p>
-    <code>openssl rand -hex 32</code>
-  </div>
-
-  <div class="section">
-    <h2>Acceso a la Interfaz Web</h2>
-    <p>Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto <strong>5555</strong>.</p>
-    <img src="https://github.com/user-attachments/assets/47efcf02-9636-4ebc-890c-286420fec6ab" alt="Acceso a la interfaz" />
-  </div>
-
-  <div class="section">
-    <h2>Panel Principal</h2>
-    <img src="https://github.com/user-attachments/assets/7ff3718b-ded5-44b7-8a9f-e1f44f93e5ee" alt="Panel principal 1" />
-    <img src="https://github.com/user-attachments/assets/cbeba303-77e4-4162-b9b8-15384dabda17" alt="Panel principal 2" />
-  </div>
-
-  <div class="section">
-    <h2>Modo Oscuro</h2>
-    <p>LANGuard cuenta con una opción para cambiar al modo oscuro.</p>
-    <img src="https://github.com/user-attachments/assets/e9494277-d249-4287-9fd0-bae11aa110c0" alt="Modo oscuro" />
-  </div>
-
-  <div class="section">
-    <h2>Escaneo de Puertos</h2>
-    <p>Visualice el estado de los puertos de los dispositivos conectados a la red LAN.</p>
-    <img src="https://github.com/user-attachments/assets/3e3185b3-1ef3-47eb-8e40-5f145c23f18b" alt="Escaneo de puertos" />
-  </div>
-
-</body>
-</html>
+🔐 LANGuard
 
 
+LANGuard es una aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN. Detecta accesos no autorizados y determina el nivel de confianza de cada dispositivo conectado.
 
+⚙️ Características principales
+🔐 Login de usuarios (por defecto: admin / admin)
 
+📁 Registro de accesos exitosos y fallidos en el archivo:
+/opt/container/app/accesos.log
 
+🌐 Interfaz web accesible desde el puerto 5555
+
+🌙 Compatible con modo oscuro
+
+🖥️ Escaneo de red y puertos
+
+🔒 Recomendación de seguridad:
+Cambia la SECRET_KEY con el siguiente comando:
+
+bash
+Copiar
+Editar
+openssl rand -hex 32
+🖥️ Acceso a la Interfaz Web
+Visita http://<IP-del-servidor>:5555 para acceder a la aplicación:
+
+<img src="https://github.com/user-attachments/assets/47efcf02-9636-4ebc-890c-286420fec6ab" alt="Interfaz web LANGuard" width="700"/>
+📊 Panel Principal
+<img src="https://github.com/user-attachments/assets/7ff3718b-ded5-44b7-8a9f-e1f44f93e5ee" alt="Panel principal" width="700"/> <img src="https://github.com/user-attachments/assets/cbeba303-77e4-4162-b9b8-15384dabda17" alt="Panel principal 2" width="700"/>
+🌑 Modo Oscuro
+<img src="https://github.com/user-attachments/assets/e9494277-d249-4287-9fd0-bae11aa110c0" alt="Modo oscuro" width="700"/>
+🔎 Escaneo de Puertos
+<img src="https://github.com/user-attachments/assets/3e3185b3-1ef3-47eb-8e40-5f145c23f18b" alt="Escaneo de puertos" width="700"/>
+¿Quieres que esto se vea también como página de GitHub Pages (index.md o docs/)? ¿O lo quieres convertir a sitio web con HTML moderno y navegación? Te lo puedo armar.
