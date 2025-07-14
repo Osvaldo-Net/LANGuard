@@ -51,11 +51,11 @@
       </div>
 
       <ul id="requisitos" class="text-sm bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-gray-700">
-        <li data-id="length" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Mínimo 8 caracteres</li>
-        <li data-id="upper" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Una letra mayúscula</li>
-        <li data-id="lower" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Una letra minúscula</li>
-        <li data-id="digit" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Un número</li>
-        <li data-id="symbol" class="flex items-center gap-2"><i class="w-4 h-4" data-lucide="circle"></i> Un símbolo especial</li>
+        <li data-id="length" class="flex items-center gap-2"><i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Mínimo 8 caracteres</li>
+        <li data-id="upper" class="flex items-center gap-2"><i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Una letra mayúscula</li>
+        <li data-id="lower" class="flex items-center gap-2"><i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Una letra minúscula</li>
+        <li data-id="digit" class="flex items-center gap-2"><i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Un número</li>
+        <li data-id="symbol" class="flex items-center gap-2"><i class="icon w-4 h-4 text-gray-400" data-lucide="circle"></i> Un símbolo especial</li>
       </ul>
 
       <div class="relative">
@@ -86,11 +86,12 @@
       input.addEventListener("input", () => {
         Object.entries(reglas).forEach(([id, fn]) => {
           const li = document.querySelector(`li[data-id="${id}"]`);
-          const icon = li.querySelector("i");
+          const icon = li.querySelector("i.icon");
           const cumple = fn(input.value);
-          icon.setAttribute("data-lucide", cumple ? "check-circle" : "x-circle");
-          icon.className = `w-4 h-4 ${cumple ? 'text-green-500' : 'text-red-500'}`;
+
+          icon.outerHTML = `<i data-lucide="${cumple ? 'check-circle' : 'x-circle'}" class="icon w-4 h-4 ${cumple ? 'text-green-500' : 'text-red-500'}"></i>`;
         });
+
         lucide.createIcons();
       });
     });
