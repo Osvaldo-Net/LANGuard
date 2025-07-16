@@ -7,9 +7,10 @@
 <body>
 
   <div class="intro">
-    <img width="1024" height="1024" alt="languard" src="https://github.com/user-attachments/assets/59f3705f-9f8a-4753-b305-cb37624830fe" alt="Logo LANGuard" />
+ <img src="https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5" alt="Logo LANGuard" />
 
     <h1>LANGuard</h1>
+
     <p>Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.</p>
     <p>Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.</p>
   </div>
