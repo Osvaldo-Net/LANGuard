@@ -50,7 +50,8 @@
   <div class="section">
     <h2>Registro de accesos</h2>
     <p>Registro de accesos exitosos y fallidos en el archivo: /ruta/del/contenedor/app/accesos.log</p>
-    <img src="https://github.com/user-attachments/assets/b6a89c68-cfd2-43d2-8da7-5ba18fc541a2" alt="Registro de accesos" />
+    <img src="https://github.com/user-attachments/assets/d523fd1b-608f-450e-811e-865baf139c01" alt="Registro de accesos" />
+
   </div>
 
 
