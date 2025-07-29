@@ -44,7 +44,7 @@
   <div class="section">
     <h2>Escaneo de Puertos</h2>
     <p>Visualice el estado de los puertos de los dispositivos conectados a la red LAN.</p>
-    <img src="https://github.com/user-attachments/assets/3e3185b3-1ef3-47eb-8e40-5f145c23f18b" alt="Escaneo de puertos" />
+    <img src="https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0" alt="Escaneo de puertos" />
   </div>
 
   <div class="section">
