@@ -26,7 +26,7 @@
   <div class="section">
     <h2>Acceso a la Interfaz Web</h2>
     <p>Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto <strong>5555</strong>.</p>
-    <img src="https://github.com/user-attachments/assets/47efcf02-9636-4ebc-890c-286420fec6ab" alt="Acceso a la interfaz" />
+    <img src="https://github.com/user-attachments/assets/17d4ce4f-d07a-41b0-8b0f-9adf2c59d386" alt="Acceso a la interfaz" />
   </div>
 
   <div class="section">
