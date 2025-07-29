@@ -38,7 +38,7 @@
   <div class="section">
     <h2>Modo Oscuro</h2>
     <p>LANGuard cuenta con una opción para cambiar al modo oscuro.</p>
-    <img src="https://github.com/user-attachments/assets/e9494277-d249-4287-9fd0-bae11aa110c0" alt="Modo oscuro" />
+    <img src="https://github.com/user-attachments/assets/79418dbc-6399-454c-97d9-6dba70174948" alt="Modo oscuro" />
   </div>
 
   <div class="section">
