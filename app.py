@@ -1,114 +1,126 @@
-from auth import iniciar_archivo_usuarios, verificar_login, cambiar_contrasena_usuario, es_contrasena_por_defecto
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+from auth import (
+    iniciar_archivo_usuarios,
+    verificar_login,
+    cambiar_contrasena_usuario,
+    es_contrasena_por_defecto,
+)
 from collections import defaultdict
-
-iniciar_archivo_usuarios()
-
 import subprocess
 import re
 import json
 import os
 import socket
 import ipaddress
-import threading
 import time
 import requests
 import logging
 from datetime import datetime
+
 
 LOG_PATH = "data/accesos.log"
 logger = logging.getLogger("accesos")
 logger.setLevel(logging.INFO)
 if not logger.handlers:
     handler = logging.FileHandler(LOG_PATH)
-    formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    )
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
 def registrar_log(mensaje):
     logger.info(mensaje)
 
 
-# Variables globales para seguridad
 INTENTOS_FALLIDOS = defaultdict(int)
 BLOQUEOS = {}
-TIEMPO_BLOQUEO = 300  # 5 minutos en segundos
+TIEMPO_BLOQUEO = 300  
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'clave_por_defecto')
+app.secret_key = os.environ.get("SECRET_KEY", "clave_por_defecto")
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
     tiempo_restante = None
-    ip_origen = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    ip_origen = (
+        request.headers.get("X-Forwarded-For", request.remote_addr)
+        .split(",")[0]
+        .strip()
+    )
 
-
-    # Verificar si la IP está bloqueada
     if ip_origen in BLOQUEOS:
         tiempo_restante = int(BLOQUEOS[ip_origen] - time.time())
         if tiempo_restante > 0:
             minutos = tiempo_restante // 60
             segundos = tiempo_restante % 60
             error = f"Demasiados intentos fallidos. Intenta en {minutos}m {segundos}s."
-            registrar_log(f"IP BLOQUEADA - {ip_origen} intentó acceder estando bloqueada.")
-            return render_template('login.html', error=error, tiempo_restante=tiempo_restante)
+            registrar_log(
+                f"IP BLOQUEADA - {ip_origen} intentó acceder estando bloqueada."
+            )
+            return render_template(
+                "login.html", error=error, tiempo_restante=tiempo_restante
+            )
         else:
             # Desbloquear IP y reiniciar intentos
             BLOQUEOS.pop(ip_origen)
             INTENTOS_FALLIDOS[ip_origen] = 0
-            return redirect(url_for('login'))
+            return redirect(url_for("login"))
 
-
-    if request.method == 'POST':
-        usuario = request.form['usuario']
-        contrasena = request.form['contrasena']
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        contrasena = request.form["contrasena"]
 
         if verificar_login(usuario, contrasena):
-            session['usuario'] = usuario
+            session["usuario"] = usuario
             INTENTOS_FALLIDOS[ip_origen] = 0
             registrar_log(f"LOGIN EXITOSO - IP: {ip_origen} - Usuario: {usuario}")
             if es_contrasena_por_defecto(usuario):
-                return redirect(url_for('cambiar_contrasena'))
-            return redirect(url_for('index'))
+                return redirect(url_for("cambiar_contrasena"))
+            return redirect(url_for("index"))
         else:
             INTENTOS_FALLIDOS[ip_origen] += 1
             if INTENTOS_FALLIDOS[ip_origen] >= 3:
                 BLOQUEOS[ip_origen] = time.time() + TIEMPO_BLOQUEO
                 tiempo_restante = TIEMPO_BLOQUEO
-                registrar_log(f"IP BLOQUEADA - {ip_origen} por {TIEMPO_BLOQUEO // 60} minutos")
+                registrar_log(
+                    f"IP BLOQUEADA - {ip_origen} por {TIEMPO_BLOQUEO // 60} minutos"
+                )
                 error = f"Demasiados intentos fallidos. Tu IP ha sido bloqueada por {TIEMPO_BLOQUEO // 60} minutos."
             else:
                 restantes = 3 - INTENTOS_FALLIDOS[ip_origen]
                 registrar_log(f"LOGIN FALLIDO - IP: {ip_origen} - Usuario: {usuario}")
                 error = f"Credenciales incorrectas. Intentos restantes: {restantes}"
 
-    return render_template('login.html', error=error, tiempo_restante=tiempo_restante)
+    return render_template("login.html", error=error, tiempo_restante=tiempo_restante)
 
 
-
-@app.route('/cambiar-contrasena', methods=['GET', 'POST'])
+@app.route("/cambiar-contrasena", methods=["GET", "POST"])
 def cambiar_contrasena():
-    if 'usuario' not in session:
-        return redirect(url_for('login'))
+    if "usuario" not in session:
+        return redirect(url_for("login"))
 
     error = None
-    if request.method == 'POST':
-        nueva = request.form['nueva']
-        confirmar = request.form['confirmar']
+    if request.method == "POST":
+        nueva = request.form["nueva"]
+        confirmar = request.form["confirmar"]
         if nueva != confirmar:
             error = "Las contraseñas no coinciden"
         else:
             try:
-                cambiar_contrasena_usuario(session['usuario'], nueva)
-                return redirect(url_for('index'))
+                cambiar_contrasena_usuario(session["usuario"], nueva)
+                return redirect(url_for("index"))
             except ValueError as e:
                 error = str(e)
 
-    return render_template('cambiar_contrasena.html', error=error)
+    return render_template("cambiar_contrasena.html", error=error)
 
-@app.route('/api/nombrar', methods=['POST'])
+
+@app.route("/api/nombrar", methods=["POST"])
 def api_nombrar():
     data = request.get_json()
     mac = data.get("mac", "").strip().lower()
@@ -122,10 +134,10 @@ def api_nombrar():
     return jsonify({"success": False, "message": "Datos inválidos"})
 
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     session.clear()
-    return redirect('/login')
+    return redirect("/login")
 
 
 DATA_PATH = "data"
@@ -133,7 +145,6 @@ LISTA_CONF_FILE = os.path.join(DATA_PATH, "lista_confiables.json")
 VENDOR_CACHE_FILE = os.path.join(DATA_PATH, "cache_vendors.json")
 DETECCIONES_FILE = os.path.join(DATA_PATH, "detecciones_mac.json")
 
-#Nombres de dispositivos
 NOMBRES_FILE = os.path.join(DATA_PATH, "nombres_dispositivos.json")
 if os.path.exists(NOMBRES_FILE):
     with open(NOMBRES_FILE, "r") as f:
@@ -143,6 +154,7 @@ if os.path.exists(NOMBRES_FILE):
             NOMBRES_DISPOSITIVOS = {}
 else:
     NOMBRES_DISPOSITIVOS = {}
+
 
 def guardar_nombres():
     with open(NOMBRES_FILE, "w") as f:
@@ -169,7 +181,6 @@ if os.path.exists(VENDOR_CACHE_FILE):
 else:
     VENDOR_CACHE = {}
 
-# Cargar detecciones
 if os.path.exists(DETECCIONES_FILE):
     with open(DETECCIONES_FILE, "r") as f:
         try:
@@ -181,19 +192,23 @@ else:
 
 CACHE_RESULTADO = []
 CACHE_TIMESTAMP = 0
-CACHE_INTERVALO = 60  # segundos
+CACHE_INTERVALO = 60  
+
 
 def guardar_lista():
     with open(LISTA_CONF_FILE, "w") as f:
         json.dump(LISTA_CONFIABLES, f)
 
+
 def guardar_cache_vendors():
     with open(VENDOR_CACHE_FILE, "w") as f:
         json.dump(VENDOR_CACHE, f)
 
+
 def guardar_detecciones():
     with open(DETECCIONES_FILE, "w") as f:
         json.dump(DETECCIONES_MAC, f)
+
 
 def obtener_fabricante(mac):
     oui = mac.lower().replace(":", "")[:6]
@@ -214,6 +229,7 @@ def obtener_fabricante(mac):
     guardar_cache_vendors()
     return fabricante
 
+
 def obtener_red_local():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -224,14 +240,19 @@ def obtener_red_local():
     red = ipaddress.IPv4Interface(f"{ip_local}/24").network
     return str(red)
 
+
 def escanear_red():
     try:
         red = obtener_red_local()
-        salida = subprocess.check_output(["nmap", "-T4", "-n", "-sn", "-PR", "--max-retries", "3", red], timeout=30).decode()
+        salida = subprocess.check_output(
+            ["nmap", "-T4", "-n", "-sn", "-PR", "--max-retries", "3", red], timeout=30
+        ).decode()
         dispositivos = []
         ip = mac = None
         ahora = time.time()
-        macs_confiables = [p.strip().lower().replace('-', ':') for p in LISTA_CONFIABLES]
+        macs_confiables = [
+            p.strip().lower().replace("-", ":") for p in LISTA_CONFIABLES
+        ]
 
         for linea in salida.splitlines():
             if "Nmap scan report for" in linea:
@@ -239,28 +260,44 @@ def escanear_red():
             elif "MAC Address:" in linea:
                 mac_match = re.search(r"MAC Address: ([\w:]+)", linea)
                 if mac_match:
-                    mac = mac_match.group(1).strip().lower().replace('-', ':')
-                    if len(mac.split(':')) == 6:
+                    mac = mac_match.group(1).strip().lower().replace("-", ":")
+                    if len(mac.split(":")) == 6:
                         fabricante = obtener_fabricante(mac)
                         confiable = mac in macs_confiables
-                        dispositivos.append({
-                            "ip": ip,
-                            "mac": mac,
-                            "fabricante": fabricante,
-                            "confiable": confiable,
-                            "nombre": NOMBRES_DISPOSITIVOS.get(mac)
-                        })
+                        dispositivos.append(
+                            {
+                                "ip": ip,
+                                "mac": mac,
+                                "fabricante": fabricante,
+                                "confiable": confiable,
+                                "nombre": NOMBRES_DISPOSITIVOS.get(mac),
+                            }
+                        )
 
                         if not confiable:
-                            DETECCIONES_MAC.setdefault(mac, {"count": 0, "notificado": False, "ultima_vista": ahora})
+                            DETECCIONES_MAC.setdefault(
+                                mac,
+                                {
+                                    "count": 0,
+                                    "notificado": False,
+                                    "ultima_vista": ahora,
+                                },
+                            )
 
                             if ahora - DETECCIONES_MAC[mac]["ultima_vista"] > 86400:
-                                DETECCIONES_MAC[mac] = {"count": 1, "notificado": False, "ultima_vista": ahora}
+                                DETECCIONES_MAC[mac] = {
+                                    "count": 1,
+                                    "notificado": False,
+                                    "ultima_vista": ahora,
+                                }
                             else:
                                 DETECCIONES_MAC[mac]["count"] += 1
                                 DETECCIONES_MAC[mac]["ultima_vista"] = ahora
 
-                            if DETECCIONES_MAC[mac]["count"] >= 3 and not DETECCIONES_MAC[mac]["notificado"]:
+                            if (
+                                DETECCIONES_MAC[mac]["count"] >= 3
+                                and not DETECCIONES_MAC[mac]["notificado"]
+                            ):
                                 enviar_telegram(mac, ip, fabricante)
                                 DETECCIONES_MAC[mac]["notificado"] = True
 
@@ -270,19 +307,22 @@ def escanear_red():
         print(f"[!] Error escaneando red: {e}")
         return []
 
+
 def actualizar_cache():
     global CACHE_RESULTADO, CACHE_TIMESTAMP
     CACHE_RESULTADO = escanear_red()
     CACHE_TIMESTAMP = time.time()
+
 
 def escaneo_background():
     while True:
         actualizar_cache()
         time.sleep(CACHE_INTERVALO)
 
-@app.route('/api/scan')
+
+@app.route("/api/scan")
 def api_scan():
-    if 'usuario' not in session:
+    if "usuario" not in session:
         return jsonify({"error": "No autorizado"}), 401
 
     actualizar_cache()
@@ -292,15 +332,19 @@ def api_scan():
     return jsonify(CACHE_RESULTADO)
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    if 'usuario' not in session:
-        return redirect(url_for('login'))
-    return render_template("index.html", dispositivos=CACHE_RESULTADO, lista_confiables=LISTA_CONFIABLES, nombres_dispositivos=NOMBRES_DISPOSITIVOS)
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    return render_template(
+        "index.html",
+        dispositivos=CACHE_RESULTADO,
+        lista_confiables=LISTA_CONFIABLES,
+        nombres_dispositivos=NOMBRES_DISPOSITIVOS,
+    )
 
 
-
-@app.route('/api/puertos', methods=['POST'])
+@app.route("/api/puertos", methods=["POST"])
 def api_puertos():
     data = request.get_json()
     ip = data.get("ip", "").strip()
@@ -309,7 +353,9 @@ def api_puertos():
         return jsonify({"success": False, "message": "IP no proporcionada"})
 
     try:
-        salida = subprocess.check_output(["nmap", "-T4", "-sT", "--top-ports", "100", "--open", ip], timeout=20).decode()
+        salida = subprocess.check_output(
+            ["nmap", "-T4", "-sT", "--top-ports", "100", "--open", ip], timeout=20
+        ).decode()
         puertos = []
         for linea in salida.splitlines():
             if "/tcp" in linea and "open" in linea:
@@ -319,12 +365,13 @@ def api_puertos():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
-@app.route('/api/agregar', methods=['POST'])
+
+@app.route("/api/agregar", methods=["POST"])
 def api_agregar():
     data = request.get_json()
-    mac = data.get("mac", "").strip().lower().replace('-', ':')
+    mac = data.get("mac", "").strip().lower().replace("-", ":")
 
-    if len(mac.split(':')) == 6 and mac not in LISTA_CONFIABLES:
+    if len(mac.split(":")) == 6 and mac not in LISTA_CONFIABLES:
         LISTA_CONFIABLES.append(mac)
         guardar_lista()
         if mac in DETECCIONES_MAC:
@@ -335,10 +382,11 @@ def api_agregar():
 
     return jsonify({"success": False, "message": "MAC inválida o ya existe."})
 
-@app.route('/api/eliminar', methods=['POST'])
+
+@app.route("/api/eliminar", methods=["POST"])
 def api_eliminar():
     data = request.get_json()
-    mac = data.get("mac", "").strip().lower().replace('-', ':')
+    mac = data.get("mac", "").strip().lower().replace("-", ":")
 
     if mac in LISTA_CONFIABLES:
         LISTA_CONFIABLES.remove(mac)
@@ -347,6 +395,7 @@ def api_eliminar():
         return jsonify({"success": True, "message": "MAC eliminada correctamente."})
 
     return jsonify({"success": False, "message": "MAC no encontrada."})
+
 
 def enviar_telegram(mac, ip, fabricante):
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -363,11 +412,7 @@ def enviar_telegram(mac, ip, fabricante):
 *Fabricante:* {fabricante}
 """
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = {
-        "chat_id": chat_id,
-        "text": mensaje,
-        "parse_mode": "Markdown"
-    }
+    data = {"chat_id": chat_id, "text": mensaje, "parse_mode": "Markdown"}
 
     try:
         response = requests.post(url, data=data)
@@ -376,6 +421,9 @@ def enviar_telegram(mac, ip, fabricante):
     except Exception as e:
         print("[!] Error Telegram:", e)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
+    import threading
+
     threading.Thread(target=escaneo_background, daemon=True).start()
-    app.run(host='0.0.0.0', port=5555)
+    app.run(host="0.0.0.0", port=5555)
