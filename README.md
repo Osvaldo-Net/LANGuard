@@ -32,7 +32,7 @@
   <div class="section">
     <h2>Panel Principal</h2>
     <img src="https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec" alt="Panel principal 1" />
-    <img src="https://github.com/user-attachments/assets/cbeba303-77e4-4162-b9b8-15384dabda17" alt="Panel principal 2" />
+    <img src="https://github.com/user-attachments/assets/90e6752a-b06b-446e-b309-7aaf19d641c7" alt="Panel principal 2" />
   </div>
 
   <div class="section">
