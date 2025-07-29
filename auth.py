@@ -3,8 +3,15 @@ import json
 import bcrypt
 import re
 
-
 RUTA_JSON = "data/usuarios.json"
+
+def cargar_usuarios():
+    with open(RUTA_JSON) as f:
+        return json.load(f)["usuarios"]
+
+def guardar_usuarios(usuarios):
+    with open(RUTA_JSON, "w") as f:
+        json.dump({"usuarios": usuarios}, f, indent=4)
 
 def iniciar_archivo_usuarios():
     if not os.path.exists(RUTA_JSON):
@@ -15,7 +22,8 @@ def iniciar_archivo_usuarios():
                 {
                     "usuario": "admin",
                     "contrasena": hashed,
-                    "rol": "admin"
+                    "rol": "admin",
+                    "requiere_cambio": True
                 }
             ]
         }
@@ -24,20 +32,12 @@ def iniciar_archivo_usuarios():
             json.dump(data, f, indent=4)
 
 def verificar_login(usuario, contrasena):
-    with open(RUTA_JSON) as f:
-        data = json.load(f)
-    for u in data["usuarios"]:
+    for u in cargar_usuarios():
         if u["usuario"] == usuario and bcrypt.checkpw(contrasena.encode(), u["contrasena"].encode()):
             return True
     return False
-    
+
 def es_contrasena_segura(contra):
-    # Debe tener al menos:
-    # - 8 caracteres
-    # - una mayúscula
-    # - una minúscula
-    # - un número
-    # - un símbolo
     if len(contra) < 8:
         return False
     if not re.search(r"[A-Z]", contra):
@@ -49,25 +49,22 @@ def es_contrasena_segura(contra):
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=/\\[\]~`]", contra):
         return False
     return True
-    
+
 def cambiar_contrasena_usuario(usuario, nueva):
-    if es_contrasena_por_defecto(usuario) and not es_contrasena_segura(nueva):
+    if not es_contrasena_segura(nueva):
         raise ValueError("La nueva contraseña no cumple con los requisitos mínimos de seguridad.")
 
-    with open(RUTA_JSON) as f:
-        data = json.load(f)
-    for u in data["usuarios"]:
+    usuarios = cargar_usuarios()
+    for u in usuarios:
         if u["usuario"] == usuario:
             u["contrasena"] = bcrypt.hashpw(nueva.encode(), bcrypt.gensalt()).decode()
+            u["requiere_cambio"] = False
             break
-    with open(RUTA_JSON, "w") as f:
-        json.dump(data, f, indent=4)
-
+    guardar_usuarios(usuarios)
 
 def es_contrasena_por_defecto(usuario):
-    with open(RUTA_JSON) as f:
-        data = json.load(f)
-    for u in data["usuarios"]:
+    for u in cargar_usuarios():
         if u["usuario"] == usuario:
-            return bcrypt.checkpw("admin".encode(), u["contrasena"].encode())
+            return u.get("requiere_cambio", False)
     return False
+
