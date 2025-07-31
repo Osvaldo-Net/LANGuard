@@ -66,7 +66,6 @@ def login():
                 "login.html", error=error, tiempo_restante=tiempo_restante
             )
         else:
-            # Desbloquear IP y reiniciar intentos
             BLOQUEOS.pop(ip_origen)
             INTENTOS_FALLIDOS[ip_origen] = 0
             return redirect(url_for("login"))
@@ -171,7 +170,6 @@ if os.path.exists(LISTA_CONF_FILE):
 else:
     LISTA_CONFIABLES = []
 
-# Cargar caché de fabricantes
 if os.path.exists(VENDOR_CACHE_FILE):
     with open(VENDOR_CACHE_FILE, "r") as f:
         try:
