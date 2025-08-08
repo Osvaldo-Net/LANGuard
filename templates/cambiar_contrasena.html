@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Cambiar Contraseña | LAN Guard</title>
+  <title>Cambiar Contraseña | LANGuard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -26,13 +27,16 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body class="min-h-screen flex items-center justify-center font-sans bg-white">
-  <div class="bg-white shadow-2xl rounded-3xl p-6 sm:p-10 w-full max-w-md border border-gray-200">
-   
-    <h2 class="text-center text-highlight text-xl font-semibold mb-4">Cambiar contraseña</h2>
+<body class="min-h-screen flex items-center justify-center font-sans bg-gradient-to-br from-bgBone to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white px-4">
+
+  <div class="w-full max-w-md bg-white/30 dark:bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-200 dark:border-gray-700 rounded-3xl p-6 sm:p-10 space-y-6 transition-all duration-300">
+
+    <h2 class="text-center text-2xl font-bold text-gray-700 dark:text-white tracking-tight">
+      Cambiar <span class="text-accent">Contraseña</span>
+    </h2>
 
     {% if error %}
-    <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
+    <div class="px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
       <strong class="font-semibold">Error:</strong> {{ error }}
     </div>
     {% endif %}
@@ -40,11 +44,11 @@
     <form method="POST" class="space-y-4">
       <div class="relative">
         <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required
-          class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+          class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
+        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
       </div>
 
-      <ul id="requisitos" class="text-sm bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-gray-700">
+      <ul id="requisitos" class="text-sm bg-white/60 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2 text-gray-700 dark:text-gray-300 transition-all duration-300">
         <li data-id="length" class="flex items-center gap-2">
           <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -84,16 +88,20 @@
 
       <div class="relative">
         <input type="password" name="confirmar" placeholder="Confirmar contraseña" required
-          class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:outline-none text-sm sm:text-base" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+          class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
+        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
       </div>
 
       <button type="submit"
-        class="w-full bg-accent text-white font-semibold py-3 px-5 rounded-full shadow-md transition hover:scale-105 flex justify-center items-center gap-2">
+        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg flex justify-center items-center gap-2">
         <i data-lucide="key-round" class="w-5 h-5"></i>
         Cambiar
       </button>
     </form>
+
+    <footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">
+      © 2025 LANGuard. Todos los derechos reservados.
+    </footer>
   </div>
 
   <script>
@@ -124,5 +132,6 @@
       lucide.createIcons();
     });
   </script>
+
 </body>
 </html>
