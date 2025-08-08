@@ -81,7 +81,7 @@ Registro de accesos exitosos y fallidos en el archivo:
 
 ## 🤖 Nota del desarrollador
 Esta aplicación fue desarrollada con el apoyo de herramientas de inteligencia artificial, como parte de un proyecto personal.
-Aunque mi formación está enfocada en redes y ciberseguridad, me apasiona todo lo relacionado con la tecnología y el desarrollo de soluciones útiles e innovadoras.
+Aunque mi formación está enfocada en redes y ciberseguridad, me apasiona todo lo relacionado con la tecnología y el desarrollo de soluciones útiles e innovadoras para mis laboratorios en casa!.
 
 
 
