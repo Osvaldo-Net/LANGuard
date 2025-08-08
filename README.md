@@ -63,7 +63,7 @@ Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utili
 
 Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
 
-![Filtrado de dispositivos](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
+![Filtrado de dispositivos]()
 
 ---
 
@@ -78,5 +78,4 @@ Registro de accesos exitosos y fallidos en el archivo:
 ![Registro de accesos](https://github.com/user-attachments/assets/d523fd1b-608f-450e-811e-865baf139c01)
 ```
 
----
 
