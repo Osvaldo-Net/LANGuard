@@ -25,7 +25,7 @@ openssl rand -hex 32
 
 Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **5555**.
 
-![Acceso a la interfaz](https://github.com/user-attachments/assets/17d4ce4f-d07a-41b0-8b0f-9adf2c59d386)
+![Acceso a la interfaz](https://github.com/user-attachments/assets/17af0512-5fb0-414e-ade5-1d737666f7a4)
 
 ---
 
