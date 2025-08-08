@@ -1,61 +1,95 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-<body>
+Perfecto, gracias por aclarar: lo que quieres es **convertir todo ese contenido HTML a Markdown** para que se vea bien en GitHub (por ejemplo, en un `README.md`).
 
-  <div class="intro">
-    <img src="https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5" alt="Logo LANGuard" />
-    <h1>LANGuard</h1>
-    <p>Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.</p>
-    <p>Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.</p>
-  </div>
+Aquí te dejo el resultado **100% migrado a Markdown**, manteniendo el mismo contenido, imágenes y estructura:
 
-  <div class="section">
-    <h2>Credenciales por defecto</h2>
-    <ul>
-      <li><strong>Usuario:</strong> <code>admin</code></li>
-      <li><strong>Contraseña:</strong> <code>admin</code></li>
-    </ul>
-    <p>⚠️ Por seguridad, cambie la <code>SECRET_KEY</code> generando una nueva con:</p>
-    <code>openssl rand -hex 32</code>
-  </div>
+---
 
-  <div class="section">
-    <h2>Acceso a la Interfaz Web</h2>
-    <p>Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto <strong>5555</strong>.</p>
-    <img src="https://github.com/user-attachments/assets/17d4ce4f-d07a-41b0-8b0f-9adf2c59d386" alt="Acceso a la interfaz" />
-  </div>
+```md
+# LANGuard
 
-  <div class="section">
-    <h2>Panel Principal</h2>
-    <img src="https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec" alt="Panel principal 1" />
-    <img src="https://github.com/user-attachments/assets/90e6752a-b06b-446e-b309-7aaf19d641c7" alt="Panel principal 2" />
-  </div>
+![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5)
 
-  <div class="section">
-    <h2>Modo Oscuro</h2>
-    <p>LANGuard cuenta con una opción para cambiar al modo oscuro.</p>
-    <img src="https://github.com/user-attachments/assets/79418dbc-6399-454c-97d9-6dba70174948" alt="Modo oscuro" />
-  </div>
+Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.
 
-  <div class="section">
-    <h2>Escaneo de Puertos</h2>
-    <p>Visualice el estado de los puertos de los dispositivos conectados a la red LAN.</p>
-    <img src="https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0" alt="Escaneo de puertos" />
-  </div>
+Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.
 
-  <div class="section">
-    <h2>Registro de accesos</h2>
-    <p>Registro de accesos exitosos y fallidos en el archivo: /ruta/del/contenedor/app/accesos.log</p>
-    <img src="https://github.com/user-attachments/assets/d523fd1b-608f-450e-811e-865baf139c01" alt="Registro de accesos" />
+---
 
-  </div>
+## 🔐 Credenciales por defecto
 
+- **Usuario:** `admin`
+- **Contraseña:** `admin`
 
+⚠️ Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
 
-</body>
-</html>
+```bash
+openssl rand -hex 32
+```
 
+---
+
+## 🌐 Acceso a la Interfaz Web
+
+Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **5555**.
+
+![Acceso a la interfaz](https://github.com/user-attachments/assets/17d4ce4f-d07a-41b0-8b0f-9adf2c59d386)
+
+---
+
+## 📊 Panel Principal
+
+![Panel principal 1](https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec)  
+![Panel principal 2](https://github.com/user-attachments/assets/90e6752a-b06b-446e-b309-7aaf19d641c7)
+
+---
+
+## 🌙 Modo Oscuro
+
+LANGuard cuenta con una opción para cambiar al modo oscuro.
+
+![Modo oscuro](https://github.com/user-attachments/assets/79418dbc-6399-454c-97d9-6dba70174948)
+
+---
+
+## 🛡️ Escaneo de Puertos
+
+Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
+
+![Escaneo de puertos](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
+
+---
+
+## 🔍 Filtrado de Dispositivos
+
+Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utilizando:
+
+- **Nombre** del dispositivo (editable)
+- **MAC Address** (dirección física)
+- **Nivel de confianza**: confiable o no confiable
+
+Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
+
+![Vista del filtrado](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
+
+---
+
+## 📁 Registro de Accesos
+
+Registro de accesos exitosos y fallidos en el archivo:
+
+```
+/ruta/del/contenedor/app/accesos.log
+```
+
+![Registro de accesos](https://github.com/user-attachments/assets/d523fd1b-608f-450e-811e-865baf139c01)
+```
+
+---
+
+### ✅ ¿Qué hacer ahora?
+
+1. Copia y pega este bloque completo en tu archivo `README.md`.
+2. Verifica en GitHub que las imágenes y el formato se vean como esperas.
+3. Puedes añadir badges, enlaces o tablas según necesites.
+
+¿Quieres que también incluya una sección de instalación y ejecución con Docker?
