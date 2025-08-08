@@ -32,10 +32,9 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 ## 🧭 Panel Principal
 
 ![Panel principal 1](https://github.com/user-attachments/assets/43243b4e-803c-4ee4-a7bb-0371074c9679)
-)
 
-![Panel principal 2](https://github.com/user-attachments/assets/828f2ed0-15bc-4c47-a7f7-b164a53e22c2>
-)
+
+![Panel principal 2](https://github.com/user-attachments/assets/828f2ed0-15bc-4c47-a7f7-b164a53e22c2)
 
 ---
 
@@ -43,7 +42,7 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 LANGuard cuenta con una opción para cambiar al modo oscuro.
 
-![Modo oscuro](https://github.com/user-attachments/assets/79418dbc-6399-454c-97d9-6dba70174948)
+![Modo oscuro](https://github.com/user-attachments/assets/f00a04b3-74da-495c-b64f-1d69f27bc2e1)
 
 ---
 
@@ -51,7 +50,7 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
-![Escaneo de puertos](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
+![Escaneo de puertos](https://github.com/user-attachments/assets/5b9596cf-1076-4080-82cd-9556f2285931)
 
 ---
 
@@ -65,7 +64,7 @@ Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utili
 
 Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
 
-![Filtrado de dispositivos]()
+![Filtrado de dispositivos](https://github.com/user-attachments/assets/78a71200-72d9-4193-9027-0b6eb34fd1fa)
 
 ---
 
