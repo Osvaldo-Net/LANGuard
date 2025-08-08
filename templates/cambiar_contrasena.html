@@ -1,137 +1,124 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cambiar Contraseña | LANGuard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            accent: '#f4a261',
-            highlight: '#e76f51',
-            bgBone: '#f8f6f2',
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
-  <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest"></script>
+	<meta charset="UTF-8" />
+	<title>Cambiar Contraseña | LANGuard</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+		      darkMode: 'class',
+		      theme: {
+		        extend: {
+		          colors: {
+		            accent: '#f4a261',
+		            highlight: '#e76f51',
+		            bgBone: '#f8f6f2',
+		          },
+		          fontFamily: {
+		            sans: ['Inter', 'sans-serif'],
+		          },
+		        },
+		      },
+		    };
+		
+	</script>
+	<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet" />
+	<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center font-sans bg-gradient-to-br from-bgBone to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white px-4">
 
-  <div class="w-full max-w-md bg-white/30 dark:bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-200 dark:border-gray-700 rounded-3xl p-6 sm:p-10 space-y-6 transition-all duration-300">
+	<div class="w-full max-w-md bg-white/30 dark:bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-200 dark:border-gray-700 rounded-3xl p-6 sm:p-10 space-y-6 transition-all duration-300">
 
-    <h2 class="text-center text-2xl font-bold text-gray-700 dark:text-white tracking-tight">
+		<h2 class="text-center text-2xl font-bold text-gray-700 dark:text-white tracking-tight">
       Cambiar <span class="text-accent">Contraseña</span>
-    </h2>
+    </h2> {% if error %}
+		<div class="px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
+			<strong class="font-semibold">Error:</strong> {{ error }}
+		</div>
+		{% endif %}
 
-    {% if error %}
-    <div class="px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
-      <strong class="font-semibold">Error:</strong> {{ error }}
-    </div>
-    {% endif %}
+		<form method="POST" class="space-y-4">
+			<div class="relative">
+				<input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
+				<i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
+			</div>
 
-    <form method="POST" class="space-y-4">
-      <div class="relative">
-        <input id="nueva" type="password" name="nueva" placeholder="Nueva contraseña" required
-          class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
-      </div>
+			<ul id="requisitos" class="text-sm bg-white/60 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2 text-gray-700 dark:text-gray-300 transition-all duration-300">
+				<li data-id="length" class="flex items-center gap-2">
+					<svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg> Mínimo 8 caracteres
+				</li>
+				<li data-id="upper" class="flex items-center gap-2">
+					<svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg> Una letra mayúscula
+				</li>
+				<li data-id="lower" class="flex items-center gap-2">
+					<svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg> Una letra minúscula
+				</li>
+				<li data-id="digit" class="flex items-center gap-2">
+					<svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg> Un número
+				</li>
+				<li data-id="symbol" class="flex items-center gap-2">
+					<svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+          </svg> Un símbolo especial
+				</li>
+			</ul>
 
-      <ul id="requisitos" class="text-sm bg-white/60 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2 text-gray-700 dark:text-gray-300 transition-all duration-300">
-        <li data-id="length" class="flex items-center gap-2">
-          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          Mínimo 8 caracteres
-        </li>
-        <li data-id="upper" class="flex items-center gap-2">
-          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          Una letra mayúscula
-        </li>
-        <li data-id="lower" class="flex items-center gap-2">
-          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          Una letra minúscula
-        </li>
-        <li data-id="digit" class="flex items-center gap-2">
-          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          Un número
-        </li>
-        <li data-id="symbol" class="flex items-center gap-2">
-          <svg class="icon w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          Un símbolo especial
-        </li>
-      </ul>
+			<div class="relative">
+				<input type="password" name="confirmar" placeholder="Confirmar contraseña" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
+				<i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
+			</div>
 
-      <div class="relative">
-        <input type="password" name="confirmar" placeholder="Confirmar contraseña" required
-          class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg" />
-        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500"></i>
-      </div>
-
-      <button type="submit"
-        class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg flex justify-center items-center gap-2">
+			<button type="submit" class="w-full bg-accent hover:bg-highlight text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg flex justify-center items-center gap-2">
         <i data-lucide="key-round" class="w-5 h-5"></i>
         Cambiar
       </button>
-    </form>
+		</form>
 
-    <footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">
-      © 2025 LANGuard. Todos los derechos reservados.
-    </footer>
-  </div>
+		<footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">
+			© 2025 LANGuard. Todos los derechos reservados.
+		</footer>
+	</div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const input = document.getElementById("nueva");
-
-      const reglas = {
-        length: v => v.length >= 8,
-        upper: v => /[A-Z]/.test(v),
-        lower: v => /[a-z]/.test(v),
-        digit: v => /\d/.test(v),
-        symbol: v => /[^A-Za-z0-9]/.test(v)
-      };
-
-      input.addEventListener("input", () => {
-        Object.entries(reglas).forEach(([id, validar]) => {
-          const li = document.querySelector(`li[data-id="${id}"]`);
-          if (!li) return;
-
-          const icon = li.querySelector("svg.icon");
-          if (!icon) return;
-
-          icon.classList.remove("text-gray-400", "text-green-500", "text-red-500");
-          icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
-        });
-      });
-
-      lucide.createIcons();
-    });
-  </script>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+		      const input = document.getElementById("nueva");
+		
+		      const reglas = {
+		        length: v => v.length >= 8,
+		        upper: v => /[A-Z]/.test(v),
+		        lower: v => /[a-z]/.test(v),
+		        digit: v => /\d/.test(v),
+		        symbol: v => /[^A-Za-z0-9]/.test(v)
+		      };
+		
+		      input.addEventListener("input", () => {
+		        Object.entries(reglas).forEach(([id, validar]) => {
+		          const li = document.querySelector(`li[data-id="${id}"]`);
+		          if (!li) return;
+		
+		          const icon = li.querySelector("svg.icon");
+		          if (!icon) return;
+		
+		          icon.classList.remove("text-gray-400", "text-green-500", "text-red-500");
+		          icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
+		        });
+		      });
+		
+		      lucide.createIcons();
+		    });
+		
+	</script>
 
 </body>
 </html>
