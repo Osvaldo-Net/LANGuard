@@ -31,9 +31,11 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ## 🧭 Panel Principal
 
-![Panel principal 1](https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec)
+![Panel principal 1](https://github.com/user-attachments/assets/43243b4e-803c-4ee4-a7bb-0371074c9679/>
+)
 
-![Panel principal 2](https://github.com/user-attachments/assets/90e6752a-b06b-446e-b309-7aaf19d641c7)
+![Panel principal 2](https://github.com/user-attachments/assets/828f2ed0-15bc-4c47-a7f7-b164a53e22c2/>
+)
 
 ---
 
