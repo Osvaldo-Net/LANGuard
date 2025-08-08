@@ -10,54 +10,56 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-				      darkMode: 'class',
-				      theme: {
-				        extend: {
-				          colors: {
-				            accent: '#f4a261',
-				            highlight: '#e76f51',
-				            bgBone: '#f8f6f2',
-				          },
-				          fontFamily: {
-				            sans: ['Urbanist', 'sans-serif'],
-				          },
-				        }
-				      }
-				    }
-				
+		                                      darkMode: 'class',
+		                                      theme: {
+		                                        extend: {
+		                                          colors: {
+		                                            accent: '#f4a261',
+		                                            highlight: '#e76f51',
+		                                            bgBone: '#f8f6f2',
+		                                          },
+		                                          fontFamily: {
+		                                            sans: ['Urbanist', 'sans-serif'],
+		                                          },
+		                                        }
+		                                      }
+		                                    }
+		
+		
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
 
 	<style>
 		@keyframes fade-in {
-				      from {
-				        opacity: 0;
-				        transform: translateY(10px);
-				      }
-				
-				      to {
-				        opacity: 1;
-				        transform: translateY(0);
-				      }
-				    }
-				
-				    .animate-fade-in {
-				      animation: fade-in 0.6s ease-out forwards;
-				    }
-				
+		                                      from {
+		                                        opacity: 0;
+		                                        transform: translateY(10px);
+		                                      }
+		
+		                                      to {
+		                                        opacity: 1;
+		                                        transform: translateY(0);
+		                                      }
+		                                    }
+		
+		                                    .animate-fade-in {
+		                                      animation: fade-in 0.6s ease-out forwards;
+		                                    }
+		
+		
 		
 	</style>
 </head>
 
 <body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gray-900 dark:text-white">
 	<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70 h-20">
-  <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+		<div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
 
 
-<a href="/" class="flex items-center">
-  <img src="{{ url_for('static', filename='languard.png') }}" alt="LAN Guard Logo" class="h-32 w-auto ml-2">
-</a>
+			<a href="/" class="flex items-center">
+				<img src="{{ url_for('static', filename='languard.png') }}" alt="LAN Guard Logo" class="h-32 w-auto ml-2">
+			</a>
 
 
 			<button id="menu-toggle" class="sm:hidden text-highlight focus:outline-none" aria-label="Abrir menú">
@@ -78,7 +80,7 @@
 			</div>
 		</div>
 
-<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
+		<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
 			<button onclick="escanearAhora()" class="w-full bg-accent hover:bg-highlight text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
         <i data-lucide="scan"></i> Escanear
       </button>
@@ -110,6 +112,16 @@
 			</div>
 		</div>
 
+		<div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+			<input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+			<input type="text" id="filtro-mac" placeholder="Filtrar por MAC" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+			<select id="filtro-confianza" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+    <option value="">Todos</option>
+    <option value="confiable">Confiables</option>
+    <option value="no-confiable">No confiables</option>
+  </select>
+		</div>
+
 		<section class="sm:overflow-visible overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60">
 			<div class="inline-block min-w-full align-middle">
 				<table class="min-w-[640px] w-full table-auto text-sm">
@@ -124,26 +136,27 @@
 					</thead>
 					<tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
 						{% for d in dispositivos %}
-						<tr class="transition-all duration-300 ease-in-out {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }} hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-[1.01]">
+						<tr class="dispositivo-row transition-all duration-300 ease-in-out {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }} hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-[1.01]" data-nombre="{{ nombres_dispositivos[d.mac]|default('N/A') | lower }}" data-mac="{{ d.mac | lower }}" data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
 							<td class="px-4 py-3">{{ d.ip }}</td>
 							<td class="px-4 py-3">{{ d.mac }}</td>
 							<td class="px-4 py-3">
 								<span onclick="editarNombre('{{ d.mac }}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline transition-all duration-200 inline-flex items-center gap-1">
-                {{ nombres_dispositivos[d.mac]|default("N/A") }}
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </span>
+      {{ nombres_dispositivos[d.mac]|default("N/A") }}
+      <i data-lucide="pencil" class="w-4 h-4"></i>
+    </span>
 							</td>
 							<td class="px-4 py-3">{{ d.fabricante }}</td>
 							<td class="px-4 py-3">
 								{% if d.confiable %}
 								<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
-                <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
-              </span> {% else %}
+        <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
+      </span> {% else %}
 								<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
-                <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
-              </span> {% endif %}
+        <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
+      </span> {% endif %}
 							</td>
 						</tr>
+
 						{% endfor %}
 					</tbody>
 				</table>
@@ -196,6 +209,8 @@
 			<div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
 		</div>
 	</div>
+
+
 </body>
 
 </html>
