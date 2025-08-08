@@ -226,45 +226,87 @@ btnToggle.addEventListener("click", () => {
       });
   };
 
-  function actualizarTabla(dispositivos) {
-    const tabla = document.getElementById("tabla-dispositivos");
-    tabla.innerHTML = "";
+  const inputNombre = document.getElementById('filtro-nombre');
+  const inputMac = document.getElementById('filtro-mac');
+  const selectConfianza = document.getElementById('filtro-confianza');
 
-    dispositivos.forEach(d => {
-      const row = document.createElement("tr");
-      row.className = "transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
-      row.innerHTML = `
-        <td class="px-4 py-3">${d.ip}</td>
-        <td class="px-4 py-3">${d.mac}</td>
-        <td class="px-4 py-3">
-          <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
-            ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
-          </span>
-        </td>
-        <td class="px-4 py-3">${d.fabricante}</td>
-        <td class="px-4 py-3">
-          ${d.confiable
-            ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                Confiable
-              </span>`
-            : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <i data-lucide="x-circle" class="w-4 h-4"></i>
-                No confiable
-              </span>`}
-          <br/>
-          <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-            <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-            Ver puertos
-          </button>
-        </td>
-      `;
-      tabla.appendChild(row);
+  function aplicarFiltros() {
+    const filas = document.querySelectorAll('.dispositivo-row');
+    const filtroNombre = inputNombre.value.toLowerCase();
+    const filtroMac = inputMac.value.toLowerCase();
+    const filtroConfianza = selectConfianza.value;
+
+    filas.forEach(fila => {
+      const nombre = fila.dataset.nombre;
+      const mac = fila.dataset.mac;
+      const confianza = fila.dataset.confianza;
+
+      const coincideNombre = nombre.includes(filtroNombre);
+      const coincideMac = mac.includes(filtroMac);
+      const coincideConfianza = filtroConfianza === '' || confianza === filtroConfianza;
+
+      if (coincideNombre && coincideMac && coincideConfianza) {
+        fila.style.display = '';
+      } else {
+        fila.style.display = 'none';
+      }
     });
-    document.getElementById("contador-dispositivos").textContent = dispositivos.length;
-    lucide.createIcons();
   }
 
-  // Autoescanear cada minuto
+  inputNombre.addEventListener('input', aplicarFiltros);
+  inputMac.addEventListener('input', aplicarFiltros);
+  selectConfianza.addEventListener('change', aplicarFiltros);
+
+
+function actualizarTabla(dispositivos) {
+  const tabla = document.getElementById("tabla-dispositivos");
+  tabla.innerHTML = "";
+
+  dispositivos.forEach(d => {
+    const row = document.createElement("tr");
+
+    row.className = "dispositivo-row transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
+
+    row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
+    row.dataset.mac = d.mac.toLowerCase();
+    row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+
+    row.innerHTML = `
+      <td class="px-4 py-3">${d.ip}</td>
+      <td class="px-4 py-3">${d.mac}</td>
+      <td class="px-4 py-3">
+        <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
+          ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
+        </span>
+      </td>
+      <td class="px-4 py-3">${d.fabricante}</td>
+      <td class="px-4 py-3">
+        ${d.confiable
+          ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              Confiable
+            </span>`
+          : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
+              <i data-lucide="x-circle" class="w-4 h-4"></i>
+              No confiable
+            </span>`}
+        <br/>
+        <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
+          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+          Ver puertos
+        </button>
+      </td>
+    `;
+
+    tabla.appendChild(row);
+  });
+
+  document.getElementById("contador-dispositivos").textContent = dispositivos.length;
+  lucide.createIcons();
+
+  aplicarFiltros();
+}
+
   setInterval(() => window.escanearAhora(), 60000);
 });
+
