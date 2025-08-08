@@ -1,4 +1,4 @@
-
+---
 
 ```md
 # LANGuard
@@ -82,10 +82,4 @@ Registro de accesos exitosos y fallidos en el archivo:
 
 ---
 
-### ✅ ¿Qué hacer ahora?
 
-1. Copia y pega este bloque completo en tu archivo `README.md`.
-2. Verifica en GitHub que las imágenes y el formato se vean como esperas.
-3. Puedes añadir badges, enlaces o tablas según necesites.
-
-¿Quieres que también incluya una sección de instalación y ejecución con Docker?
