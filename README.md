@@ -1,25 +1,31 @@
 
 ```md
-# LANGuard
+# 🛡️ LANGuard
 
-![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5)
+![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-ebbd-457c-891c-6c8926a436a5)
 
-Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.
+Aplicación web auto hospedada con funciones de escaneo avanzado para tu red **LAN**.
 
-Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.
+Con esta herramienta puedes:
+- Detectar accesos no autorizados.
+- Determinar el nivel de confianza de cada dispositivo conectado.
+- Recibir alertas vía Telegram.
+- Visualizar estado de puertos, latencia y propagación DNS.
 
 ---
 
 ## 🔐 Credenciales por defecto
 
-- **Usuario:** `admin`
-- **Contraseña:** `admin`
+| Campo        | Valor     |
+|--------------|-----------|
+| **Usuario**  | `admin`   |
+| **Contraseña** | `admin` |
 
-⚠️ Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
+> ⚠️ **Importante:** Cambia la variable `SECRET_KEY` para mayor seguridad.  
+> Puedes generar una nueva ejecutando:
 
 ```bash
 openssl rand -hex 32
-```
 
 ---
 
