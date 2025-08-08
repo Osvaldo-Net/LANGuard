@@ -1,31 +1,23 @@
+## LANGuard
 
-```md
-# 🛡️ LANGuard
+![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5)
 
-![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-ebbd-457c-891c-6c8926a436a5)
+Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.
 
-Aplicación web auto hospedada con funciones de escaneo avanzado para tu red **LAN**.
-
-Con esta herramienta puedes:
-- Detectar accesos no autorizados.
-- Determinar el nivel de confianza de cada dispositivo conectado.
-- Recibir alertas vía Telegram.
-- Visualizar estado de puertos, latencia y propagación DNS.
+Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.
 
 ---
 
 ## 🔐 Credenciales por defecto
 
-| Campo        | Valor     |
-|--------------|-----------|
-| **Usuario**  | `admin`   |
-| **Contraseña** | `admin` |
+- **Usuario:** `admin`
+- **Contraseña:** `admin`
 
-> ⚠️ **Importante:** Cambia la variable `SECRET_KEY` para mayor seguridad.  
-> Puedes generar una nueva ejecutando:
+⚠️ Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
 
 ```bash
 openssl rand -hex 32
+```
 
 ---
 
@@ -37,9 +29,10 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ---
 
-## 📊 Panel Principal
+## 🧭 Panel Principal
 
-![Panel principal 1](https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec)  
+![Panel principal 1](https://github.com/user-attachments/assets/37011d9e-0694-4be7-8976-4a4b4afaa9ec)
+
 ![Panel principal 2](https://github.com/user-attachments/assets/90e6752a-b06b-446e-b309-7aaf19d641c7)
 
 ---
@@ -52,7 +45,7 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 ---
 
-## 🛡️ Escaneo de Puertos
+## 🧪 Escaneo de Puertos
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
@@ -60,7 +53,7 @@ Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
 ---
 
-## 🔍 Filtrado de Dispositivos
+## 🔍 Filtrado de dispositivos
 
 Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utilizando:
 
@@ -70,11 +63,11 @@ Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utili
 
 Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
 
-![Vista del filtrado](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
+![Filtrado de dispositivos](https://github.com/user-attachments/assets/e2ee4164-951c-49a9-bf7a-04fc5d86f7b0)
 
 ---
 
-## 📁 Registro de Accesos
+## 📝 Registro de accesos
 
 Registro de accesos exitosos y fallidos en el archivo:
 
@@ -86,5 +79,4 @@ Registro de accesos exitosos y fallidos en el archivo:
 ```
 
 ---
-
 
