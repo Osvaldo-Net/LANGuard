@@ -2,9 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const iconoTema = document.getElementById("icono-tema");
 
-  /* ==========================
-     TEMA OSCURO / CLARO
-  ========================== */
+
   function aplicarTemaDesdeStorage() {
     const modoOscuro = localStorage.getItem("modoOscuro") === "true";
     root.classList.toggle("dark", modoOscuro);
@@ -35,9 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   aplicarTemaDesdeStorage();
   lucide.createIcons();
 
-  /* ==========================
-     MENÚ MÓVIL
-  ========================== */
+
   const btnToggle = document.getElementById("menu-toggle");
   const menuMobile = document.getElementById("menu-mobile");
 
@@ -49,9 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
   });
 
-  /* ==========================
-     NOTIFICACIONES
-  ========================== */
+
   function mostrarNotificacion(mensaje, tipo = "info") {
     const noti = document.getElementById("notificacion");
     const colores = {
@@ -69,16 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => noti.classList.add("hidden"), 10000);
   }
 
-  /* ==========================
-     MODAL
-  ========================== */
+
   window.cerrarModal = function () {
     document.getElementById("modal-puertos").classList.add("hidden");
   };
 
-  /* ==========================
-     FORMULARIO AGREGAR MAC
-  ========================== */
+
   document.getElementById("form-agregar").addEventListener("submit", async (e) => {
     e.preventDefault();
     const mac = document.getElementById("input-mac").value.trim();
@@ -125,9 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ==========================
-     ELIMINAR MAC
-  ========================== */
+
   window.eliminarMAC = function (mac) {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -168,9 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `, "error"));
   };
 
-  /* ==========================
-     EDITAR NOMBRE DISPOSITIVO
-  ========================== */
+
   window.editarNombre = function (mac) {
     const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
     const nombreActual = fila.innerText.trim();
@@ -181,9 +167,10 @@ document.addEventListener("DOMContentLoaded", () => {
           class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm 
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                  text-sm w-40 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
-        <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg text-sm">
-          Guardar
-        </button>
+<button class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
+  Guardar
+</button>
+
       </div>
     `;
 
@@ -225,9 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  /* ==========================
-     HORA ACTUAL
-  ========================== */
+ 
   function actualizarHoraActual() {
     const ahora = new Date();
     const formateada = ahora.toLocaleString('es-CO', {
@@ -245,9 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(actualizarHoraActual, 1000);
   actualizarHoraActual();
 
-  /* ==========================
-     ESCANEAR RED
-  ========================== */
+
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -279,9 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 
-  /* ==========================
-     VER PUERTOS
-  ========================== */
+ 
   window.verPuertos = function (ip) {
     const modal = document.getElementById("modal-puertos");
     const contenido = document.getElementById("contenido-puertos");
@@ -325,9 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 
-  /* ==========================
-     FILTROS TABLA
-  ========================== */
+
   const inputNombre = document.getElementById('filtro-nombre');
   const inputMac = document.getElementById('filtro-mac');
   const selectConfianza = document.getElementById('filtro-confianza');
@@ -355,9 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputMac.addEventListener('input', aplicarFiltros);
   selectConfianza.addEventListener('change', aplicarFiltros);
 
-  /* ==========================
-     ACTUALIZAR TABLA
-  ========================== */
+
   function actualizarTabla(dispositivos) {
     const tabla = document.getElementById("tabla-dispositivos");
     tabla.innerHTML = "";
@@ -405,8 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
     aplicarFiltros();
   }
 
-  /* ==========================
-     ESCANEO AUTOMÁTICO CADA MINUTO
-  ========================== */
+
   setInterval(() => window.escanearAhora(), 60000);
 });
