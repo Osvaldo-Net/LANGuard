@@ -2,24 +2,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const iconoTema = document.getElementById("icono-tema");
 
+  /* ==========================
+     TEMA OSCURO / CLARO
+  ========================== */
   function aplicarTemaDesdeStorage() {
     const modoOscuro = localStorage.getItem("modoOscuro") === "true";
     root.classList.toggle("dark", modoOscuro);
     actualizarIconoTema();
   }
 
-function actualizarIconoTema() {
-  const esOscuro = root.classList.contains("dark");
-  document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
-  document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
+  function actualizarIconoTema() {
+    const esOscuro = root.classList.contains("dark");
 
-  const iconoLunaMobile = document.getElementById("icono-luna-mobile");
-  const iconoSolMobile = document.getElementById("icono-sol-mobile");
-  if (iconoLunaMobile && iconoSolMobile) {
-    iconoLunaMobile.classList.toggle("hidden", esOscuro);
-    iconoSolMobile.classList.toggle("hidden", !esOscuro);
+    document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
+    document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
+
+    const iconoLunaMobile = document.getElementById("icono-luna-mobile");
+    const iconoSolMobile = document.getElementById("icono-sol-mobile");
+
+    if (iconoLunaMobile && iconoSolMobile) {
+      iconoLunaMobile.classList.toggle("hidden", esOscuro);
+      iconoSolMobile.classList.toggle("hidden", !esOscuro);
+    }
   }
-}
 
   window.toggleDarkMode = function () {
     root.classList.toggle("dark");
@@ -30,18 +35,23 @@ function actualizarIconoTema() {
   aplicarTemaDesdeStorage();
   lucide.createIcons();
 
-const btnToggle = document.getElementById("menu-toggle");
-const menuMobile = document.getElementById("menu-mobile");
+  /* ==========================
+     MENÚ MÓVIL
+  ========================== */
+  const btnToggle = document.getElementById("menu-toggle");
+  const menuMobile = document.getElementById("menu-mobile");
 
-btnToggle.addEventListener("click", () => {
-  menuMobile.classList.toggle("hidden");
-  btnToggle.innerHTML = menuMobile.classList.contains("hidden")
-    ? `<i data-lucide="menu" class="w-6 h-6"></i>`
-    : `<i data-lucide="x" class="w-6 h-6"></i>`;
-  lucide.createIcons();
-});
+  btnToggle.addEventListener("click", () => {
+    menuMobile.classList.toggle("hidden");
+    btnToggle.innerHTML = menuMobile.classList.contains("hidden")
+      ? `<i data-lucide="menu" class="w-6 h-6"></i>`
+      : `<i data-lucide="x" class="w-6 h-6"></i>`;
+    lucide.createIcons();
+  });
 
-
+  /* ==========================
+     NOTIFICACIONES
+  ========================== */
   function mostrarNotificacion(mensaje, tipo = "info") {
     const noti = document.getElementById("notificacion");
     const colores = {
@@ -50,17 +60,25 @@ btnToggle.addEventListener("click", () => {
       error: "bg-red-100 text-red-800",
       warning: "bg-yellow-100 text-yellow-800"
     };
+
     noti.innerHTML = mensaje;
     noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
     noti.classList.remove("hidden");
+
     lucide.createIcons();
     setTimeout(() => noti.classList.add("hidden"), 10000);
   }
 
+  /* ==========================
+     MODAL
+  ========================== */
   window.cerrarModal = function () {
     document.getElementById("modal-puertos").classList.add("hidden");
   };
 
+  /* ==========================
+     FORMULARIO AGREGAR MAC
+  ========================== */
   document.getElementById("form-agregar").addEventListener("submit", async (e) => {
     e.preventDefault();
     const mac = document.getElementById("input-mac").value.trim();
@@ -80,17 +98,36 @@ btnToggle.addEventListener("click", () => {
         body: JSON.stringify({ mac })
       });
       const data = await res.json();
+
       if (data.success) {
-        mostrarNotificacion(`<i data-lucide='check' class='w-4 h-4'></i> ${data.message}`, "success");
+        mostrarNotificacion(`
+          <span class="inline-flex items-center gap-2">
+            <i data-lucide='check' class='w-4 h-4'></i>
+            ${data.message}
+          </span>
+        `, "success");
         setTimeout(() => location.reload(), 1000);
       } else {
-        mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
+        mostrarNotificacion(`
+          <span class="inline-flex items-center gap-2">
+            <i data-lucide='x-circle' class='w-4 h-4'></i>
+            ${data.message}
+          </span>
+        `, "error");
       }
     } catch (error) {
-      mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error de conexión", "error");
+      mostrarNotificacion(`
+        <span class="inline-flex items-center gap-2">
+          <i data-lucide='x-circle' class='w-4 h-4'></i>
+          Error de conexión
+        </span>
+      `, "error");
     }
   });
 
+  /* ==========================
+     ELIMINAR MAC
+  ========================== */
   window.eliminarMAC = function (mac) {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -107,36 +144,90 @@ btnToggle.addEventListener("click", () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          mostrarNotificacion(`<i data-lucide='check' class='w-4 h-4'></i> ${data.message}`, "success");
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='check' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "success");
           setTimeout(() => location.reload(), 1000);
         } else {
-          mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='x-circle' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "error");
         }
       })
-      .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error de conexión", "error"));
+      .catch(() => mostrarNotificacion(`
+        <span class="inline-flex items-center gap-2">
+          <i data-lucide='x-circle' class='w-4 h-4'></i>
+          Error de conexión
+        </span>
+      `, "error"));
   };
 
-  window.editarNombre = function(mac) {
-    const nuevoNombre = prompt("Ingresa un nombre para el dispositivo:", mac);
-    if (!nuevoNombre || nuevoNombre.trim() === "") return;
+  /* ==========================
+     EDITAR NOMBRE DISPOSITIVO
+  ========================== */
+  window.editarNombre = function (mac) {
+    const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
+    const nombreActual = fila.innerText.trim();
 
-    fetch("/api/nombrar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mac: mac, nombre: nuevoNombre })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        mostrarNotificacion("<i data-lucide='check' class='w-4 h-4'></i> Nombre guardado", "success");
-        location.reload();
-      } else {
-        mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
-      }
-    })
-    .catch(() => mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error al guardar nombre", "error"));
+    fila.innerHTML = `
+      <div class="flex items-center gap-2">
+        <input type="text" value="${nombreActual}"
+          class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm 
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                 text-sm w-40 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
+        <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg text-sm">
+          Guardar
+        </button>
+      </div>
+    `;
+
+    const input = fila.querySelector("input");
+    const boton = fila.querySelector("button");
+
+    boton.addEventListener("click", () => {
+      const nuevoNombre = input.value.trim();
+      if (!nuevoNombre) return;
+
+      fetch("/api/nombrar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mac: mac, nombre: nuevoNombre })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            mostrarNotificacion(`
+              <span class="flex items-center gap-2">
+                <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
+                <span>Nombre guardado</span>
+              </span>
+            `, "success");
+
+            fila.innerHTML = `
+              <span onclick="editarNombre('${mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
+                ${nuevoNombre} <i data-lucide="pencil" class="w-4 h-4"></i>
+              </span>
+            `;
+            lucide.createIcons();
+          } else {
+            mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
+          }
+        })
+        .catch(() => {
+          mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error al guardar nombre", "error");
+        });
+    });
   };
 
+  /* ==========================
+     HORA ACTUAL
+  ========================== */
   function actualizarHoraActual() {
     const ahora = new Date();
     const formateada = ahora.toLocaleString('es-CO', {
@@ -154,6 +245,9 @@ btnToggle.addEventListener("click", () => {
   setInterval(actualizarHoraActual, 1000);
   actualizarHoraActual();
 
+  /* ==========================
+     ESCANEAR RED
+  ========================== */
   window.escanearAhora = function () {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
@@ -165,13 +259,15 @@ btnToggle.addEventListener("click", () => {
     fetch("/api/scan")
       .then(res => res.json())
       .then(data => {
-        mostrarNotificacion(`
-          <span class="inline-flex items-center gap-2">
-            <i data-lucide="check" class="w-4 h-4 text-green-700"></i>
-            Escaneo completo
-          </span>
-        `, "success");
-        actualizarTabla(data);
+        setTimeout(() => {
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-green-700"></i>
+              Escaneo completo
+            </span>
+          `, "success");
+          actualizarTabla(data);
+        }, 2000);
       })
       .catch(() => {
         mostrarNotificacion(`
@@ -183,6 +279,9 @@ btnToggle.addEventListener("click", () => {
       });
   };
 
+  /* ==========================
+     VER PUERTOS
+  ========================== */
   window.verPuertos = function (ip) {
     const modal = document.getElementById("modal-puertos");
     const contenido = document.getElementById("contenido-puertos");
@@ -226,6 +325,9 @@ btnToggle.addEventListener("click", () => {
       });
   };
 
+  /* ==========================
+     FILTROS TABLA
+  ========================== */
   const inputNombre = document.getElementById('filtro-nombre');
   const inputMac = document.getElementById('filtro-mac');
   const selectConfianza = document.getElementById('filtro-confianza');
@@ -245,11 +347,7 @@ btnToggle.addEventListener("click", () => {
       const coincideMac = mac.includes(filtroMac);
       const coincideConfianza = filtroConfianza === '' || confianza === filtroConfianza;
 
-      if (coincideNombre && coincideMac && coincideConfianza) {
-        fila.style.display = '';
-      } else {
-        fila.style.display = 'none';
-      }
+      fila.style.display = (coincideNombre && coincideMac && coincideConfianza) ? '' : 'none';
     });
   }
 
@@ -257,56 +355,58 @@ btnToggle.addEventListener("click", () => {
   inputMac.addEventListener('input', aplicarFiltros);
   selectConfianza.addEventListener('change', aplicarFiltros);
 
+  /* ==========================
+     ACTUALIZAR TABLA
+  ========================== */
+  function actualizarTabla(dispositivos) {
+    const tabla = document.getElementById("tabla-dispositivos");
+    tabla.innerHTML = "";
 
-function actualizarTabla(dispositivos) {
-  const tabla = document.getElementById("tabla-dispositivos");
-  tabla.innerHTML = "";
+    dispositivos.forEach(d => {
+      const row = document.createElement("tr");
+      row.className = "dispositivo-row transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
 
-  dispositivos.forEach(d => {
-    const row = document.createElement("tr");
+      row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
+      row.dataset.mac = d.mac.toLowerCase();
+      row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
-    row.className = "dispositivo-row transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
+      row.innerHTML = `
+        <td class="px-4 py-3">${d.ip}</td>
+        <td class="px-4 py-3">${d.mac}</td>
+        <td class="px-4 py-3">
+          <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
+            ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
+          </span>
+        </td>
+        <td class="px-4 py-3">${d.fabricante}</td>
+        <td class="px-4 py-3">
+          ${d.confiable
+            ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                Confiable
+              </span>`
+            : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                No confiable
+              </span>`}
+          <br/>
+          <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
+            <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+            Ver puertos
+          </button>
+        </td>
+      `;
 
-    row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
-    row.dataset.mac = d.mac.toLowerCase();
-    row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+      tabla.appendChild(row);
+    });
 
-    row.innerHTML = `
-      <td class="px-4 py-3">${d.ip}</td>
-      <td class="px-4 py-3">${d.mac}</td>
-      <td class="px-4 py-3">
-        <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
-          ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
-        </span>
-      </td>
-      <td class="px-4 py-3">${d.fabricante}</td>
-      <td class="px-4 py-3">
-        ${d.confiable
-          ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
-              <i data-lucide="check-circle" class="w-4 h-4"></i>
-              Confiable
-            </span>`
-          : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
-              <i data-lucide="x-circle" class="w-4 h-4"></i>
-              No confiable
-            </span>`}
-        <br/>
-        <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-          Ver puertos
-        </button>
-      </td>
-    `;
+    document.getElementById("contador-dispositivos").textContent = dispositivos.length;
+    lucide.createIcons();
+    aplicarFiltros();
+  }
 
-    tabla.appendChild(row);
-  });
-
-  document.getElementById("contador-dispositivos").textContent = dispositivos.length;
-  lucide.createIcons();
-
-  aplicarFiltros();
-}
-
+  /* ==========================
+     ESCANEO AUTOMÁTICO CADA MINUTO
+  ========================== */
   setInterval(() => window.escanearAhora(), 60000);
 });
-
