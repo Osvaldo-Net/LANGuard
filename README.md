@@ -27,6 +27,9 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ![Acceso a la interfaz](https://github.com/user-attachments/assets/203e2456-0847-4d64-a6f4-24fcbdf60eae)
 
+![Cambio de contraseña](https://github.com/user-attachments/assets/d2a7e46c-271e-4138-822c-c19f7e8bbb0e)
+
+
 ---
 
 ## 🧭 Panel Principal
