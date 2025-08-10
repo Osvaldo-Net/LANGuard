@@ -10,7 +10,7 @@ Con esta aplicación puedes detectar accesos no autorizados y determinar el nive
 
 ## 🔐 Credenciales por defecto
 
-- **Usuario:** `admin`
+- **Usuario:** `admin@example.com`
 - **Contraseña:** `admin`
 
 ⚠️ Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
