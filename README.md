@@ -34,10 +34,10 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ## 🧭 Panel Principal
 
-![Panel principal 1](https://github.com/user-attachments/assets/43243b4e-803c-4ee4-a7bb-0371074c9679)
+![Panel principal 1](https://github.com/user-attachments/assets/1eae97fb-f181-482a-8cc2-354a4d4949be)
 
 
-![Panel principal 2](https://github.com/user-attachments/assets/828f2ed0-15bc-4c47-a7f7-b164a53e22c2)
+![Panel principal 2](https://github.com/user-attachments/assets/c7e1a0a0-5d63-4f78-ab9b-859b589b643f)
 
 ---
 
@@ -45,7 +45,7 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 LANGuard cuenta con una opción para cambiar al modo oscuro.
 
-![Modo oscuro](https://github.com/user-attachments/assets/f00a04b3-74da-495c-b64f-1d69f27bc2e1)
+![Modo oscuro](https://github.com/user-attachments/assets/878674a3-4a31-49ef-a382-e4563a442743)
 
 ---
 
@@ -53,7 +53,7 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
-![Escaneo de puertos](https://github.com/user-attachments/assets/5b9596cf-1076-4080-82cd-9556f2285931)
+![Escaneo de puertos](https://github.com/user-attachments/assets/8c34985e-c0c8-4699-9c58-84d011256855)
 
 ---
 
