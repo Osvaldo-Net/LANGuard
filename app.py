@@ -181,7 +181,7 @@ def escanear_red():
             timeout=30
         ).decode()
 
-        dispositivos = []
+        dispositivos_nmap = []
         ip = None
         ahora = time.time()
         macs_confiables = [m.lower() for m in LISTA_CONFIABLES]
@@ -195,7 +195,7 @@ def escanear_red():
                     mac = mac_match.group(1).lower().replace('-', ':')
                     fabricante = obtener_fabricante(mac)
                     confiable = mac in macs_confiables
-                    dispositivos.append({
+                    dispositivos_nmap.append({
                         "ip": ip,
                         "mac": mac,
                         "fabricante": fabricante,
@@ -215,8 +215,42 @@ def escanear_red():
                             enviar_telegram(mac, ip, fabricante)
                             registro["notificado"] = True
 
+        dispositivos_arp = []
+        try:
+            salida_arp = subprocess.check_output(["ip", "neigh", "show"], timeout=5).decode()
+            for linea in salida_arp.splitlines():
+                match = re.match(r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})", linea, re.I)
+                if match:
+                    ip_arp, mac_arp = match.groups()
+                    mac_arp = mac_arp.lower()
+                    fabricante_arp = obtener_fabricante(mac_arp)
+                    dispositivos_arp.append({
+                        "ip": ip_arp,
+                        "mac": mac_arp,
+                        "fabricante": fabricante_arp,
+                        "confiable": mac_arp in macs_confiables,
+                        "nombre": NOMBRES_DISPOSITIVOS.get(mac_arp)
+                    })
+        except Exception as e:
+            print(f"[!] Error obteniendo tabla ARP con ip neigh: {e}")
+
+        macs_nmap = {d["mac"] for d in dispositivos_nmap}
+        macs_arp = {d["mac"] for d in dispositivos_arp}
+
+        solo_arp = [d for d in dispositivos_arp if d["mac"] not in macs_nmap]
+        solo_nmap = [d for d in dispositivos_nmap if d["mac"] not in macs_arp]
+
+        if solo_arp:
+            print("[INFO] Dispositivos solo detectados en ARP:", solo_arp)
+        if solo_nmap:
+            print("[INFO] Dispositivos solo detectados en NMAP:", solo_nmap)
+
+        # --- UNIR LISTAS ---
+        dispositivos_final = dispositivos_nmap + solo_arp
+
         guardar_json(RUTA_DETECCIONES, DETECCIONES_MAC)
-        return dispositivos
+        return dispositivos_final
+
     except Exception as e:
         print(f"[!] Error escaneando red: {e}")
         return []
