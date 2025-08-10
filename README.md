@@ -67,7 +67,7 @@ Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utili
 
 Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
 
-![Filtrado de dispositivos](https://github.com/user-attachments/assets/78a71200-72d9-4193-9027-0b6eb34fd1fa)
+![Filtrado de dispositivos](https://github.com/user-attachments/assets/47f5df60-401b-4206-bbad-ed931e71d958)
 
 ---
 
@@ -83,7 +83,7 @@ Registro de accesos exitosos y fallidos en el archivo:
 ---
 
 ## 🤖 Nota del desarrollador
-Esta aplicación fue desarrollada con el apoyo de herramientas de inteligencia artificial, como parte de un proyecto personal.
+Esta aplicación fue desarrollada con un gran apoyo de herramientas de inteligencia artificial, como parte de un proyecto personal.
 Aunque mi formación está enfocada en redes y ciberseguridad, me apasiona todo lo relacionado con la tecnología y el desarrollo de soluciones útiles e innovadoras para mis laboratorios en casa!.
 
 
