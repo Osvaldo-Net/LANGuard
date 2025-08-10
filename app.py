@@ -171,6 +171,19 @@ def obtener_red_local():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.connect(("8.8.8.8", 80))
         ip_local = s.getsockname()[0]
+
+    try:
+        salida = subprocess.check_output(["ip", "addr", "show"], text=True)
+        for linea in salida.splitlines():
+            if ip_local in linea:
+                # Buscar algo como: "inet 192.168.1.10/24"
+                match = re.search(rf"inet\s+{re.escape(ip_local)}/(\d+)", linea)
+                if match:
+                    prefix = int(match.group(1))
+                    return str(ipaddress.IPv4Interface(f"{ip_local}/{prefix}").network)
+    except Exception as e:
+        print(f"[!] No se pudo obtener máscara real, usando /24: {e}")
+
     return str(ipaddress.IPv4Interface(f"{ip_local}/24").network)
 
 def escanear_red():
@@ -217,11 +230,20 @@ def escanear_red():
 
         dispositivos_arp = []
         try:
+            red_local = ipaddress.IPv4Network(obtener_red_local(), strict=False)
+
             salida_arp = subprocess.check_output(["ip", "neigh", "show"], timeout=5).decode()
             for linea in salida_arp.splitlines():
                 match = re.match(r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})", linea, re.I)
                 if match:
                     ip_arp, mac_arp = match.groups()
+
+                    try:
+                        if ipaddress.IPv4Address(ip_arp) not in red_local:
+                            continue
+                    except ValueError:
+                        continue
+
                     mac_arp = mac_arp.lower()
                     fabricante_arp = obtener_fabricante(mac_arp)
                     dispositivos_arp.append({
@@ -245,11 +267,11 @@ def escanear_red():
         if solo_nmap:
             print("[INFO] Dispositivos solo detectados en NMAP:", solo_nmap)
 
-        # --- UNIR LISTAS ---
         dispositivos_final = dispositivos_nmap + solo_arp
 
         guardar_json(RUTA_DETECCIONES, DETECCIONES_MAC)
         return dispositivos_final
+
 
     except Exception as e:
         print(f"[!] Error escaneando red: {e}")
