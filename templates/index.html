@@ -7,66 +7,69 @@
 	<title>LAN Guard</title>
 	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-		      darkMode: 'class',
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: '#f4a261',
-		            highlight: '#e76f51',
-		            bgBone: '#f8f6f2',
-		          },
-		          fontFamily: {
-		            sans: ['Urbanist', 'sans-serif'],
-		          },
-		        }
-		      }
-		    }
+				      darkMode: 'class',
+				      theme: {
+				        extend: {
+				          colors: {
+				            accent: '#f4a261',
+				            highlight: '#e76f51',
+				            bgBone: '#f8f6f2',
+				          },
+				          fontFamily: {
+				            sans: ['Urbanist', 'sans-serif'],
+				          },
+				        }
+				      }
+				    }
+				
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<style>
 		@keyframes fade-in {
-		      from {
-		        opacity: 0;
-		        transform: translateY(10px);
-		      }
-		      to {
-		        opacity: 1;
-		        transform: translateY(0);
-		      }
-		    }
-		
-		    @keyframes pulse-glow {
-		      0%, 100% {
-		        box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
-		      }
-		      50% {
-		  	box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
-		      }
-		    }
-		
-		
-		    .animate-fade-in {
-		      animation: fade-in 0.6s ease-out forwards;
-		    }
-		
-		    .animate-pulse-glow {
-		      animation: pulse-glow 2s infinite;
-		    }
-		
-		    .custom-scrollbar::-webkit-scrollbar {
-		      width: 6px;
-		    }
-		    .custom-scrollbar::-webkit-scrollbar-thumb {
-		      background: rgba(244, 162, 97, 0.7);
-		      border-radius: 10px;
-		    }
-		    .custom-scrollbar::-webkit-scrollbar-track {
-		      background: transparent;
-		    }
+				      from {
+				        opacity: 0;
+				        transform: translateY(10px);
+				      }
+				      to {
+				        opacity: 1;
+				        transform: translateY(0);
+				      }
+				    }
+				
+				    @keyframes pulse-glow {
+				      0%, 100% {
+				        box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
+				      }
+				      50% {
+				  	box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
+				      }
+				    }
+				
+				
+				    .animate-fade-in {
+				      animation: fade-in 0.6s ease-out forwards;
+				    }
+				
+				    .animate-pulse-glow {
+				      animation: pulse-glow 2s infinite;
+				    }
+				
+				    .custom-scrollbar::-webkit-scrollbar {
+				      width: 6px;
+				    }
+				    .custom-scrollbar::-webkit-scrollbar-thumb {
+				      background: rgba(244, 162, 97, 0.7);
+				      border-radius: 10px;
+				    }
+				    .custom-scrollbar::-webkit-scrollbar-track {
+				      background: transparent;
+				    }
+				
 		
 	</style>
 </head>
@@ -75,8 +78,13 @@
 	<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70 h-20">
 		<div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
 			<a href="/" class="flex items-center">
-				<img src="{{ url_for('static', filename='languard.png') }}" alt="LAN Guard Logo" class="h-28 w-auto ml-2">
+				<span class="text-3xl font-bold ml-2 transition-colors duration-300" style="font-family: 'Poppins', sans-serif;">
+    <span class="text-accent">LAN</span>
+				<span class="text-gray-800 dark:text-white">Guard</span>
+				</span>
 			</a>
+
+
 
 			<button id="menu-toggle" class="sm:hidden text-highlight focus:outline-none" aria-label="Abrir menú">
         <i data-lucide="menu" class="w-6 h-6"></i>
