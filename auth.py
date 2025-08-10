@@ -4,31 +4,33 @@ import bcrypt
 import re
 from typing import Dict, Any
 
-RUTA_JSON = "data/usuarios.json"
+RUTA_JSON = "/app/data/usuarios.json"
 USUARIO_DEFECTO = "admin"
 CONTRASENA_DEFECTO = "admin"
 
 
 def cargar_datos() -> Dict[str, Any]:
-    """Carga los datos de usuarios desde el archivo JSON."""
     if not os.path.exists(RUTA_JSON):
         iniciar_archivo_usuarios()
     with open(RUTA_JSON, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def guardar_datos(data: Dict[str, Any]) -> None:
-    """Guarda los datos en el archivo JSON."""
     os.makedirs(os.path.dirname(RUTA_JSON), exist_ok=True)
     with open(RUTA_JSON, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
+
 def hash_contrasena(contrasena: str) -> str:
-    """Genera el hash de una contraseña."""
     return bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt()).decode()
 
 
 def iniciar_archivo_usuarios() -> None:
-    """Crea el archivo JSON de usuarios con el usuario por defecto."""
+    if os.path.exists(RUTA_JSON):
+        print("Archivo de usuarios ya existe, no se sobrescribe.")
+        return
+
     print("Creando archivo de usuarios por defecto...")
     data = {
         "usuarios": [
@@ -43,15 +45,14 @@ def iniciar_archivo_usuarios() -> None:
 
 
 def verificar_login(usuario: str, contrasena: str) -> bool:
-    """Verifica si el usuario y la contraseña son correctos."""
     data = cargar_datos()
     return any(
         u["usuario"] == usuario and bcrypt.checkpw(contrasena.encode(), u["contrasena"].encode())
         for u in data["usuarios"]
     )
 
+
 def es_contrasena_segura(contra: str) -> bool:
-    """Comprueba si una contraseña cumple los requisitos de seguridad."""
     reglas = [
         (len(contra) >= 8, "Debe tener al menos 8 caracteres"),
         (re.search(r"[A-Z]", contra), "Debe contener al menos una mayúscula"),
@@ -61,8 +62,8 @@ def es_contrasena_segura(contra: str) -> bool:
     ]
     return all(condicion for condicion, _ in reglas)
 
+
 def cambiar_contrasena_usuario(usuario: str, nueva: str) -> None:
-    """Cambia la contraseña de un usuario, validando requisitos si es la por defecto."""
     if es_contrasena_por_defecto(usuario) and not es_contrasena_segura(nueva):
         raise ValueError("La nueva contraseña no cumple con los requisitos mínimos de seguridad.")
 
@@ -74,8 +75,8 @@ def cambiar_contrasena_usuario(usuario: str, nueva: str) -> None:
             return
     raise ValueError("Usuario no encontrado.")
 
+
 def es_contrasena_por_defecto(usuario: str) -> bool:
-    """Comprueba si la contraseña de un usuario es la de defecto."""
     data = cargar_datos()
     for u in data["usuarios"]:
         if u["usuario"] == usuario:
