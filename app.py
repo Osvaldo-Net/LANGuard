@@ -321,47 +321,45 @@ def escanear_red():
                             enviar_telegram(mac, ip, fabricante)
                             registro["notificado"] = True
 
-        # -------------------------------
-        # Comparar con tabla ARP
-        # -------------------------------
-        dispositivos_arp = []
-        try:
-            red_local = ipaddress.IPv4Network(obtener_red_local(),
-                                              strict=False)
-           salida_arp = subprocess.check_output(["ip", "neigh", "show"], timeout=5).decode()
+# -------------------------------
+# Comparar con tabla ARP
+# -------------------------------
+dispositivos_arp = []
+try:
+    red_local = ipaddress.IPv4Network(obtener_red_local(), strict=False)
+    salida_arp = subprocess.check_output(["ip", "neigh", "show"], timeout=5).decode()
 
-for linea in salida_arp.splitlines():
-    # Solo procesar si está en estado REACHABLE
-    if "REACHABLE" not in linea.upper():
-        continue
-
-    match = re.match(
-        r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})",
-        linea, re.I
-    )
-    if match:
-        ip_arp, mac_arp = match.groups()
-        try:
-            if ipaddress.IPv4Address(ip_arp) not in red_local:
-                continue
-        except ValueError:
+    for linea in salida_arp.splitlines():
+        # Solo procesar si está en estado REACHABLE
+        if "REACHABLE" not in linea.upper():
             continue
 
-        mac_arp = mac_arp.lower()
-        fabricante_arp = obtener_fabricante(mac_arp)
-        dispositivos_arp.append({
-            "ip": ip_arp,
-            "mac": mac_arp,
-            "fabricante": fabricante_arp,
-            "confiable": mac_arp in macs_confiables,
-            "nombre": NOMBRES_DISPOSITIVOS.get(mac_arp)
-        })
+        match = re.match(
+            r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})",
+            linea, re.I
+        )
+        if match:
+            ip_arp, mac_arp = match.groups()
+            try:
+                if ipaddress.IPv4Address(ip_arp) not in red_local:
+                    continue
+            except ValueError:
+                continue
+
+            mac_arp = mac_arp.lower()
+            fabricante_arp = obtener_fabricante(mac_arp)
+            dispositivos_arp.append({
+                "ip": ip_arp,
+                "mac": mac_arp,
+                "fabricante": fabricante_arp,
+                "confiable": mac_arp in macs_confiables,
+                "nombre": NOMBRES_DISPOSITIVOS.get(mac_arp)
+            })
+
+except Exception as e:
+    print(f"[!] Error obteniendo tabla ARP con ip neigh: {e}")
 
 
-        except Exception as e:
-            print(f"[!] Error obteniendo tabla ARP con ip neigh: {e}")
-
-        # Combinar resultados
         macs_nmap = {d["mac"] for d in dispositivos_nmap}
         macs_arp = {d["mac"] for d in dispositivos_arp}
         solo_arp = [d for d in dispositivos_arp if d["mac"] not in macs_nmap]
