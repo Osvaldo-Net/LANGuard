@@ -332,6 +332,9 @@ def escanear_red():
                                                  timeout=5).decode()
 
             for linea in salida_arp.splitlines():
+    		if "REACHABLE" not in linea.upper():
+        	continue
+
                 match = re.match(
                     r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})",
                     linea, re.I)
