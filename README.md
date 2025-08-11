@@ -2,9 +2,13 @@
 
 ![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5)
 
-Aplicación web autohospedada con funciones de escaneo avanzado de tu red LAN.
+Aplicación web autohospedada para escaneo y monitoreo avanzado de tu red LAN.
 
-Con esta aplicación puedes detectar accesos no autorizados y determinar el nivel de confianza de cada dispositivo conectado.
+Esta herramienta permite detectar accesos no autorizados en tiempo real, marcando cada dispositivo como confiable o no confiable según la configuración que definas.
+Si se detecta un dispositivo no confiable, la aplicación envía notificaciones automáticas por Telegram para alertarte de forma inmediata.
+
+Integra el poder de Nmap y ARP para una detección más precisa, sin necesidad de seleccionar manualmente la interfaz de red, ya que identifica automáticamente el segmento de red del servidor donde se ejecuta el servicio.
+Además, mantiene un historial de detecciones, permite asignar nombres personalizados a dispositivos, y ofrece una interfaz moderna y adaptable para que puedas administrar y supervisar tu red de forma sencilla y visualmente atractiva.
 
 ---
 
