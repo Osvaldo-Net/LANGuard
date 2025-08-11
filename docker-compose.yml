@@ -2,6 +2,8 @@ services:
   LANGuard:
     container_name: LANGuard
     image: netosvaltools/languard:latest
+    user: "1000:1000"
+    #Usar ID de usuario según conveniencia 
     environment:
       TELEGRAM_BOT_TOKEN: "tu_bot_token"
       TELEGRAM_CHAT_ID: "tu_chat_id"
