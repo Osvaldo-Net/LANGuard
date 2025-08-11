@@ -25,19 +25,19 @@ openssl rand -hex 32
 
 Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **5555**.
 
-![Acceso a la interfaz](https://github.com/user-attachments/assets/203e2456-0847-4d64-a6f4-24fcbdf60eae)
+![Acceso a la interfaz](https://github.com/user-attachments/assets/fac17760-0030-457e-83ad-d0fb8da1ed0a)
 
-![Cambio de contraseña](https://github.com/user-attachments/assets/d2a7e46c-271e-4138-822c-c19f7e8bbb0e)
+![Cambio de credenciales](https://github.com/user-attachments/assets/30136b9c-2336-4783-8a8b-423487348bbd)
 
 
 ---
 
 ## 🧭 Panel Principal
 
-![Panel principal 1](https://github.com/user-attachments/assets/1eae97fb-f181-482a-8cc2-354a4d4949be)
+![Panel principal 1](https://github.com/user-attachments/assets/8bd99ff0-2a54-4375-b52d-bd9748121fb8)
 
 
-![Panel principal 2](https://github.com/user-attachments/assets/c7e1a0a0-5d63-4f78-ab9b-859b589b643f)
+![Panel principal 2](https://github.com/user-attachments/assets/3fac3450-ccb4-46ef-9eea-d307f3ede8f4)
 
 ---
 
@@ -45,7 +45,7 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 LANGuard cuenta con una opción para cambiar al modo oscuro.
 
-![Modo oscuro](https://github.com/user-attachments/assets/878674a3-4a31-49ef-a382-e4563a442743)
+![Modo oscuro](https://github.com/user-attachments/assets/d45ac182-0e15-4366-a732-a6e0110448be)
 
 ---
 
@@ -53,7 +53,7 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
-![Escaneo de puertos](https://github.com/user-attachments/assets/8c34985e-c0c8-4699-9c58-84d011256855)
+![Escaneo de puertos](https://github.com/user-attachments/assets/fa29b5ac-fa7e-4a7b-b9bb-10056a8936f6)
 
 ---
 
@@ -67,7 +67,7 @@ Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utili
 
 Esto te permite ubicar rápidamente un dispositivo específico entre todos los conectados.
 
-![Filtrado de dispositivos](https://github.com/user-attachments/assets/47f5df60-401b-4206-bbad-ed931e71d958)
+![Filtrado de dispositivos](https://github.com/user-attachments/assets/a1cb2f61-4c28-4e9b-a1a0-af27de16ab44)
 
 ---
 
