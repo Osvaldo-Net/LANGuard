@@ -118,12 +118,12 @@
                     class="w-full bg-gradient-to-r from-accent to-highlight hover:shadow-accent/50 text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 flex justify-center items-center gap-2"
                 >
                     <i data-lucide="key-round" class="w-5 h-5"></i>
-                    Guardar Cambios
+                    {{ get_text('auth.save_changes') }}
                 </button>
             </form>
 
             <footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">
-                © 2025 LANGuard. Todos los derechos reservados.
+                {{ get_text('common.copyright') }}
             </footer>
         </div>
 

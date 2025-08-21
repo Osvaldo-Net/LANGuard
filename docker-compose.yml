@@ -1,18 +1,18 @@
 services:
-  LANGuard:
-    container_name: LANGuard
-    image: netosvaltools/languard:latest
+  languard:
+    container_name: languard
+    build: .
     environment:
-      TELEGRAM_BOT_TOKEN: "tu_bot_token"
-      TELEGRAM_CHAT_ID: "tu_chat_id"
-      #openssl rand -hex 32
-      SECRET_KEY: "tu_llave_secreta"
+      TELEGRAM_BOT_TOKEN: "7079900439:AAGC3lri1OK8qTjyiXE_Vpx8eePVchtuMbQ"
+      TELEGRAM_CHAT_ID: "Drenlia_bot"
+      SECRET_KEY: "6561b63a51a080437efc811026e4ef15a0614dde80b69f8a85910142d6985edb"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./data:/app/data
     user: "1000:1000"
-    #Usar ID de usuario según conveniencia 
     network_mode: "host"
     cap_add:
       - NET_RAW
+      - NET_ADMIN
     restart: unless-stopped
+    privileged: true

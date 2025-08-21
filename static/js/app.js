@@ -1,6 +1,90 @@
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const iconoTema = document.getElementById("icono-tema");
+  
+  // Language switching functionality
+  let currentLanguage = 'es';
+  let translations = {};
+  
+  // Translation function for JavaScript
+  function getText(key) {
+    // Get translations from the page data
+    const pageTranslations = window.pageTranslations || {};
+    const keys = key.split('.');
+    let value = pageTranslations;
+    
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        // Fallback to Spanish if key not found
+        return key;
+      }
+    }
+    
+    return typeof value === 'string' ? value : key;
+  }
+  
+  // Load current language from session
+  async function loadCurrentLanguage() {
+    try {
+      const response = await fetch('/api/language');
+      const data = await response.json();
+      if (data.success !== false) {
+        currentLanguage = data.current;
+        updateLanguageDisplay();
+      }
+    } catch (error) {
+      console.error('Error loading language:', error);
+    }
+  }
+  
+  // Change language
+  async function changeLanguage(langCode) {
+    try {
+      const response = await fetch(`/api/language/${langCode}`);
+      const data = await response.json();
+      if (data.success) {
+        currentLanguage = langCode;
+        sessionStorage.setItem('language', langCode);
+        updateLanguageDisplay();
+        location.reload(); // Reload page to apply new language
+      }
+    } catch (error) {
+      console.error('Error changing language:', error);
+    }
+  }
+  
+  // Update language display
+  function updateLanguageDisplay() {
+    const flagElement = document.getElementById('current-language-flag');
+    const nameElement = document.getElementById('current-language-name');
+    
+    if (flagElement && nameElement) {
+      // Get language info from the page data
+      const languageConfig = window.languageConfig || {};
+      const currentLangInfo = languageConfig.supported_languages?.[currentLanguage];
+      
+      if (currentLangInfo) {
+        flagElement.textContent = currentLangInfo.flag;
+        nameElement.textContent = currentLangInfo.name;
+      }
+    }
+  }
+  
+  // Toggle language dropdown
+  window.toggleLanguageDropdown = function() {
+    const menu = document.getElementById('language-menu');
+    if (menu) {
+      menu.classList.toggle('hidden');
+    }
+  }
+  
+  // Change language function (global)
+  window.changeLanguage = changeLanguage;
+  
+  // Load language on startup
+  loadCurrentLanguage();
 
 
   function aplicarTemaDesdeStorage() {
@@ -77,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
         <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-        Agregando MAC...
+        ${getText('notifications.adding_mac')}
       </span>
     `, "info");
 
@@ -105,22 +189,62 @@ document.addEventListener("DOMContentLoaded", () => {
           </span>
         `, "error");
       }
-    } catch (error) {
-      mostrarNotificacion(`
-        <span class="inline-flex items-center gap-2">
-          <i data-lucide='x-circle' class='w-4 h-4'></i>
-          Error de conexión
-        </span>
-      `, "error");
-    }
+          } catch (error) {
+        mostrarNotificacion(`
+          <span class="inline-flex items-center gap-2">
+            <i data-lucide='x-circle' class='w-4 h-4'></i>
+            ${getText('notifications.connection_error')}
+          </span>
+        `, "error");
+      }
   });
 
 
-  window.eliminarMAC = function (mac) {
+  window.agregarConfianza = function (mac) {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
         <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-        Eliminando MAC...
+        ${getText('notifications.adding_mac')}
+      </span>
+    `, "info");
+
+    fetch("/api/agregar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mac })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='check' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "success");
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='x-circle' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "error");
+        }
+      })
+      .catch(() => mostrarNotificacion(`
+        <span class="inline-flex items-center gap-2">
+          <i data-lucide='x-circle' class='w-4 h-4'></i>
+          ${getText('notifications.connection_error')}
+        </span>
+      `, "error"));
+  };
+
+  window.quitarConfianza = function (mac) {
+    mostrarNotificacion(`
+      <span class="inline-flex items-center gap-2">
+        <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
+        ${getText('notifications.removing_mac')}
       </span>
     `, "info");
 
@@ -151,7 +275,47 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(() => mostrarNotificacion(`
         <span class="inline-flex items-center gap-2">
           <i data-lucide='x-circle' class='w-4 h-4'></i>
-          Error de conexión
+          ${getText('notifications.connection_error')}
+        </span>
+      `, "error"));
+  };
+
+  window.eliminarMAC = function (mac) {
+    mostrarNotificacion(`
+      <span class="inline-flex items-center gap-2">
+        <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
+        ${getText('notifications.removing_mac')}
+      </span>
+    `, "info");
+
+    fetch("/api/eliminar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mac })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='check' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "success");
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          mostrarNotificacion(`
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide='x-circle' class='w-4 h-4'></i>
+              ${data.message}
+            </span>
+          `, "error");
+        }
+      })
+      .catch(() => mostrarNotificacion(`
+        <span class="inline-flex items-center gap-2">
+          <i data-lucide='x-circle' class='w-4 h-4'></i>
+          ${getText('notifications.connection_error')}
         </span>
       `, "error"));
   };
@@ -167,8 +331,8 @@ document.addEventListener("DOMContentLoaded", () => {
           class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm 
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                  text-sm w-40 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
-<button class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
-  Guardar
+        <button class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
+  ${getText('common.save')}
 </button>
 
       </div>
@@ -189,12 +353,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(r => r.json())
         .then(data => {
           if (data.success) {
-            mostrarNotificacion(`
-              <span class="flex items-center gap-2">
-                <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
-                <span>Nombre guardado</span>
-              </span>
-            `, "success");
+                         mostrarNotificacion(`
+               <span class="flex items-center gap-2">
+                 <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
+                 <span>${getText('notifications.name_saved')}</span>
+               </span>
+             `, "success");
 
             fila.innerHTML = `
               <span onclick="editarNombre('${mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
@@ -206,9 +370,9 @@ document.addEventListener("DOMContentLoaded", () => {
             mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
           }
         })
-        .catch(() => {
-          mostrarNotificacion("<i data-lucide='x-circle' class='w-4 h-4'></i> Error al guardar nombre", "error");
-        });
+                 .catch(() => {
+           mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${getText('notifications.error')}`, "error");
+         });
     });
   };
 
@@ -235,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mostrarNotificacion(`
       <span class="inline-flex items-center gap-2">
         <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-        Escaneando red...
+        ${getText('notifications.scanning_network')}
       </span>
     `, "info");
 
@@ -246,7 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
           mostrarNotificacion(`
             <span class="inline-flex items-center gap-2">
               <i data-lucide="check" class="w-4 h-4 text-green-700"></i>
-              Escaneo completo
+              ${getText('notifications.scan_complete')}
             </span>
           `, "success");
           actualizarTabla(data);
@@ -256,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarNotificacion(`
           <span class="inline-flex items-center gap-2">
             <i data-lucide="x-circle" class="w-4 h-4 text-red-700"></i>
-            Error al escanear
+            ${getText('notifications.scan_error')}
           </span>
         `, "error");
       });
@@ -270,7 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
     contenido.innerHTML = `
       <div class="flex items-center gap-2 text-orange-800 dark:text-orange-400">
         <i data-lucide="loader" class="animate-spin w-4 h-4"></i>
-        Escaneando puertos en <strong>${ip}</strong>...
+        ${getText('ports.scanning')} <strong>${ip}</strong>...
       </div>
     `;
     modal.classList.remove("hidden");
@@ -286,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.success) {
           if (data.puertos.length === 0) {
             contenido.innerHTML = `
-              <p class="text-gray-600 dark:text-gray-300 text-center">No se encontraron puertos abiertos en <strong>${ip}</strong>.</p>
+              <p class="text-gray-600 dark:text-gray-300 text-center">${getText('ports.no_ports')} <strong>${ip}</strong>.</p>
             `;
           } else {
             const lista = data.puertos.map(p => `<li>${p.puerto} (${p.servicio})</li>`).join('');
@@ -301,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lucide.createIcons();
       })
       .catch(() => {
-        contenido.innerHTML = `<p class="text-red-600 dark:text-red-400">Error al consultar puertos para ${ip}</p>`;
+        contenido.innerHTML = `<p class="text-red-600 dark:text-red-400">${getText('notifications.error')} ${ip}</p>`;
         lucide.createIcons();
       });
   };
@@ -359,18 +523,18 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="px-4 py-3">
           ${d.confiable
             ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                Confiable
-              </span>`
-            : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
-                <i data-lucide="x-circle" class="w-4 h-4"></i>
-                No confiable
-              </span>`}
-          <br/>
-          <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-            <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-            Ver puertos
-          </button>
+                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
+                 ${getText('devices.status.trusted')}
+               </span>`
+             : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
+                 <i data-lucide="x-circle" class="w-4 h-4"></i>
+                 ${getText('devices.status.untrusted')}
+               </span>`}
+           <br/>
+           <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
+             <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+             ${getText('devices.actions.view_ports')}
+           </button>
         </td>
       `;
 

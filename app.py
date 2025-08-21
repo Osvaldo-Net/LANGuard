@@ -17,6 +17,70 @@ import requests
 import logging
 
 # -------------------------------
+# Internationalization
+# -------------------------------
+def load_translations():
+    """Load all translation files"""
+    translations = {}
+    i18n_dir = "i18n"
+    
+    try:
+        # Load language configuration
+        with open(os.path.join(i18n_dir, "config.json"), "r", encoding="utf-8") as f:
+            config = json.load(f)
+        
+        # Load each language file
+        for lang_code in config["supported_languages"]:
+            lang_file = os.path.join(i18n_dir, f"{lang_code}.json")
+            if os.path.exists(lang_file):
+                with open(lang_file, "r", encoding="utf-8") as f:
+                    translations[lang_code] = json.load(f)
+        
+        return translations, config
+    except Exception as e:
+        print(f"[!] Error loading translations: {e}")
+        return {}, {}
+
+def get_text(key, lang="es"):
+    """Get translated text for a given key and language"""
+    try:
+        keys = key.split('.')
+        value = TRANSLATIONS.get(lang, TRANSLATIONS.get("es", {}))
+        
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
+            else:
+                # Fallback to Spanish if key not found
+                value = TRANSLATIONS.get("es", {})
+                for k_fallback in keys:
+                    if isinstance(value, dict) and k_fallback in value:
+                        value = value[k_fallback]
+                    else:
+                        return key  # Return key if translation not found
+        
+        return value if isinstance(value, str) else key
+    except Exception:
+        return key
+
+def get_user_language():
+    """Get user's preferred language from session or request"""
+    if 'language' in session:
+        return session['language']
+    
+    # Try to detect from Accept-Language header
+    accept_lang = request.headers.get('Accept-Language', '')
+    if accept_lang:
+        for lang in ['en', 'fr', 'es']:
+            if lang in accept_lang.lower():
+                return lang
+    
+    return "es"  # Default to Spanish
+
+# Load translations at startup
+TRANSLATIONS, LANGUAGE_CONFIG = load_translations()
+
+# -------------------------------
 # Rutas y configuraciones
 # -------------------------------
 DATA_PATH = "data"
@@ -93,6 +157,25 @@ app.secret_key = SECRET_KEY
 
 iniciar_archivo_usuarios()
 
+# -------------------------------
+# Language switching
+# -------------------------------
+@app.route('/api/language/<lang>')
+def change_language(lang):
+    if lang in LANGUAGE_CONFIG["supported_languages"]:
+        session['language'] = lang
+        return jsonify({"success": True, "language": lang})
+    return jsonify({"success": False, "message": "Language not supported"}), 400
+
+@app.route('/api/language')
+def get_language():
+    current_lang = get_user_language()
+    return jsonify({
+        "current": current_lang,
+        "supported": LANGUAGE_CONFIG["supported_languages"],
+        "default": LANGUAGE_CONFIG["default_language"]
+    })
+
 
 # -------------------------------
 # Seguridad de login
@@ -153,9 +236,13 @@ def login():
             else:
                 error = f"Credenciales incorrectas. Intentos restantes: {restantes}"
 
+    current_lang = get_user_language()
     return render_template('login.html',
                            error=error,
-                           tiempo_restante=tiempo_restante)
+                           tiempo_restante=tiempo_restante,
+                           current_language=current_lang,
+                           language_config=LANGUAGE_CONFIG,
+                           get_text=lambda key: get_text(key, current_lang))
 
 
 # -------------------------------
@@ -190,7 +277,12 @@ def cambiar_credenciales():
             except ValueError as e:
                 error = str(e)
 
-    return render_template('cambiar_credenciales.html', error=error)
+    current_lang = get_user_language()
+    return render_template('cambiar_credenciales.html', 
+                           error=error,
+                           current_language=current_lang,
+                           language_config=LANGUAGE_CONFIG,
+                           get_text=lambda key: get_text(key, current_lang))
 
 
 # -------------------------------
@@ -220,22 +312,48 @@ def logout():
 # -------------------------------
 # Obtener fabricante
 # -------------------------------
-def obtener_fabricante(mac):
+def obtener_fabricante(mac, lang="es"):
     oui = mac.lower().replace(":", "")[:6]
     if oui in VENDOR_CACHE:
-        return VENDOR_CACHE[oui]
-    try:
-        resp = requests.get(f"https://api.maclookup.app/v2/macs/{mac}",
-                            timeout=5)
-        fabricante = resp.json().get(
-            "company",
-            "Desconocido") if resp.status_code == 200 else "Desconocido"
-    except Exception:
-        fabricante = "Desconocido"
-    VENDOR_CACHE[oui] = fabricante
-    guardar_json(RUTA_CACHE_VENDORS, VENDOR_CACHE)
-    return fabricante
+        fabricante = VENDOR_CACHE[oui]
+    else:
+        try:
+            resp = requests.get(f"https://api.maclookup.app/v2/macs/{mac}",
+                                timeout=5)
+            fabricante = resp.json().get(
+                "company",
+                "Desconocido") if resp.status_code == 200 else "Desconocido"
+        except Exception:
+            fabricante = "Desconocido"
+        VENDOR_CACHE[oui] = fabricante
+        guardar_json(RUTA_CACHE_VENDORS, VENDOR_CACHE)
+    
+    # Translate vendor names based on language
+    if lang == "en":
+        if fabricante == "Desconocido":
+            return "Unknown"
+        return fabricante
+    elif lang == "fr":
+        if fabricante == "Desconocido":
+            return "Inconnu"
+        return fabricante
+    else:
+        return fabricante  # Spanish (default)
 
+
+# -------------------------------
+# Traducir fabricante para frontend
+# -------------------------------
+def traducir_fabricante(fabricante, lang="es"):
+    """Translate vendor names for frontend display"""
+    if fabricante == "Desconocido":
+        if lang == "en":
+            return "Unknown"
+        elif lang == "fr":
+            return "Inconnu"
+        else:
+            return "Desconocido"
+    return fabricante
 
 # -------------------------------
 # Obtener red local
@@ -285,7 +403,7 @@ def escanear_red():
                 mac_match = re.search(r"MAC Address: ([\w:]+)", linea)
                 if mac_match:
                     mac = mac_match.group(1).lower().replace('-', ':')
-                    fabricante = obtener_fabricante(mac)
+                    fabricante = obtener_fabricante(mac, "es")  # Use Spanish for background scanning
                     confiable = mac in macs_confiables
                     dispositivos_nmap.append({
                         "ip": ip,
@@ -341,7 +459,7 @@ def escanear_red():
                         continue
 
                     mac_arp = mac_arp.lower()
-                    fabricante_arp = obtener_fabricante(mac_arp)
+                    fabricante_arp = obtener_fabricante(mac_arp, "es")  # Use Spanish for background scanning
                     dispositivos_arp.append({
                         "ip": ip_arp,
                         "mac": mac_arp,
@@ -407,10 +525,23 @@ def api_scan():
 def index():
     if 'usuario' not in session:
         return redirect(url_for('login'))
+    
+    current_lang = get_user_language()
+    
+    # Translate vendor names for frontend display
+    dispositivos_traducidos = []
+    for dispositivo in CACHE_RESULTADO:
+        dispositivo_traducido = dispositivo.copy()
+        dispositivo_traducido['fabricante'] = traducir_fabricante(dispositivo['fabricante'], current_lang)
+        dispositivos_traducidos.append(dispositivo_traducido)
+    
     return render_template("index.html",
-                           dispositivos=CACHE_RESULTADO,
+                           dispositivos=dispositivos_traducidos,
                            lista_confiables=LISTA_CONFIABLES,
-                           nombres_dispositivos=NOMBRES_DISPOSITIVOS)
+                           nombres_dispositivos=NOMBRES_DISPOSITIVOS,
+                           current_language=current_lang,
+                           language_config=LANGUAGE_CONFIG,
+                           get_text=lambda key: get_text(key, current_lang))
 
 
 # -------------------------------

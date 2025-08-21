@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "title": "LAN Guard",
+    "scan": "Escanear",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "login_button": "Entrar",
+    "login_success": "Inicio de sesión exitoso",
+    "login_failed": "Credenciales incorrectas",
+    "too_many_attempts": "Demasiados intentos fallidos",
+    "ip_blocked": "Tu IP ha sido bloqueada",
+    "change_credentials": "Cambiar credenciales",
+    "new_username": "Nuevo usuario",
+    "new_password": "Nueva contraseña",
+    "confirm_password": "Confirmar contraseña",
+    "passwords_dont_match": "Las contraseñas no coinciden",
+    "password_requirements": "La nueva contraseña no cumple con los requisitos de seguridad",
+    "save_changes": "Guardar cambios",
+    "credentials_changed": "Credenciales actualizadas correctamente"
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "subtitle": "Escaneo avanzado de red LAN: detecta accesos no autorizados y evalúa la confianza de cada dispositivo conectado.",
+    "devices_count": "Dispositivos detectados",
+    "scan_now": "Escanear ahora",
+    "last_scan": "Último escaneo",
+    "dark_mode": "Modo oscuro",
+    "light_mode": "Modo claro"
+  },
+  "devices": {
+    "table": {
+      "ip": "Dirección IP",
+      "mac": "Dirección MAC",
+      "name": "Nombre",
+      "vendor": "Fabricante",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "trusted": "Confiable",
+      "untrusted": "No confiable"
+    },
+    "actions": {
+      "view_ports": "Ver puertos",
+      "edit_name": "Editar nombre",
+      "add_trusted": "Agregar a confiables",
+      "remove_trusted": "Quitar de confiables",
+      "save_name": "Guardar",
+      "cancel": "Cancelar"
+    },
+    "filters": {
+      "filter_by_name": "Filtrar por nombre",
+      "filter_by_mac": "Filtrar por MAC",
+      "filter_by_status": "Filtrar por estado",
+      "all": "Todos",
+      "trusted": "Confiable",
+      "untrusted": "No confiable"
+    }
+  },
+  "ports": {
+    "modal_title": "Puertos abiertos",
+    "scanning": "Escaneando puertos en",
+    "no_ports": "No se encontraron puertos abiertos en",
+    "ports_found": "Puertos encontrados",
+    "port": "Puerto",
+    "service": "Servicio"
+  },
+  "notifications": {
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información",
+    "mac_added": "MAC agregada correctamente",
+    "mac_removed": "MAC eliminada correctamente",
+    "name_saved": "Nombre guardado",
+    "scan_complete": "Escaneo completo",
+    "scan_error": "Error al escanear",
+    "connection_error": "Error de conexión",
+    "adding_mac": "Agregando MAC...",
+    "removing_mac": "Eliminando MAC...",
+    "scanning_network": "Escaneando red...",
+    "scanning_ports": "Escaneando puertos..."
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "refresh": "Actualizar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpiar",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "Desconocido",
+    "not_applicable": "N/A",
+    "copyright": "© 2025 LANGuard. Todos los derechos reservados."
+  },
+  "time": {
+    "now": "Ahora",
+    "ago": "hace",
+    "seconds": "segundos",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "días"
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "usuarios": [
+        {
+            "usuario": "daniel@drenlia.com",
+            "contrasena": "$2b$12$x55KCaOeI3Iss0ite3DVPeHCdc9nEpRADKNdBM3OT9ydfo1h8Lcmm",
+            "rol": "admin"
+        }
+    ]
+}

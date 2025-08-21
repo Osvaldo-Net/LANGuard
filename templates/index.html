@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-	<title>LAN Guard</title>
+	<title>{{ get_text('nav.title') }}</title>
 	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -29,6 +29,12 @@
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
+	<script>
+		// Pass language configuration to JavaScript
+		window.languageConfig = {{ language_config | tojson }};
+		window.currentLanguage = "{{ current_language }}";
+		window.pageTranslations = {{ get_text('') | tojson }};
+	</script>
 	<style>
 		@keyframes fade-in {
 				      from {
@@ -78,10 +84,7 @@
 	<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70 h-20">
 		<div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
 			<a href="/" class="flex items-center">
-				<span class="text-3xl font-bold ml-2 transition-colors duration-300" style="font-family: 'Poppins', sans-serif;">
-    <span class="text-accent">LAN</span>
-				<span class="text-gray-800 dark:text-white">Guard</span>
-				</span>
+									<span class="text-3xl font-bold ml-2 transition-colors duration-300" style="font-family: 'Poppins', sans-serif;"><span class="text-accent">LAN</span> <span class="text-gray-800 dark:text-white">Guard</span></span>
 			</a>
 
 
@@ -91,11 +94,28 @@
       </button>
 
 			<div class="hidden sm:flex items-center gap-3" id="menu-desktop">
+				<!-- Language Switcher -->
+				<div class="relative">
+					<button id="language-dropdown" onclick="toggleLanguageDropdown()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg shadow-sm flex items-center gap-2 text-sm transition hover:scale-105 focus:ring-2 focus:ring-highlight focus:outline-none">
+						<span id="current-language-flag">{{ language_config.supported_languages[current_language].flag }}</span>
+						<span id="current-language-name">{{ language_config.supported_languages[current_language].name }}</span>
+						<i data-lucide="chevron-down" class="w-4 h-4"></i>
+					</button>
+					<div id="language-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+						{% for lang_code, lang_info in language_config.supported_languages.items() %}
+						<button onclick="changeLanguage('{{ lang_code }}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors {% if lang_code == current_language %}bg-accent text-white{% endif %}">
+							<span class="text-lg">{{ lang_info.flag }}</span>
+							<span>{{ lang_info.name }}</span>
+						</button>
+						{% endfor %}
+					</div>
+				</div>
+				
 				<button onclick="escanearAhora()" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105 focus:ring-2 focus:ring-highlight focus:outline-none animate-pulse-glow">
-          <i data-lucide="scan" class="w-5 h-5"></i><span>Escanear</span>
+          <i data-lucide="scan" class="w-5 h-5"></i><span>{{ get_text('nav.scan') }}</span>
         </button>
 				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
-					<i data-lucide="log-out"></i><span>Cerrar sesión</span>
+					<i data-lucide="log-out"></i><span>{{ get_text('nav.logout') }}</span>
 				</a>
 				<button onclick="toggleDarkMode()" class="text-highlight hover:text-accent flex items-center transition">
           <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
@@ -106,15 +126,15 @@
 
 		<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
 			<button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
-        <i data-lucide="scan"></i> Escanear
+        <i data-lucide="scan"></i> {{ get_text('nav.scan') }}
       </button>
 			<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm">
-				<i data-lucide="log-out"></i> Cerrar sesión
+				<i data-lucide="log-out"></i> {{ get_text('nav.logout') }}
 			</a>
 			<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent">
         <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
         <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
-        Cambiar tema
+        {{ get_text('dashboard.dark_mode') }}
       </button>
 		</div>
 	</nav>
@@ -122,13 +142,13 @@
 	<main class="max-w-7xl mx-auto px-4 py-10">
 		<header class="text-center mb-10 max-w-3xl mx-auto animate-fade-in">
 			<p class="text-2xl font-semibold text-gray-700 dark:text-gray-200 leading-relaxed">
-				Escaneo avanzado de red LAN: <span class="text-accent">detecta accesos no autorizados</span> y evalúa la <span class="text-highlight">confianza</span> de cada dispositivo conectado.
+				{{ get_text('dashboard.subtitle') }}
 			</p>
 		</header>
 
 		<div class="mb-4 flex flex-wrap items-center justify-between gap-4">
 			<p class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-				<i data-lucide="list" class="w-5 h-5 text-accent"></i> Dispositivos detectados: <strong id="contador-dispositivos">{{ dispositivos|length }}</strong>
+				<i data-lucide="list" class="w-5 h-5 text-accent"></i> {{ get_text('dashboard.devices_count') }}: <strong id="contador-dispositivos">{{ dispositivos|length }}</strong>
 			</p>
 			<div class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
 				<i data-lucide="clock" class="w-5 h-5 text-accent"></i>
@@ -137,12 +157,12 @@
 		</div>
 
 		<div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-			<input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
-			<input type="text" id="filtro-mac" placeholder="Filtrar por MAC" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+			<input type="text" id="filtro-nombre" placeholder="{{ get_text('devices.filters.filter_by_name') }}" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+			<input type="text" id="filtro-mac" placeholder="{{ get_text('devices.filters.filter_by_mac') }}" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
 			<select id="filtro-confianza" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
-        <option value="">Todos</option>
-        <option value="confiable">Confiables</option>
-        <option value="no-confiable">No confiables</option>
+        <option value="">{{ get_text('devices.filters.all') }}</option>
+        <option value="confiable">{{ get_text('devices.filters.trusted') }}</option>
+        <option value="no-confiable">{{ get_text('devices.filters.untrusted') }}</option>
       </select>
 		</div>
 
@@ -151,11 +171,11 @@
 				<table class="min-w-[640px] w-full table-auto text-sm">
 					<thead class="sticky top-0 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 z-10">
 						<tr>
-							<th class="px-4 py-3 text-left font-medium"><i data-lucide="ip" class="inline-block w-4 h-4"></i> IP</th>
-							<th class="px-4 py-3 text-left font-medium"><i data-lucide="hash" class="inline-block w-4 h-4"></i> MAC</th>
-							<th class="px-4 py-3 text-left font-medium"><i data-lucide="tag" class="inline-block w-4 h-4"></i> Nombre</th>
-							<th class="px-4 py-3 text-left font-medium"><i data-lucide="factory" class="inline-block w-4 h-4"></i> Fabricante</th>
-							<th class="px-4 py-3 text-left font-medium"><i data-lucide="shield" class="inline-block w-4 h-4"></i> Confianza</th>
+							<th class="px-4 py-3 text-left font-medium"><i data-lucide="ip" class="inline-block w-4 h-4"></i> {{ get_text('devices.table.ip') }}</th>
+							<th class="px-4 py-3 text-left font-medium"><i data-lucide="hash" class="inline-block w-4 h-4"></i> {{ get_text('devices.table.mac') }}</th>
+							<th class="px-4 py-3 text-left font-medium"><i data-lucide="tag" class="inline-block w-4 h-4"></i> {{ get_text('devices.table.name') }}</th>
+							<th class="px-4 py-3 text-left font-medium"><i data-lucide="factory" class="inline-block w-4 h-4"></i> {{ get_text('devices.table.vendor') }}</th>
+							<th class="px-4 py-3 text-left font-medium"><i data-lucide="shield" class="inline-block w-4 h-4"></i> {{ get_text('devices.table.status') }}</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
@@ -173,11 +193,19 @@
 							<td class="px-4 py-3">
 								{% if d.confiable %}
 								<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
-                  <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
-                </span> {% else %}
+                  <i data-lucide="check-circle" class="w-4 h-4"></i> {{ get_text('devices.status.trusted') }}
+                </span>
+								<button onclick="quitarConfianza('{{ d.mac }}')" class="ml-2 inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                  <i data-lucide="x" class="w-3 h-3"></i> {{ get_text('devices.actions.remove_trusted') }}
+                </button>
+								{% else %}
 								<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
-                  <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
-                </span> {% endif %}
+                  <i data-lucide="x-circle" class="w-4 h-4"></i> {{ get_text('devices.status.untrusted') }}
+                </span>
+								<button onclick="agregarConfianza('{{ d.mac }}')" class="ml-2 inline-flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                  <i data-lucide="check" class="w-3 h-3"></i> {{ get_text('devices.actions.add_trusted') }}
+                </button>
+								{% endif %}
 							</td>
 						</tr>
 						{% endfor %}
@@ -189,16 +217,16 @@
 		<div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
 			<div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-gray-800/60 animate-fade-in">
 				<h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-          <i data-lucide="plus"></i> Agregar MAC confiable
+          <i data-lucide="plus"></i> {{ get_text('devices.actions.add_trusted') }}
         </h2>
 				<form id="form-agregar" class="space-y-4">
 					<input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
-					<button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">Agregar</button>
+					<button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">{{ get_text('common.save') }}</button>
 				</form>
 			</div>
 			<div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-gray-800/60 animate-fade-in">
 				<h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-          <i data-lucide="check"></i> Dispositivos Confiables
+          <i data-lucide="check"></i> {{ get_text('devices.status.trusted') }}
         </h2>
 				<ul id="lista-macs" class="space-y-3 custom-scrollbar overflow-y-auto max-h-64">
 					{% for prefijo in lista_confiables %}
@@ -208,7 +236,7 @@
 							<span class="text-xs text-gray-500 dark:text-gray-400">{{ prefijo }}</span>
 						</div>
 						<button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-              <i data-lucide="trash-2"></i> Eliminar
+              <i data-lucide="trash-2"></i> {{ get_text('common.delete') }}
             </button>
 					</li>
 					{% endfor %}
@@ -230,7 +258,7 @@
   <span class="p-2 rounded-full bg-gradient-to-r from-accent to-highlight text-white shadow-md">
     <i data-lucide="server" class="w-5 h-5"></i>
   </span>
-  Puertos Abiertos
+  {{ get_text('ports.modal_title') }}
 </h2>
 
 			<div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
