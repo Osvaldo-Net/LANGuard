@@ -3,9 +3,9 @@ services:
     container_name: languard
     build: .
     environment:
-      TELEGRAM_BOT_TOKEN: "7079900439:AAGC3lri1OK8qTjyiXE_Vpx8eePVchtuMbQ"
-      TELEGRAM_CHAT_ID: "Drenlia_bot"
-      SECRET_KEY: "6561b63a51a080437efc811026e4ef15a0614dde80b69f8a85910142d6985edb"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      SECRET_KEY: ${SECRET_KEY}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./data:/app/data
