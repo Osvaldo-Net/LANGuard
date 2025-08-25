@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Iniciar Sesión | LANGuard</title>
+	<title>{{ get_text('auth.login') }} | {{ get_text('nav.title') }}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	<script src="https://cdn.tailwindcss.com"></script>
@@ -47,27 +47,27 @@
 
 		<div class="text-center space-y-1">
 			<h2 class="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
-				Bienvenido a <span class="text-accent">LANGuard</span>
+				{{ get_text('auth.login') }} <span class="text-accent">{{ get_text('nav.title') }}</span>
 			</h2>
-			<p class="text-sm text-gray-500 dark:text-gray-400">Protegiendo tu red de forma inteligente</p>
+			<p class="text-sm text-gray-500 dark:text-gray-400">{{ get_text('dashboard.subtitle') }}</p>
 		</div>
 
 		{% if error %}
 		<div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
 			<i data-lucide="alert-triangle" class="w-5 h-5"></i>
-			<span><strong class="font-semibold">Error:</strong> {{ error }}</span>
+			<span><strong class="font-semibold">{{ get_text('notifications.error') }}:</strong> {{ error }}</span>
 		</div>
 		{% endif %}
 
 		<form method="POST" class="space-y-4">
 
 			<div class="relative group">
-				<input type="text" name="usuario" placeholder="Usuario" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg">
+				<input type="text" name="usuario" placeholder="{{ get_text('auth.username') }}" required class="w-full p-3 pl-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg">
 				<i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent"></i>
 			</div>
 
 			<div class="relative group">
-				<input id="contrasena" type="password" name="contrasena" placeholder="Contraseña" required class="w-full p-3 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg">
+				<input id="contrasena" type="password" name="contrasena" placeholder="{{ get_text('auth.password') }}" required class="w-full p-3 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none focus:shadow-lg">
 				<i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent"></i>
 				<button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-gray-500 hover:text-accent">
 					<i id="icono-ojo" data-lucide="eye"></i>
@@ -75,12 +75,12 @@
 			</div>
 
 			<button type="submit" class="w-full bg-gradient-to-r from-accent to-highlight hover:shadow-accent/50 text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 flex justify-center items-center gap-2">
-				<i data-lucide="log-in" class="w-5 h-5"></i> Entrar
+				<i data-lucide="log-in" class="w-5 h5"></i> {{ get_text('auth.login_button') }}
 			</button>
 		</form>
 
 		<footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">
-			© 2025 LANGuard. Todos los derechos reservados.
+			{{ get_text('common.copyright') }}
 		</footer>
 
 	</div>

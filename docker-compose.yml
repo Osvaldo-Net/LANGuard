@@ -1,11 +1,10 @@
 services:
   languard:
-    container_name: LANGuard
-    image: netosvaltools/languard:latest
+    container_name: languard
+    build: .
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
-      #openssl rand -hex 32
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -16,3 +15,4 @@ services:
       - NET_RAW
       - NET_ADMIN
     restart: unless-stopped
+    privileged: true
