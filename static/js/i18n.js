@@ -1,5 +1,3 @@
-// i18n.js
-
 const translations = {
   es: {
     scan: "Escanear",
@@ -22,8 +20,8 @@ const translations = {
     scanning: "Escaneando red...",
     scanDone: "Escaneo completo",
     scanError: "Error al escanear",
-    scanningPorts: ip => `Escaneando puertos en <strong>${ip}</strong>...`,
-    noPorts: ip => `No se encontraron puertos abiertos en <strong>${ip}</strong>.`,
+    scanningPorts: (ip) => `Escaneando puertos en <strong>${ip}</strong>...`,
+    noPorts: (ip) => `No se encontraron puertos abiertos en <strong>${ip}</strong>.`,
     viewPorts: "Ver puertos",
     nameSaved: "Nombre guardado",
     addMac: "Agregando MAC...",
@@ -44,7 +42,7 @@ const translations = {
     adding: "Agregando MAC...",
     success: "MAC agregada con éxito",
     error: "Error al agregar la MAC",
-    eliminando: "Eliminando MAC..."
+    eliminando: "Eliminando MAC...",
   },
   en: {
     scan: "Scan",
@@ -67,8 +65,8 @@ const translations = {
     scanning: "Scanning network...",
     scanDone: "Scan complete",
     scanError: "Error while scanning",
-    scanningPorts: ip => `Scanning ports on <strong>${ip}</strong>...`,
-    noPorts: ip => `No open ports found on <strong>${ip}</strong>.`,
+    scanningPorts: (ip) => `Scanning ports on <strong>${ip}</strong>...`,
+    noPorts: (ip) => `No open ports found on <strong>${ip}</strong>.`,
     viewPorts: "View ports",
     nameSaved: "Name saved",
     addMac: "Adding MAC...",
@@ -89,8 +87,8 @@ const translations = {
     adding: "Adding MAC...",
     success: "MAC successfully added",
     error: "Failed to add MAC",
-    eliminando: "Deleting MAC..."
-  }
+    eliminando: "Deleting MAC...",
+  },
 };
 
 function t(key, ...args) {
@@ -100,22 +98,18 @@ function t(key, ...args) {
 }
 
 function setLanguage(lang) {
-  document.querySelectorAll("[data-i18n]").forEach(el => {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     const value = translations[lang]?.[key];
     if (!value) return;
 
     if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
       el.setAttribute("placeholder", value);
-
-    } else if (el.tagName === "BUTTON" || 
-              (el.tagName === "INPUT" && el.type === "submit")) {
+    } else if (el.tagName === "BUTTON" || (el.tagName === "INPUT" && el.type === "submit")) {
       el.value = value;
       el.textContent = value;
-
     } else if (el.tagName === "OPTION") {
       el.textContent = value;
-
     } else {
       if (value.includes("<")) {
         el.innerHTML = value;
