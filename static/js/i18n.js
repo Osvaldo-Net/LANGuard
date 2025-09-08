@@ -2,7 +2,8 @@ const translations = {
   es: {
     scan: "Escanear",
     logout: "Cerrar sesión",
-    header: "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
+    header:
+      "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
     trusted: "Confiable",
     untrusted: "No confiable",
     addTrusted: "Agregar MAC confiable",
@@ -21,7 +22,8 @@ const translations = {
     scanDone: "Escaneo completo",
     scanError: "Error al escanear",
     scanningPorts: (ip) => `Escaneando puertos en <strong>${ip}</strong>...`,
-    noPorts: (ip) => `No se encontraron puertos abiertos en <strong>${ip}</strong>.`,
+    noPorts: (ip) =>
+      `No se encontraron puertos abiertos en <strong>${ip}</strong>.`,
     viewPorts: "Ver puertos",
     nameSaved: "Nombre guardado",
     addMac: "Agregando MAC...",
@@ -47,7 +49,8 @@ const translations = {
   en: {
     scan: "Scan",
     logout: "Logout",
-    header: "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
+    header:
+      "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
     trusted: "Trusted",
     untrusted: "Untrusted",
     addTrusted: "Add trusted MAC",
@@ -98,27 +101,36 @@ function t(key, ...args) {
 }
 
 function setLanguage(lang) {
-  document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.getAttribute("data-i18n");
-    const value = translations[lang]?.[key];
-    if (!value) return;
+  function applyTranslation() {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      const value = translations[lang]?.[key];
+      if (!value) return;
 
-    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
-      el.setAttribute("placeholder", value);
-    } else if (el.tagName === "BUTTON" || (el.tagName === "INPUT" && el.type === "submit")) {
-      el.value = value;
-      el.textContent = value;
-    } else if (el.tagName === "OPTION") {
-      el.textContent = value;
-    } else {
-      if (value.includes("<")) {
-        el.innerHTML = value;
-      } else {
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        el.setAttribute("placeholder", value);
+      } else if (
+        el.tagName === "BUTTON" ||
+        (el.tagName === "INPUT" && el.type === "submit")
+      ) {
+        el.value = value;
         el.textContent = value;
+      } else if (el.tagName === "OPTION") {
+        el.textContent = value;
+      } else {
+        if (value.includes("<")) {
+          el.innerHTML = value;
+        } else {
+          el.textContent = value;
+        }
       }
-    }
-  });
-  localStorage.setItem("lang", lang);
+    });
+
+    localStorage.setItem("lang", lang);
+    if (typeof window.escanearAhora === "function") window.escanearAhora();
+  }
+
+  applyTranslation();
 }
 
 window.t = t;
