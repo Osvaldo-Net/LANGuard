@@ -89,40 +89,65 @@
         </button>
 
 			<div class="hidden sm:flex items-center gap-3" id="menu-desktop">
-				<button onclick="escanearAhora()" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105 focus:ring-2 focus:ring-highlight focus:outline-none animate-pulse-glow"><i data-lucide="scan" class="w-5 h-5"></i><span data-i18n="scan">Escanear</span></button>
-				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105"> <i data-lucide="log-out"></i><span data-i18n="logout">Cerrar sesión</span> </a>
-				<button onclick="toggleDarkMode()" class="text-highlight hover:text-accent flex items-center transition">
-            <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
-            <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
-          </button>
+				<button onclick="escanearAhora()" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105 focus:ring-2 focus:ring-highlight focus:outline-none animate-pulse-glow">
+    <i data-lucide="scan" class="w-5 h-5"></i>
+    <span data-i18n="scan">Escanear</span>
+  </button>
+
 				<div class="relative inline-block">
 					<select id="language-select" class="appearance-none text-sm border border-accent rounded-lg px-3 py-2 pr-9
            bg-white dark:bg-gray-800 dark:text-white
            focus:ring-2 focus:ring-accent cursor-pointer">
-    <option value="es">Español</option>
-    <option value="en">English</option>
-  </select>
-
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
 					<span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
-    <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-    </svg>
-  </span>
+      <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </span>
 				</div>
 
-			</div>
-		</div>
+				<a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
+					<i data-lucide="log-out"></i>
+					<span data-i18n="logout">Cerrar sesión</span>
+				</a>
 
-		<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
-			<button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105"><i data-lucide="scan"></i><span data-i18n="scan">Escanear</span></button>
-			<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm"> <i data-lucide="log-out"></i><span data-i18n="logout">Cerrar sesión</span> </a>
-			<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent">
-          <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
-          <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
-          <span data-i18n="changeTheme">Cambiar tema</span>
-        </button>
-			<button onclick="toggleLanguage()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent"><i data-lucide="languages" class="w-5 h-5"></i>Idioma</button>
-		</div>
+				<button onclick="toggleDarkMode()" class="text-highlight hover:text-accent flex items-center transition">
+    <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
+    <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
+  </button>
+			</div>
+
+
+			<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
+				<button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105
+           sm:bg-transparent sm:text-accent sm:border sm:border-accent sm:hover:bg-accent sm:hover:text-white sm:shadow-none">
+    <i data-lucide="scan"></i>
+    <span data-i18n="scan">Escanear</span>
+  </button>
+
+				<button onclick="toggleLanguage()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
+           sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
+    <i data-lucide="languages" class="w-5 h-5"></i>
+    Idioma
+  </button>
+
+				<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm
+           sm:bg-transparent sm:text-red-500 sm:border sm:border-red-500 sm:hover:bg-red-500 sm:hover:text-white sm:shadow-none">
+					<i data-lucide="log-out"></i>
+					<span data-i18n="logout">Cerrar sesión</span>
+				</a>
+
+				<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
+           sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
+    <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
+    <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
+    <span data-i18n="changeTheme">Cambiar tema</span>
+  </button>
+			</div>
+
+
 	</nav>
 
 	<main class="max-w-7xl mx-auto px-4 py-10">
