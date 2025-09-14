@@ -11,60 +11,62 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-				        darkMode: "class",
-				        theme: {
-				          extend: {
-				            colors: {
-				              accent: "#f4a261",
-				              highlight: "#e76f51",
-				              bgBone: "#f8f6f2",
-				            },
-				            fontFamily: {
-				              sans: ["Urbanist", "sans-serif"],
-				            },
-				          },
-				        },
-				      };
+						        darkMode: "class",
+						        theme: {
+						          extend: {
+						            colors: {
+						              accent: "#f4a261",
+						              highlight: "#e76f51",
+						              bgBone: "#f8f6f2",
+						            },
+						            fontFamily: {
+						              sans: ["Urbanist", "sans-serif"],
+						            },
+						          },
+						        },
+						      };
+						
 				
 		
 	</script>
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<style>
 		@keyframes fade-in {
-				        from {
-				          opacity: 0;
-				          transform: translateY(10px);
-				        }
-				        to {
-				          opacity: 1;
-				          transform: translateY(0);
-				        }
-				      }
-				      @keyframes pulse-glow {
-				        0%,
-				        100% {
-				          box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
-				        }
-				        50% {
-				          box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
-				        }
-				      }
-				      .animate-fade-in {
-				        animation: fade-in 0.6s ease-out forwards;
-				      }
-				      .animate-pulse-glow {
-				        animation: pulse-glow 2s infinite;
-				      }
-				      .custom-scrollbar::-webkit-scrollbar {
-				        width: 6px;
-				      }
-				      .custom-scrollbar::-webkit-scrollbar-thumb {
-				        background: rgba(244, 162, 97, 0.7);
-				        border-radius: 10px;
-				      }
-				      .custom-scrollbar::-webkit-scrollbar-track {
-				        background: transparent;
-				      }
+						        from {
+						          opacity: 0;
+						          transform: translateY(10px);
+						        }
+						        to {
+						          opacity: 1;
+						          transform: translateY(0);
+						        }
+						      }
+						      @keyframes pulse-glow {
+						        0%,
+						        100% {
+						          box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
+						        }
+						        50% {
+						          box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
+						        }
+						      }
+						      .animate-fade-in {
+						        animation: fade-in 0.6s ease-out forwards;
+						      }
+						      .animate-pulse-glow {
+						        animation: pulse-glow 2s infinite;
+						      }
+						      .custom-scrollbar::-webkit-scrollbar {
+						        width: 6px;
+						      }
+						      .custom-scrollbar::-webkit-scrollbar-thumb {
+						        background: rgba(244, 162, 97, 0.7);
+						        border-radius: 10px;
+						      }
+						      .custom-scrollbar::-webkit-scrollbar-track {
+						        background: transparent;
+						      }
+						
 				
 		
 	</style>
@@ -119,36 +121,36 @@
   </button>
 			</div>
 
+	</nav>
 
-			<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
-				<button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105
+	<div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
+		<button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105
            sm:bg-transparent sm:text-accent sm:border sm:border-accent sm:hover:bg-accent sm:hover:text-white sm:shadow-none">
     <i data-lucide="scan"></i>
     <span data-i18n="scan">Escanear</span>
   </button>
 
-				<button onclick="toggleLanguage()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
+		<button onclick="toggleLanguage()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
            sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
     <i data-lucide="languages" class="w-5 h-5"></i>
     Idioma
   </button>
 
-				<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm
+		<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm
            sm:bg-transparent sm:text-red-500 sm:border sm:border-red-500 sm:hover:bg-red-500 sm:hover:text-white sm:shadow-none">
-					<i data-lucide="log-out"></i>
-					<span data-i18n="logout">Cerrar sesión</span>
-				</a>
+			<i data-lucide="log-out"></i>
+			<span data-i18n="logout">Cerrar sesión</span>
+		</a>
 
-				<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
+		<button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
            sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
     <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
     <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
     <span data-i18n="changeTheme">Cambiar tema</span>
   </button>
-			</div>
+	</div>
 
 
-	</nav>
 
 	<main class="max-w-7xl mx-auto px-4 py-10">
 		<header class="text-center mb-10 max-w-3xl mx-auto animate-fade-in">
