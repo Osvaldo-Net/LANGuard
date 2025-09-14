@@ -9,7 +9,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -18,90 +17,14 @@
             bgBone: '#f8f6f2',
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Poppins', 'Inter', 'sans-serif'],
           },
         }
       }
     }
   </script>
-  <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-
-<body
-  class="bg-gradient-to-br from-bgBone to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white font-sans flex flex-col items-center justify-center min-h-screen px-4">
-
-  <button onclick="document.documentElement.classList.toggle('dark')"
-    class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-    <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
-    <i data-lucide="sun" class="w-5 h-5 hidden dark:inline"></i>
-  </button>
-
-  <div
-    class="w-full max-w-4xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl border border-gray-300/30 dark:border-gray-600/30 rounded-3xl overflow-hidden flex flex-col md:flex-row animate-fade-in">
-
-    <div class="w-full md:w-1/2 p-8 sm:p-10 space-y-6">
-      <div class="text-center space-y-2">
-        <h2 class="text-3xl font-extrabold text-gray-700 dark:text-white tracking-tight">
-          Bienvenido a <span class="text-accent">LANGuard</span>
-        </h2>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Inicia sesión para continuar</p>
-      </div>
-
-      {% if error %}
-      <div
-        class="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
-        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-        <span><strong class="font-semibold">Error:</strong> {{ error }}</span>
-      </div>
-      {% endif %}
-
-      <form method="POST" class="space-y-5">
-
-        <div class="relative group">
-          <input type="text" name="usuario" placeholder="Usuario" required
-            class="w-full p-3 pl-10 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-900/70 text-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:border-accent transition">
-          <i data-lucide="user"
-            class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent transition"></i>
-        </div>
-
-        <div class="relative group">
-          <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña" required
-            class="w-full p-3 pl-10 pr-10 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-900/70 text-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:border-accent transition">
-          <i data-lucide="lock"
-            class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent transition"></i>
-          <button type="button" onclick="togglePassword()"
-            class="absolute right-3 top-2.5 text-gray-500 hover:text-accent transition">
-            <i id="icono-ojo" data-lucide="eye"></i>
-          </button>
-        </div>
-
-        <button type="submit"
-          class="w-full bg-gradient-to-r from-accent to-highlight hover:shadow-lg hover:shadow-accent/40 text-white font-semibold py-3 px-5 rounded-full transition-transform duration-200 hover:scale-105 active:scale-95 flex justify-center items-center gap-2">
-          <i data-lucide="log-in" class="w-5 h-5"></i> Ingresar
-        </button>
-      </form>
-    </div>
-
-    <div
-      class="hidden md:flex w-1/2 flex-col items-center justify-center bg-gradient-to-br from-accent/20 to-highlight/20 dark:from-accent/10 dark:to-highlight/10 p-10 text-center relative overflow-hidden">
-
-      <div
-        class="w-24 h-24 flex items-center justify-center rounded-2xl bg-white/40 dark:bg-gray-900/40 shadow-inner backdrop-blur-md mb-6 hover:scale-110 transition-transform duration-300">
-        <img src="{{ url_for('static', filename='LANGuard.png') }}" alt="Logo" class="w-16 h-16">
-      </div>
-
-      <h3 class="text-2xl font-bold text-gray-700 dark:text-white">LANGuard</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-300 mt-2 max-w-xs">Seguridad avanzada y monitoreo de tu red.</p>
-    </div>
-
-  </div>
-
-  <footer class="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
-    <a href="https://github.com/Osvaldo-Net/LANGuard" target="_blank"
-      class="hover:text-accent transition-colors">Ver en GitHub</a>
-  </footer>
-
   <style>
     .animate-fade-in {
       animation: fadeIn 0.8s ease-out;
@@ -118,7 +41,86 @@
         transform: translateY(0);
       }
     }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #f4a261, #e76f51);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   </style>
+</head>
+
+<body
+  class="bg-gradient-to-br from-bgBone to-white text-gray-800 font-sans flex flex-col min-h-screen justify-between">
+
+  <main
+    class="flex flex-col items-center justify-center flex-grow px-4">
+
+    <div
+      class="w-full max-w-4xl bg-white shadow-2xl border border-gray-200 rounded-3xl overflow-hidden flex flex-col md:flex-row animate-fade-in">
+
+      <div class="w-full md:w-1/2 p-8 sm:p-10 space-y-6">
+        <div class="text-center space-y-2">
+          <h2 class="text-4xl font-bold tracking-tight text-gray-800">
+            Bienvenido a <span class="gradient-text">LANGuard</span>
+          </h2>
+          <p class="text-gray-500 text-sm">Inicia sesión para continuar</p>
+        </div>
+
+        {% if error %}
+        <div
+          class="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-100 text-red-800 border border-red-300 shadow text-sm sm:text-base">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          <span><strong class="font-semibold">Error:</strong> {{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-5">
+
+          <div class="relative group">
+            <input type="text" name="usuario" placeholder="Usuario" required
+              class="w-full p-3 pl-10 rounded-xl border border-gray-300 bg-white text-gray-800 focus:ring-4 focus:ring-accent/40 focus:border-accent transition">
+            <i data-lucide="user"
+              class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent transition"></i>
+          </div>
+
+          <div class="relative group">
+            <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña" required
+              class="w-full p-3 pl-10 pr-10 rounded-xl border border-gray-300 bg-white text-gray-800 focus:ring-4 focus:ring-accent/40 focus:border-accent transition">
+            <i data-lucide="lock"
+              class="absolute left-3 top-3 w-5 h-5 text-gray-400 group-focus-within:text-accent transition"></i>
+            <button type="button" onclick="togglePassword()"
+              class="absolute right-3 top-2.5 text-gray-500 hover:text-accent transition">
+              <i id="icono-ojo" data-lucide="eye"></i>
+            </button>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-gradient-to-r from-accent to-highlight hover:shadow-lg hover:shadow-accent/40 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 flex justify-center items-center gap-2">
+            <i data-lucide="log-in" class="w-5 h-5"></i> Ingresar
+          </button>
+        </form>
+      </div>
+
+      <div
+        class="hidden md:flex w-1/2 flex-col items-center justify-center bg-gradient-to-br from-accent/10 to-highlight/10 p-10 text-center relative">
+
+        <div
+          class="w-24 h-24 flex items-center justify-center rounded-2xl bg-white shadow-inner backdrop-blur-md mb-6 hover:rotate-6 hover:scale-110 transition-transform duration-500">
+          <img src="{{ url_for('static', filename='LANGuard.png') }}" alt="Logo" class="w-16 h-16">
+        </div>
+
+        <h3 class="text-2xl font-semibold gradient-text">LANGuard</h3>
+        <p class="text-sm text-gray-600 mt-2 max-w-xs">Seguridad avanzada y monitoreo de tu red.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-4 text-sm text-gray-500 text-center border-t border-gray-200">
+    <a href="https://github.com/Osvaldo-Net/LANGuard" target="_blank"
+      class="hover:text-accent transition-colors">Ver en GitHub</a>
+  </footer>
 
   <script>
     function togglePassword() {
