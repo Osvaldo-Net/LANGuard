@@ -11,20 +11,21 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-						        darkMode: "class",
-						        theme: {
-						          extend: {
-						            colors: {
-						              accent: "#f4a261",
-						              highlight: "#e76f51",
-						              bgBone: "#f8f6f2",
-						            },
-						            fontFamily: {
-						              sans: ["Urbanist", "sans-serif"],
-						            },
-						          },
-						        },
-						      };
+								        darkMode: "class",
+								        theme: {
+								          extend: {
+								            colors: {
+								              accent: "#f4a261",
+								              highlight: "#e76f51",
+								              bgBone: "#f8f6f2",
+								            },
+								            fontFamily: {
+								              sans: ["Urbanist", "sans-serif"],
+								            },
+								          },
+								        },
+								      };
+								
 						
 				
 		
@@ -32,40 +33,41 @@
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<style>
 		@keyframes fade-in {
-						        from {
-						          opacity: 0;
-						          transform: translateY(10px);
-						        }
-						        to {
-						          opacity: 1;
-						          transform: translateY(0);
-						        }
-						      }
-						      @keyframes pulse-glow {
-						        0%,
-						        100% {
-						          box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
-						        }
-						        50% {
-						          box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
-						        }
-						      }
-						      .animate-fade-in {
-						        animation: fade-in 0.6s ease-out forwards;
-						      }
-						      .animate-pulse-glow {
-						        animation: pulse-glow 2s infinite;
-						      }
-						      .custom-scrollbar::-webkit-scrollbar {
-						        width: 6px;
-						      }
-						      .custom-scrollbar::-webkit-scrollbar-thumb {
-						        background: rgba(244, 162, 97, 0.7);
-						        border-radius: 10px;
-						      }
-						      .custom-scrollbar::-webkit-scrollbar-track {
-						        background: transparent;
-						      }
+								        from {
+								          opacity: 0;
+								          transform: translateY(10px);
+								        }
+								        to {
+								          opacity: 1;
+								          transform: translateY(0);
+								        }
+								      }
+								      @keyframes pulse-glow {
+								        0%,
+								        100% {
+								          box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
+								        }
+								        50% {
+								          box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
+								        }
+								      }
+								      .animate-fade-in {
+								        animation: fade-in 0.6s ease-out forwards;
+								      }
+								      .animate-pulse-glow {
+								        animation: pulse-glow 2s infinite;
+								      }
+								      .custom-scrollbar::-webkit-scrollbar {
+								        width: 6px;
+								      }
+								      .custom-scrollbar::-webkit-scrollbar-thumb {
+								        background: rgba(244, 162, 97, 0.7);
+								        border-radius: 10px;
+								      }
+								      .custom-scrollbar::-webkit-scrollbar-track {
+								        background: transparent;
+								      }
+								
 						
 				
 		
@@ -97,12 +99,12 @@
   </button>
 
 				<div class="relative inline-block">
-					<select id="language-select" class="appearance-none text-sm border border-accent rounded-lg px-3 py-2 pr-9
-           bg-white dark:bg-gray-800 dark:text-white
-           focus:ring-2 focus:ring-accent cursor-pointer">
-      <option value="es">Español</option>
-      <option value="en">English</option>
-    </select>
+					<select class="language-select appearance-none text-sm border border-accent rounded-lg px-3 py-2 pr-9
+  bg-white dark:bg-gray-800 dark:text-white
+  focus:ring-2 focus:ring-accent cursor-pointer">
+  <option value="es">Español</option>
+  <option value="en">English</option>
+</select>
 					<span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
       <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -130,11 +132,20 @@
     <span data-i18n="scan">Escanear</span>
   </button>
 
-		<button onclick="toggleLanguage()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
-           sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
-    <i data-lucide="languages" class="w-5 h-5"></i>
-    Idioma
-  </button>
+		<div class="relative inline-block">
+			<select class="language-select appearance-none w-full text-sm border border-accent rounded-xl px-4 py-2 pr-9
+  bg-white dark:bg-gray-800 dark:text-white
+  focus:ring-2 focus:ring-accent cursor-pointer shadow-md">
+  <option value="es">Español</option>
+  <option value="en">English</option>
+</select>
+			<span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+    <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </span>
+		</div>
+
 
 		<a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm
            sm:bg-transparent sm:text-red-500 sm:border sm:border-red-500 sm:hover:bg-red-500 sm:hover:text-white sm:shadow-none">
