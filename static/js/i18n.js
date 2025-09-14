@@ -140,11 +140,19 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("lang") || "es";
   setLanguage(savedLang);
 
-  const selector = document.getElementById("language-select");
-  if (selector) {
+  const selectors = document.querySelectorAll(".language-select");
+
+  selectors.forEach((selector) => {
     selector.value = savedLang;
+
     selector.addEventListener("change", (e) => {
-      setLanguage(e.target.value);
+      const newLang = e.target.value;
+      localStorage.setItem("lang", newLang);
+      setLanguage(newLang);
+
+      selectors.forEach((sel) => {
+        sel.value = newLang;
+      });
     });
-  }
+  });
 });
