@@ -5,26 +5,29 @@
 	<title>Cambiar Credenciales | LANGuard</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+
 	<script src="https://cdn.tailwindcss.com"></script>
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 	<script>
 		tailwind.config = {
-		      darkMode: "class",
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: "#f4a261",
-		            highlight: "#e76f51",
-		            bgBone: "#f8f6f2",
-		          },
-		          fontFamily: {
-		            sans: ["Inter", "sans-serif"],
-		          },
-		        },
-		      },
-		    };
-		
+			darkMode: "class",
+			theme: {
+				extend: {
+					colors: {
+						accent: "#f4a261",
+						highlight: "#e76f51",
+						bgBone: "#f8f6f2",
+					},
+					fontFamily: {
+						sans: ["Poppins", "sans-serif"],  // 👈 Se cambió a Poppins
+					},
+				},
+			},
+		};
 	</script>
-	<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.10/index.min.css" rel="stylesheet" />
+
 	<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -55,19 +58,18 @@
 					<input id="nueva" type="password" name="nueva_contrasena" placeholder="Nueva contraseña" required class="w-full p-3 pl-12 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none shadow-sm" />
 					<i data-lucide="lock" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-accent"></i>
 					<button type="button" class="toggle-password absolute right-3 top-3.5 text-gray-400 hover:text-accent" data-target="nueva">
-      <i data-lucide="eye"></i>
-    </button>
+						<i data-lucide="eye"></i>
+					</button>
 				</div>
 
 				<div id="confirmar-wrapper" class="relative group hidden">
 					<input id="confirmar" type="password" name="confirmar_contrasena" placeholder="Confirmar contraseña" class="w-full p-3 pl-12 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none shadow-sm" />
 					<i data-lucide="lock" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-accent"></i>
 					<button type="button" class="toggle-password absolute right-3 top-3.5 text-gray-400 hover:text-accent" data-target="confirmar">
-      <i data-lucide="eye"></i>
-    </button>
+						<i data-lucide="eye"></i>
+					</button>
 				</div>
 			</div>
-
 
 			<ul id="requisitos" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm bg-white/60 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-gray-700 dark:text-gray-300">
 				<li data-id="length" class="flex items-center gap-2">
@@ -88,9 +90,9 @@
 			</ul>
 
 			<button type="submit" class="w-full bg-gradient-to-r from-accent to-highlight hover:shadow-accent/50 text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 flex justify-center items-center gap-2">
-        <i data-lucide="key-round" class="w-5 h-5"></i>
-        Guardar Cambios
-      </button>
+				<i data-lucide="key-round" class="w-5 h-5"></i>
+				Guardar Cambios
+			</button>
 		</form>
 
 		<footer class="text-xs text-center text-gray-500 dark:text-gray-400 pt-4">© 2025 LANGuard. Todos los derechos reservados.</footer>
@@ -98,65 +100,64 @@
 
 	<script>
 		document.addEventListener("DOMContentLoaded", () => {
-		      const input = document.getElementById("nueva");
-		      const confirmar = document.getElementById("confirmar");
-		      const confirmarWrapper = document.getElementById("confirmar-wrapper");
-		
-		      const reglas = {
-		        length: (v) => v.length >= 8,
-		        upper: (v) => /[A-Z]/.test(v),
-		        lower: (v) => /[a-z]/.test(v),
-		        digit: (v) => /\d/.test(v),
-		        symbol: (v) => /[^A-Za-z0-9]/.test(v),
-		      };
-		
-		      input.addEventListener("input", () => {
-		        Object.entries(reglas).forEach(([id, validar]) => {
-		          const li = document.querySelector(`li[data-id="${id}"]`);
-		          if (!li) return;
-		          const icon = li.querySelector("svg.icon");
-		          if (!icon) return;
-		          icon.classList.remove("text-gray-400", "text-green-500", "text-red-500");
-		          icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
-		        });
-		
-		        if (input.value.trim().length > 0) {
-		          confirmarWrapper.classList.remove("hidden");
-		        } else {
-		          confirmarWrapper.classList.add("hidden");
-		          confirmar.value = "";
-		          confirmar.classList.remove("border-green-500", "border-red-500");
-		        }
-		      });
-		
-		      confirmar.addEventListener("input", () => {
-		        if (confirmar.value === input.value && confirmar.value.length > 0) {
-		          confirmar.classList.remove("border-red-500");
-		          confirmar.classList.add("border-green-500");
-		        } else {
-		          confirmar.classList.remove("border-green-500");
-		          confirmar.classList.add("border-red-500");
-		        }
-		      });
-		
-		      document.querySelectorAll(".toggle-password").forEach((btn) => {
-		        btn.addEventListener("click", () => {
-		          const target = document.getElementById(btn.dataset.target);
-		          const icon = btn.querySelector("i");
-		          if (target.type === "password") {
-		            target.type = "text";
-		            icon.setAttribute("data-lucide", "eye-off");
-		          } else {
-		            target.type = "password";
-		            icon.setAttribute("data-lucide", "eye");
-		          }
-		          lucide.createIcons();
-		        });
-		      });
-		
-		      lucide.createIcons();
-		    });
-		
+			const input = document.getElementById("nueva");
+			const confirmar = document.getElementById("confirmar");
+			const confirmarWrapper = document.getElementById("confirmar-wrapper");
+
+			const reglas = {
+				length: (v) => v.length >= 8,
+				upper: (v) => /[A-Z]/.test(v),
+				lower: (v) => /[a-z]/.test(v),
+				digit: (v) => /\d/.test(v),
+				symbol: (v) => /[^A-Za-z0-9]/.test(v),
+			};
+
+			input.addEventListener("input", () => {
+				Object.entries(reglas).forEach(([id, validar]) => {
+					const li = document.querySelector(`li[data-id="${id}"]`);
+					if (!li) return;
+					const icon = li.querySelector("svg.icon");
+					if (!icon) return;
+					icon.classList.remove("text-gray-400", "text-green-500", "text-red-500");
+					icon.classList.add(validar(input.value) ? "text-green-500" : "text-red-500");
+				});
+
+				if (input.value.trim().length > 0) {
+					confirmarWrapper.classList.remove("hidden");
+				} else {
+					confirmarWrapper.classList.add("hidden");
+					confirmar.value = "";
+					confirmar.classList.remove("border-green-500", "border-red-500");
+				}
+			});
+
+			confirmar.addEventListener("input", () => {
+				if (confirmar.value === input.value && confirmar.value.length > 0) {
+					confirmar.classList.remove("border-red-500");
+					confirmar.classList.add("border-green-500");
+				} else {
+					confirmar.classList.remove("border-green-500");
+					confirmar.classList.add("border-red-500");
+				}
+			});
+
+			document.querySelectorAll(".toggle-password").forEach((btn) => {
+				btn.addEventListener("click", () => {
+					const target = document.getElementById(btn.dataset.target);
+					const icon = btn.querySelector("i");
+					if (target.type === "password") {
+						target.type = "text";
+						icon.setAttribute("data-lucide", "eye-off");
+					} else {
+						target.type = "password";
+						icon.setAttribute("data-lucide", "eye");
+					}
+					lucide.createIcons();
+				});
+			});
+
+			lucide.createIcons();
+		});
 	</script>
 </body>
 </html>
