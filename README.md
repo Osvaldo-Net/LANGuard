@@ -29,19 +29,19 @@ openssl rand -hex 32
 
 Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **5555**.
 
-![Acceso a la interfaz](https://github.com/user-attachments/assets/fac17760-0030-457e-83ad-d0fb8da1ed0a)
+![Acceso a la interfaz](https://github.com/user-attachments/assets/887db6a3-177d-44c0-8db7-ce110dac4148)
 
-![Cambio de credenciales](https://github.com/user-attachments/assets/30136b9c-2336-4783-8a8b-423487348bbd)
-
+![Cambio de credenciales](https://github.com/user-attachments/assets/09ab7175-e221-406c-bebe-19f4f0694cd1)
 
 ---
 
 ## 🧭 Panel Principal
 
-![Panel principal 1](https://github.com/user-attachments/assets/8bd99ff0-2a54-4375-b52d-bd9748121fb8)
+![Panel principal 1](https://github.com/user-attachments/assets/be8f83f9-ffd9-40d3-afb7-6a5700a422a7)
 
 
-![Panel principal 2](https://github.com/user-attachments/assets/3fac3450-ccb4-46ef-9eea-d307f3ede8f4)
+![Panel principal 2](https://github.com/user-attachments/assets/032a21d1-6e39-44cf-99de-7222398a67db)
+
 
 ---
 
@@ -49,7 +49,8 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 LANGuard cuenta con una opción para cambiar al modo oscuro.
 
-![Modo oscuro](https://github.com/user-attachments/assets/d45ac182-0e15-4366-a732-a6e0110448be)
+![Modo oscuro](https://github.com/user-attachments/assets/5c3ab79f-b25e-4f2a-937f-d195000c0a3b)
+
 
 ---
 
