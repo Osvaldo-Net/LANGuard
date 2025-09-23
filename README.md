@@ -58,7 +58,8 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
-![Escaneo de puertos](https://github.com/user-attachments/assets/fa29b5ac-fa7e-4a7b-b9bb-10056a8936f6)
+![Escaneo de puertos](https://github.com/user-attachments/assets/02c27dc7-8421-4b56-9c72-e2932a245cbd)
+
 
 ---
 
