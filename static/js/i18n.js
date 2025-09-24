@@ -127,7 +127,6 @@ function setLanguage(lang) {
     });
 
     localStorage.setItem("lang", lang);
-    if (typeof window.escanearAhora === "function") window.escanearAhora();
   }
 
   applyTranslation();
