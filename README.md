@@ -12,12 +12,12 @@ Además, mantiene un historial de detecciones, permite asignar nombres personali
 
 ---
 
-## 🔐 Credenciales por defecto
+## Credenciales por defecto
 
 - **Usuario:** `admin@example.com`
 - **Contraseña:** `admin`
 
-⚠️ Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
+Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
 
 ```bash
 openssl rand -hex 32
@@ -25,7 +25,7 @@ openssl rand -hex 32
 
 ---
 
-## 🌐 Acceso a la Interfaz Web
+## Acceso a la Interfaz Web
 
 Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **5555**.
 
@@ -45,7 +45,7 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ---
 
-## 🌙 Modo Oscuro
+## Modo Oscuro
 
 LANGuard cuenta con una opción para cambiar al modo oscuro.
 
@@ -54,7 +54,7 @@ LANGuard cuenta con una opción para cambiar al modo oscuro.
 
 ---
 
-## 🧪 Escaneo de Puertos
+## Escaneo de Puertos
 
 Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
@@ -63,7 +63,7 @@ Visualice el estado de los puertos de los dispositivos conectados a la red LAN.
 
 ---
 
-## 🔍 Filtrado de dispositivos
+## Filtrado de dispositivos
 
 Ahora puedes filtrar fácilmente los dispositivos detectados en la red LAN utilizando:
 
@@ -77,7 +77,7 @@ Esto te permite ubicar rápidamente un dispositivo específico entre todos los c
 
 ---
 
-## 📝 Registro de accesos
+## Registro de accesos
 
 Registro de accesos exitosos y fallidos en el archivo:
 
