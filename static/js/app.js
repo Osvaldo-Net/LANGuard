@@ -249,12 +249,11 @@ document.addEventListener("DOMContentLoaded", () => {
   actualizarHoraActual();
 
   window.escanearAhora = async () => {
-    // Mostrar "Escaneando..." por al menos 2 segundos
     mostrarNotificacion(
       `
     <div class="flex items-center gap-2">
       <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
-      <span>Escaneando la red...</span>
+      <span>${t("scanning")}</span>
     </div>
     `,
       "info",
@@ -274,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `
         <div class="flex items-center gap-2">
           <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
-          <span>Escaneo completado</span>
+          <span>${t("scanDone")}</span>
         </div>
         `,
           "success",
@@ -286,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `
         <div class="flex items-center gap-2">
           <i data-lucide="alert-circle" class="w-5 h-5 text-yellow-500"></i>
-          <span>Respuesta inesperada del servidor</span>
+          <span>${t("scanError")}</span>
         </div>
         `,
           "error",
@@ -298,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `
       <div class="flex items-center gap-2">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
-        <span>Error al escanear la red</span>
+        <span>${t("scanError")}</span>
       </div>
       `,
         "error",
