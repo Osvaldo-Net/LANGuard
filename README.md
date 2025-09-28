@@ -115,7 +115,7 @@ Registro de accesos exitosos y fallidos en el archivo:
 /ruta/del/contenedor/app/accesos.log
 ```
 
-![Registro de accesos](https://github.com/user-attachments/assets/516e38d1-7ff7-4d5e-adee-a01ce55b9da8)
+![Registro de accesos](https://github.com/user-attachments/assets/ed1c04e6-7ef7-40ca-85c6-63bb90fddb5b)
 
 
 ---
