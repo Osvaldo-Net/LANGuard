@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>LAN Guard</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -154,26 +153,31 @@
                 <table class="min-w-[640px] w-full table-auto text-sm">
                     <thead class="sticky top-0 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 z-10">
                         <tr>
-                            <th class="px-4 py-3 text-left font-semibold">
+                            <th class="px-4 py-3 text-left font-normal">
                                 <i data-lucide="ip" class="inline-block w-4 h-4"></i> IP
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold">
+                            <th class="px-4 py-3 text-left font-normal">
                                 <i data-lucide="hash" class="inline-block w-4 h-4"></i> MAC
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold">
-                                <i data-lucide="tag" class="inline-block w-4 h-4"></i> <span data-i18n="name">Nombre</span>
+                            <th class="px-4 py-3 text-left font-normal">
+                                <i data-lucide="tag" class="inline-block w-4 h-4"></i>
+                                <span data-i18n="name">Nombre</span>
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold">
-                                <i data-lucide="factory" class="inline-block w-4 h-4"></i> <span data-i18n="manufacturer">Fabricante</span>
+                            <th class="px-4 py-3 text-left font-normal">
+                                <i data-lucide="factory" class="inline-block w-4 h-4"></i>
+                                <span data-i18n="manufacturer">Fabricante</span>
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold">
-                                <i data-lucide="shield" class="inline-block w-4 h-4"></i> <span data-i18n="trust">Confianza</span>
+                            <th class="px-4 py-3 text-left font-normal">
+                                <i data-lucide="shield" class="inline-block w-4 h-4"></i>
+                                <span data-i18n="trust">Confianza</span>
                             </th>
-                            <th class="px-4 py-3 text-left font-semibold">
-                                <i data-lucide="server" class="inline-block w-4 h-4"></i><span data-i18n="ports">Puertos</span>
+                            <th class="px-4 py-3 text-left font-normal">
+                                <i data-lucide="server" class="inline-block w-4 h-4"></i>
+                                <span data-i18n="ports">Puertos</span>
                             </th>
                         </tr>
                     </thead>
+
 
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
                         {% for d in dispositivos %}
