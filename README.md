@@ -72,6 +72,7 @@ Visite la interfaz web de LANGuard ingresando la IP del servidor en el puerto **
 
 ![Panel principal 1](https://github.com/user-attachments/assets/6e3820d6-d934-4448-9b1b-6b749f8acce2)
 
+![Panel principal 2](https://github.com/user-attachments/assets/c0eb0665-8585-44b7-b8d0-679ef8c76e9e)
 
 ---
 
