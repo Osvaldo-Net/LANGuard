@@ -59,7 +59,8 @@
     </style>
 </head>
 
-<body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 dark:text-white">
+<body class="bg-bgBone text-gray-800 font-sans antialiased text-sm dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 dark:text-white">
+
 
     <button id="toggleMenu" class="fixed top-4 left-4 z-50 bg-accent text-white p-2 rounded-lg shadow-lg sm:hidden">
         <i data-lucide="menu"></i>
@@ -129,32 +130,51 @@
 
 
 
-        <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" data-i18n="filterName" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none"
-            />
-            <input type="text" id="filtro-mac" placeholder="Filtrar por MAC" data-i18n="filterMac" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none"
-            />
-            <select id="filtro-confianza" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none">
+        <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" data-i18n="filterName" class="p-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 
+           bg-white text-gray-800 dark:bg-gray-800 dark:text-white 
+           focus:ring-2 focus:ring-accent focus:outline-none" />
+
+            <input type="text" id="filtro-mac" placeholder="Filtrar por MAC" data-i18n="filterMac" class="p-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 
+           bg-white text-gray-800 dark:bg-gray-800 dark:text-white 
+           focus:ring-2 focus:ring-accent focus:outline-none" />
+
+            <select id="filtro-confianza" class="p-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 
+           bg-white text-gray-800 dark:bg-gray-800 dark:text-white 
+           focus:ring-2 focus:ring-accent focus:outline-none">
                 <option value="" data-i18n="filterAll">Todos</option>
                 <option value="confiable" data-i18n="filterTrusted">Confiables</option>
                 <option value="no-confiable" data-i18n="filterUntrusted">No confiables</option>
             </select>
         </div>
 
+
         <section class="sm:overflow-visible overflow-x-auto rounded-xl border border-gray-200 bg-white/60 backdrop-blur-lg shadow-lg dark:bg-gray-800/60 animate-fade-in">
             <div class="inline-block min-w-full align-middle">
                 <table class="min-w-[640px] w-full table-auto text-sm">
                     <thead class="sticky top-0 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 z-10">
                         <tr>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="ip" class="inline-block w-4 h-4"></i> IP</th>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="hash" class="inline-block w-4 h-4"></i> MAC</th>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="tag" class="inline-block w-4 h-4"></i> <span data-i18n="name">Nombre</span></th>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="factory" class="inline-block w-4 h-4"></i> <span data-i18n="manufacturer">Fabricante</span></th>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="shield" class="inline-block w-4 h-4"></i> <span data-i18n="trust">Confianza</span></th>
-                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="server" class="inline-block w-4 h-4"></i><span data-i18n="ports">Puertos</span>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="ip" class="inline-block w-4 h-4"></i> IP
+                            </th>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="hash" class="inline-block w-4 h-4"></i> MAC
+                            </th>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="tag" class="inline-block w-4 h-4"></i> <span data-i18n="name">Nombre</span>
+                            </th>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="factory" class="inline-block w-4 h-4"></i> <span data-i18n="manufacturer">Fabricante</span>
+                            </th>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="shield" class="inline-block w-4 h-4"></i> <span data-i18n="trust">Confianza</span>
+                            </th>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <i data-lucide="server" class="inline-block w-4 h-4"></i><span data-i18n="ports">Puertos</span>
                             </th>
                         </tr>
                     </thead>
+
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
                         {% for d in dispositivos %}
                         <tr class="dispositivo-row transition-all duration-300 ease-in-out {{ loop.index is even and 'bg-white/70 dark:bg-white/5' or 'bg-[#fef6ef]/70 dark:bg-gray-800/50' }} hover:bg-white/90 dark:hover:bg-gray-700/80 hover:scale-[1.01]" data-nombre="{{ nombres_dispositivos[d.mac]|default('N/A') | lower }}"
