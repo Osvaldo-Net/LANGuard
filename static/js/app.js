@@ -32,15 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
   aplicarTemaDesdeStorage();
   lucide.createIcons();
 
-  const btnToggle = document.getElementById("menu-toggle");
-  const menuMobile = document.getElementById("menu-mobile");
-
-  btnToggle.addEventListener("click", () => {
-    menuMobile.classList.toggle("hidden");
-    btnToggle.innerHTML = menuMobile.classList.contains("hidden") ? `<i data-lucide="menu" class="w-6 h-6"></i>` : `<i data-lucide="x" class="w-6 h-6"></i>`;
-    lucide.createIcons();
-  });
-
   function mostrarNotificacion(mensaje, tipo = "info") {
     const noti = document.getElementById("notificacion");
     const colores = {
@@ -62,63 +53,65 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modal-puertos").classList.add("hidden");
   };
 
-  document.getElementById("form-agregar").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const mac = document.getElementById("input-mac").value.trim();
-    if (!mac) return;
+  document
+    .getElementById("form-agregar")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mac = document.getElementById("input-mac").value.trim();
+      if (!mac) return;
 
-    mostrarNotificacion(
-      `
+      mostrarNotificacion(
+        `
     <span class="inline-flex items-center gap-2">
       <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
       ${t("adding")}
     </span>
   `,
-      "info",
-    );
+        "info",
+      );
 
-    try {
-      const res = await fetch("/api/agregar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mac }),
-      });
-      const data = await res.json();
+      try {
+        const res = await fetch("/api/agregar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mac }),
+        });
+        const data = await res.json();
 
-      if (data.success) {
-        mostrarNotificacion(
-          `
+        if (data.success) {
+          mostrarNotificacion(
+            `
         <span class="inline-flex items-center gap-2">
           <i data-lucide='check' class='w-4 h-4'></i>
           ${t("success")}
         </span>
       `,
-          "success",
-        );
-        setTimeout(() => location.reload(), 1000);
-      } else {
-        mostrarNotificacion(
-          `
+            "success",
+          );
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          mostrarNotificacion(
+            `
         <span class="inline-flex items-center gap-2">
           <i data-lucide='x-circle' class='w-4 h-4'></i>
           ${t("error")}
         </span>
       `,
-          "error",
-        );
-      }
-    } catch (error) {
-      mostrarNotificacion(
-        `
+            "error",
+          );
+        }
+      } catch (error) {
+        mostrarNotificacion(
+          `
       <span class="inline-flex items-center gap-2">
         <i data-lucide='x-circle' class='w-4 h-4'></i>
         ${t("connectionError")}
       </span>
     `,
-        "error",
-      );
-    }
-  });
+          "error",
+        );
+      }
+    });
 
   window.eliminarMAC = function (mac) {
     mostrarNotificacion(
@@ -175,16 +168,18 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.editarNombre = function (mac) {
-    const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
+    const fila = document.querySelector(
+      `tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`,
+    );
     const nombreActual = fila.innerText.trim();
 
     fila.innerHTML = `
     <div class="flex items-center gap-2">
       <input type="text" value="${nombreActual}"
-        class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm 
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+        class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                text-sm w-40 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
-      <button data-i18n="guardar" 
+      <button data-i18n="guardar"
         class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
         ${t("guardar")}
       </button>
@@ -215,23 +210,23 @@ document.addEventListener("DOMContentLoaded", () => {
               <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
               <span>${t("nombre_guardado")}</span>
             </span>
-          `,
+            `,
               "success",
             );
 
-            fila.innerHTML = `
-            <span onclick="editarNombre('${mac}')" 
-              class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
-              ${nuevoNombre} <i data-lucide="pencil" class="w-4 h-4"></i>
-            </span>
-          `;
-            lucide.createIcons();
+            setTimeout(() => location.reload(), 1000);
           } else {
-            mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`, "error");
+            mostrarNotificacion(
+              `<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`,
+              "error",
+            );
           }
         })
         .catch(() => {
-          mostrarNotificacion(`<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`, "error");
+          mostrarNotificacion(
+            `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
+            "error",
+          );
         });
     });
   };
@@ -253,55 +248,144 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(actualizarHoraActual, 1000);
   actualizarHoraActual();
 
-  window.escanearAhora = function () {
+  window.escanearAhora = async () => {
+    // Mostrar "Escaneando..." por al menos 2 segundos
     mostrarNotificacion(
       `
-    <span class="inline-flex items-center gap-2">
-      <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-      ${t("scanning")}
-    </span>
-  `,
+    <div class="flex items-center gap-2">
+      <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+      <span>Escaneando la red...</span>
+    </div>
+    `,
       "info",
+      2000,
     );
 
-    fetch("/api/scan")
-      .then((res) => res.json())
-      .then((data) => {
-        setTimeout(() => {
-          mostrarNotificacion(
-            `
-          <span class="inline-flex items-center gap-2">
-            <i data-lucide="check" class="w-4 h-4 text-green-700"></i>
-            ${t("scanDone")}
-          </span>
-        `,
-            "success",
-          );
-          actualizarTabla(data);
-        }, 2000);
-      })
-      .catch(() => {
+    try {
+      const [res] = await Promise.all([
+        fetch("/api/scan"),
+        new Promise((resolve) => setTimeout(resolve, 2000)),
+      ]);
+
+      const dispositivos = await res.json();
+
+      if (Array.isArray(dispositivos)) {
         mostrarNotificacion(
           `
-        <span class="inline-flex items-center gap-2">
-          <i data-lucide="x-circle" class="w-4 h-4 text-red-700"></i>
-          ${t("scanError")}
-        </span>
-      `,
-          "error",
+        <div class="flex items-center gap-2">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
+          <span>Escaneo completado</span>
+        </div>
+        `,
+          "success",
+          2000,
         );
-      });
+        actualizarTabla(dispositivos);
+      } else {
+        mostrarNotificacion(
+          `
+        <div class="flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-yellow-500"></i>
+          <span>Respuesta inesperada del servidor</span>
+        </div>
+        `,
+          "error",
+          2000,
+        );
+      }
+    } catch (e) {
+      mostrarNotificacion(
+        `
+      <div class="flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
+        <span>Error al escanear la red</span>
+      </div>
+      `,
+        "error",
+        2000,
+      );
+      console.error(e);
+    }
   };
+
+  function actualizarTabla(dispositivos) {
+    const tbody = document.getElementById("tabla-dispositivos");
+    tbody.innerHTML = "";
+
+    dispositivos.forEach((d, index) => {
+      const rowClass =
+        (index + 1) % 2 === 0
+          ? "bg-white/70 dark:bg-white/5"
+          : "bg-[#fef6ef]/70 dark:bg-gray-800/50";
+
+      const row = document.createElement("tr");
+      row.className = `dispositivo-row transition-all duration-300 ease-in-out ${rowClass} hover:bg-white/90 dark:hover:bg-gray-700/80 hover:scale-[1.01]`;
+      row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
+      row.dataset.mac = d.mac.toLowerCase();
+      row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+
+      row.innerHTML = `
+      <td class="px-4 py-3">${d.ip}</td>
+      <td class="px-4 py-3">${d.mac}</td>
+      <td class="px-4 py-3 flex items-center gap-2">
+        <span class="text-gray-800 dark:text-gray-200">${d.nombre || "N/A"}</span>
+        <button onclick="editarNombre('${d.mac}')" 
+          class="text-blue-700 dark:text-blue-300 hover:underline transition-all duration-200">
+          <i data-lucide="pencil" class="w-4 h-4"></i>
+        </button>
+      </td>
+      <td class="px-4 py-3">${d.fabricante || "—"}</td>
+      <td class="px-4 py-3">
+        ${
+          d.confiable
+            ? `<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
+                 <i data-lucide="check-circle" class="w-4 h-4"></i> 
+                 <span data-i18n="trusted">Confiable</span>
+               </span>`
+            : `<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
+                 <i data-lucide="x-circle" class="w-4 h-4"></i> 
+                 <span data-i18n="untrusted">No confiable</span>
+               </span>`
+        }
+      </td>
+      <td id="puertos-${d.ip.replace(/\./g, "-")}" class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
+        <button onclick="verPuertos('${d.ip}')" 
+          class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
+          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+          <span data-i18n="view_ports">Ver puertos</span>
+        </button>
+      </td>
+    `;
+
+      tbody.appendChild(row);
+    });
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
 
   window.verPuertos = function (ip) {
     const modal = document.getElementById("modal-puertos");
     const contenido = document.getElementById("contenido-puertos");
 
     contenido.innerHTML = `
-    <div class="flex items-center gap-2 text-orange-800 dark:text-orange-400">
-      <i data-lucide="loader" class="animate-spin w-4 h-4"></i>
-      ${t("scanning_ports").replace("{{ip}}", ip)}
+    <div class="flex flex-col items-center gap-4 py-4 text-orange-800 dark:text-orange-400 transition-all duration-300">
+      <i data-lucide="scan" class="animate-pulse w-8 h-8"></i>
+      <span class="text-sm font-semibold tracking-wide">
+        ${t("scanning_ports").replace("{{ip}}", ip)}
+      </span>
+      <div class="w-full max-w-sm h-2 bg-orange-200 dark:bg-orange-800 rounded-full overflow-hidden shadow-inner">
+        <div class="animate-[progress_2s_ease-in-out_infinite] bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 h-full w-1/2"></div>
+      </div>
     </div>
+
+    <style>
+      @keyframes progress {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(200%); }
+      }
+    </style>
   `;
     modal.classList.remove("hidden");
     lucide.createIcons();
@@ -316,32 +400,59 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.success) {
           if (data.puertos.length === 0) {
             contenido.innerHTML = `
-            <p class="text-gray-600 dark:text-gray-300 text-center">
-              ${t("no_ports").replace("{{ip}}", ip)}
-            </p>
+            <div class="flex items-center gap-2 p-4 rounded-lg bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 shadow-sm">
+              <i data-lucide="check-circle" class="w-5 h-5"></i>
+              <span class="text-sm">${t("no_ports").replace("{{ip}}", ip)}</span>
+            </div>
           `;
           } else {
-            const lista = data.puertos.map((p) => `<li>${p.puerto} (${p.servicio})</li>`).join("");
+            const lista = data.puertos
+              .map(
+                (p) => `
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="server" class="w-4 h-4 text-orange-500"></i>
+                  <span class="font-mono text-sm font-semibold">${p.puerto}</span>
+                </div>
+                <span class="text-xs text-gray-600 dark:text-gray-300">${p.servicio}</span>
+              </div>`,
+              )
+              .join("");
+
             contenido.innerHTML = `
-            <p class="mb-2">${t("host_label")}: <strong>${ip}</strong></p>
-            <ul class="list-disc list-inside space-y-1">${lista}</ul>
+            <div class="mb-4">
+              <p class="text-sm font-medium mb-2">
+                ${t("host_label")}:
+              </p>
+              <span class="px-3 py-1.5 inline-block rounded-md bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 font-mono text-sm">
+                ${ip}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${lista}
+            </div>
           `;
           }
         } else {
-          contenido.innerHTML = `<p class="text-red-600 dark:text-red-400">${data.message}</p>`;
+          contenido.innerHTML = `
+          <div class="flex items-center gap-2 p-4 rounded-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 shadow-sm">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <span class="text-sm">${data.message}</span>
+          </div>
+        `;
         }
         lucide.createIcons();
       })
       .catch(() => {
         contenido.innerHTML = `
-        <p class="text-red-600 dark:text-red-400">
-          ${t("error_ports").replace("{{ip}}", ip)}
-        </p>
+        <div class="flex items-center gap-2 p-4 rounded-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 shadow-sm">
+          <i data-lucide="x-circle" class="w-5 h-5"></i>
+          <span class="text-sm">${t("error_ports").replace("{{ip}}", ip)}</span>
+        </div>
       `;
         lucide.createIcons();
       });
   };
-
   const inputNombre = document.getElementById("filtro-nombre");
   const inputMac = document.getElementById("filtro-mac");
   const selectConfianza = document.getElementById("filtro-confianza");
@@ -359,9 +470,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const coincideNombre = nombre.includes(filtroNombre);
       const coincideMac = mac.includes(filtroMac);
-      const coincideConfianza = filtroConfianza === "" || confianza === filtroConfianza;
+      const coincideConfianza =
+        filtroConfianza === "" || confianza === filtroConfianza;
 
-      fila.style.display = coincideNombre && coincideMac && coincideConfianza ? "" : "none";
+      fila.style.display =
+        coincideNombre && coincideMac && coincideConfianza ? "" : "none";
     });
   }
 
@@ -369,54 +482,19 @@ document.addEventListener("DOMContentLoaded", () => {
   inputMac.addEventListener("input", aplicarFiltros);
   selectConfianza.addEventListener("change", aplicarFiltros);
 
-  function actualizarTabla(dispositivos) {
-    const tabla = document.getElementById("tabla-dispositivos");
-    tabla.innerHTML = "";
+  const toggleMenu = document.getElementById("toggleMenu");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
 
-    dispositivos.forEach((d) => {
-      const row = document.createElement("tr");
-      row.className = "dispositivo-row transition-colors duration-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700/60";
+  toggleMenu.addEventListener("click", () => {
+    sidebar.classList.toggle("-translate-x-full");
+    overlay.classList.toggle("hidden");
+  });
 
-      row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
-      row.dataset.mac = d.mac.toLowerCase();
-      row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
-
-      row.innerHTML = `
-  <td class="px-4 py-3">${d.ip}</td>
-  <td class="px-4 py-3">${d.mac}</td>
-  <td class="px-4 py-3">
-    <span onclick="editarNombre('${d.mac}')" class="cursor-pointer text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1">
-      ${d.nombre ? d.nombre : "N/A"} <i data-lucide="pencil" class="w-4 h-4"></i>
-    </span>
-  </td>
-  <td class="px-4 py-3">${d.fabricante}</td>
-  <td class="px-4 py-3">
-    ${
-      d.confiable
-        ? `<span class='inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium'>
-          <i data-lucide="check-circle" class="w-4 h-4"></i>
-          ${t("trusted")}
-        </span>`
-        : `<span class='inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium'>
-          <i data-lucide="x-circle" class="w-4 h-4"></i>
-          ${t("untrusted")}
-        </span>`
-    }
-    <br/>
-    <button onclick="verPuertos('${d.ip}')" class="inline-flex items-center gap-2 mt-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-      <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-      ${t("viewPorts")}
-    </button>
-  </td>
-`;
-
-      tabla.appendChild(row);
-    });
-
-    document.getElementById("contador-dispositivos").textContent = dispositivos.length;
-    lucide.createIcons();
-    aplicarFiltros();
-  }
+  overlay.addEventListener("click", () => {
+    sidebar.classList.add("-translate-x-full");
+    overlay.classList.add("hidden");
+  });
 
   setInterval(() => window.escanearAhora(), 60000);
 });
