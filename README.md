@@ -2,13 +2,22 @@
 
 ![Logo LANGuard](https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5)
 
-Aplicación web autohospedada para escaneo y monitoreo avanzado de tu red LAN.
+Aplicación web autohospedada para escaneo y monitoreo avanzado de tu red LAN
 
-Esta herramienta permite detectar accesos no autorizados en tiempo real, marcando cada dispositivo como confiable o no confiable según la configuración que definas.
-Si se detecta un dispositivo no confiable, la aplicación envía notificaciones automáticas por Telegram para alertarte de forma inmediata.
+Esta herramienta te permite detectar accesos no autorizados en tiempo real, clasificando cada dispositivo como confiable o no confiable según la configuración que definas.
+Si se detecta un dispositivo no confiable, la aplicación enviará notificaciones automáticas por Telegram, alertándote de inmediato.
 
-Integra el poder de Nmap y ARP para una detección más precisa, sin necesidad de seleccionar manualmente la interfaz de red, ya que identifica automáticamente el segmento de red del servidor donde se ejecuta el servicio.
-Además, mantiene un historial de detecciones, permite asignar nombres personalizados a dispositivos, y ofrece una interfaz moderna y adaptable para que puedas administrar y supervisar tu red de forma sencilla y visualmente atractiva.
+Integra el poder de Nmap y ARP para lograr una detección más precisa, sin necesidad de elegir manualmente la interfaz de red, ya que identifica de forma automática el segmento de red del servidor donde se ejecuta el servicio.
+
+Entre sus principales características se incluyen:
+
+Historial de detecciones para un mejor seguimiento.
+
+Posibilidad de asignar nombres personalizados a los dispositivos.
+
+Interfaz moderna, responsiva y fácil de usar, diseñada para una administración intuitiva de la red.
+
+La aplicación fue diseñada para usuarios de habla hispana, sin embargo ya soporta idioma inglés, lo que amplía su alcance a usuarios de habla inglesa. Se planea añadir más idiomas en el futuro, al tiempo que se perfeccionan las traducciones existentes.
 
 ---
 
