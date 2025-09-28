@@ -12,163 +12,122 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-        												        darkMode: "class",
-        												        theme: {
-        												          extend: {
-        												            colors: {
-        												              accent: "#f4a261",
-        												              highlight: "#e76f51",
-        												              bgBone: "#f8f6f2",
-        												            },
-        fontFamily: {
-          sans: ["Poppins", "Inter", "sans-serif"],
-        },
-        
-        												          },
-        												        },
-        												      };
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                accent: "#f4a261",
+                highlight: "#e76f51",
+                bgBone: "#f8f6f2",
+              },
+              fontFamily: {
+                sans: ["Poppins", "Inter", "sans-serif"],
+              },
+            },
+          },
+        };
     </script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @keyframes fade-in {
-        												        from {
-        												          opacity: 0;
-        												          transform: translateY(10px);
-        												        }
-        												        to {
-        												          opacity: 1;
-        												          transform: translateY(0);
-        												        }
-        												      }
-        												      @keyframes pulse-glow {
-        												        0%,
-        												        100% {
-        												          box-shadow: 0 0 5px rgba(231, 111, 81, 0.3);
-        												        }
-        												        50% {
-        												          box-shadow: 0 0 12px rgba(231, 111, 81, 0.5);
-        												        }
-        												      }
-        												      .animate-fade-in {
-        												        animation: fade-in 0.6s ease-out forwards;
-        												      }
-        												      .animate-pulse-glow {
-        												        animation: pulse-glow 2s infinite;
-        												      }
-        												      .custom-scrollbar::-webkit-scrollbar {
-        												        width: 6px;
-        												      }
-        												      .custom-scrollbar::-webkit-scrollbar-thumb {
-        												        background: rgba(244, 162, 97, 0.7);
-        												        border-radius: 10px;
-        												      }
-        												      .custom-scrollbar::-webkit-scrollbar-track {
-        												        background: transparent;
-        												      }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+    
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+    
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out forwards;
+        }
+    
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+    
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(244, 162, 97, 0.7);
+          border-radius: 10px;
+        }
+    
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
     </style>
 </head>
 
 <body class="bg-bgBone text-gray-800 font-sans antialiased dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 dark:text-white">
-    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-gray-800/70 h-20">
-        <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
 
+    <button id="toggleMenu" class="fixed top-4 left-4 z-50 bg-accent text-white p-2 rounded-lg shadow-lg sm:hidden">
+        <i data-lucide="menu"></i>
+    </button>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden sm:hidden"></div>
+
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-gray-900/80 backdrop-blur-lg border-r border-gray-200 dark:border-gray-700 flex flex-col z-50 transform -translate-x-full sm:translate-x-0 transition-transform duration-300">
+
+        <div class="h-20 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
             <span style="font-family: 'Rajdhani', sans-serif;" class="text-3xl font-bold tracking-tight">
-  <span class="text-accent">LAN</span><span class="text-gray-800 dark:text-gray-100">Guard</span>
+        <span class="text-accent">LAN</span><span class="text-gray-800 dark:text-gray-100">Guard</span>
             </span>
+        </div>
 
-
-
-
-
-
-
-            <button id="menu-toggle" class="sm:hidden text-highlight focus:outline-none" aria-label="Abrir menú">
-                <i data-lucide="menu" class="w-6 h-6"></i>
+        <nav class="flex-1 px-4 py-6 space-y-4 overflow-y-auto custom-scrollbar">
+            <button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
+                <i data-lucide="scan" class="w-5 h-5"></i>
+                <span data-i18n="scan">Escanear</span>
             </button>
 
-            <div class="hidden sm:flex items-center gap-3" id="menu-desktop">
-                <button onclick="escanearAhora()" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105 focus:ring-2 focus:ring-highlight focus:outline-none animate-pulse-glow">
-                    <i data-lucide="scan" class="w-5 h-5"></i>
-                    <span data-i18n="scan">Escanear</span>
-                </button>
-
-                <div class="relative inline-block">
-                    <select class="language-select appearance-none text-sm border border-accent rounded-lg px-3 py-2 pr-9
-  bg-white dark:bg-gray-800 dark:text-white
-  focus:ring-2 focus:ring-accent cursor-pointer">
-                        <option value="es">Español</option>
-                        <option value="en">English</option>
-                    </select>
-                    <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
-      <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </span>
-                </div>
-
-                <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
-                    <i data-lucide="log-out"></i>
-                    <span data-i18n="logout">Cerrar sesión</span>
-                </a>
-
-                <button onclick="toggleDarkMode()" class="text-highlight hover:text-accent flex items-center transition">
-                    <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
-                    <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
-                </button>
+            <div class="relative">
+                <select class="language-select appearance-none w-full text-sm border border-accent rounded-lg px-3 py-2 pr-9 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent cursor-pointer">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+          <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
             </div>
-        </div>
-    </nav>
 
-    <div id="menu-mobile" class="sm:hidden hidden px-4 pb-4 space-y-3 animate-fade-in bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-b-xl shadow-md border-t border-gray-200 dark:border-gray-700">
-        <button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm transition hover:scale-105
-           sm:bg-transparent sm:text-accent sm:border sm:border-accent sm:hover:bg-accent sm:hover:text-white sm:shadow-none">
-            <i data-lucide="scan"></i>
-            <span data-i18n="scan">Escanear</span>
-        </button>
+            <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm border border-accent">
+                <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
+                <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
+                <span data-i18n="changeTheme">Cambiar tema</span>
+            </button>
+        </nav>
 
-        <div class="relative inline-block">
-            <select class="language-select appearance-none w-full text-sm border border-accent rounded-xl px-4 py-2 pr-9
-  bg-white dark:bg-gray-800 dark:text-white
-  focus:ring-2 focus:ring-accent cursor-pointer shadow-md">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-            </select>
-            <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-    <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-    </svg>
-  </span>
-        </div>
-
-
-        <a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm
-           sm:bg-transparent sm:text-red-500 sm:border sm:border-red-500 sm:hover:bg-red-500 sm:hover:text-white sm:shadow-none">
-            <i data-lucide="log-out"></i>
-            <span data-i18n="logout">Cerrar sesión</span>
-        </a>
-
-        <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-xl shadow-md flex items-center gap-2 text-sm border border-accent
-           sm:border sm:border-gray-400 sm:text-gray-700 dark:sm:text-gray-200 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-700 sm:shadow-none">
-            <i id="icono-luna-mobile" data-lucide="moon" class="w-5 h-5"></i>
-            <i id="icono-sol-mobile" data-lucide="sun" class="w-5 h-5 hidden"></i>
-            <span data-i18n="changeTheme">Cambiar tema</span>
-        </button>
-    </div>
-
-
-
-    <main class="max-w-7xl mx-auto px-4 py-10">
-        <header class="text-center mb-10 max-w-3xl mx-auto animate-fade-in">
-            <p class="text-2xl font-semibold text-gray-700 dark:text-gray-200 leading-relaxed" data-i18n="header">Escaneo avanzado de red LAN: <span class="text-accent">detecta accesos no autorizados</span> y evalúa la <span class="text-highlight">confianza</span> de cada dispositivo conectado.</p>
-        </header>
-
-        <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-            <p class="flex items-center gap-2 text-gray-700 dark:text-gray-200"><i data-lucide="list" class="w-5 h-5 text-accent"></i> <span data-i18n="detectedDevices">Dispositivos detectados:</span> <strong id="contador-dispositivos">{{ dispositivos|length }}</strong></p>
-            <div class="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                <i data-lucide="clock" class="w-5 h-5 text-accent"></i>
+        <div class="px-4 py-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+            <!-- Hora -->
+            <div class="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm">
+                <i data-lucide="clock" class="w-4 h-4 text-accent"></i>
                 <span id="horaActual">--:--:--</span>
             </div>
+
+            <a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
+                <i data-lucide="log-out"></i>
+                <span data-i18n="logout">Cerrar sesión</span>
+            </a>
+
+            <p class="text-center text-xs text-gray-500 dark:text-gray-400">
+                LANGuard Beta v2.0.0
+            </p>
         </div>
+    </aside>
+
+    <main class="sm:ml-64 ml-0 px-6 py-10 animate-fade-in">
+        <header class="text-center mb-10 max-w-3xl mx-auto">
+            <p class="text-2xl font-semibold text-gray-700 dark:text-gray-200 leading-relaxed" data-i18n="header">
+                Escaneo avanzado de red LAN:
+                <span class="text-accent">detecta accesos no autorizados</span> y evalúa la
+                <span class="text-highlight">confianza</span> de cada dispositivo conectado.
+            </p>
+        </header>
+
+
 
         <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" data-i18n="filterName" class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none"
@@ -192,6 +151,8 @@
                             <th class="px-4 py-3 text-left font-medium"><i data-lucide="tag" class="inline-block w-4 h-4"></i> <span data-i18n="name">Nombre</span></th>
                             <th class="px-4 py-3 text-left font-medium"><i data-lucide="factory" class="inline-block w-4 h-4"></i> <span data-i18n="manufacturer">Fabricante</span></th>
                             <th class="px-4 py-3 text-left font-medium"><i data-lucide="shield" class="inline-block w-4 h-4"></i> <span data-i18n="trust">Confianza</span></th>
+                            <th class="px-4 py-3 text-left font-medium"><i data-lucide="server" class="inline-block w-4 h-4"></i><span data-i18n="ports">Puertos</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
@@ -217,6 +178,14 @@
                                 <span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300"> <i data-lucide="x-circle" class="w-4 h-4"></i> <span data-i18n="untrusted">No confiable</span>                                </span>
                                 {% endif %}
                             </td>
+                            <td id="puertos-{{ d.ip | replace('.', '-') }}" class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
+                                <button onclick="verPuertos('{{ d.ip }}')" class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
+                                    <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+                                    <span data-i18n="view_ports">Ver puertos</span>
+                                </button>
+                            </td>
+
+
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -253,8 +222,7 @@
 
     <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
 
-    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
 
     <div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
@@ -270,6 +238,11 @@
             <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+
 </body>
 
 </html>
