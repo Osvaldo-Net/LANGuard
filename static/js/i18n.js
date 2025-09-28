@@ -45,6 +45,8 @@ const translations = {
     success: "MAC agregada con éxito",
     error: "Error al agregar la MAC",
     eliminando: "Eliminando MAC...",
+    view_ports: "Ver puertos",
+    ports: "Puertos",
   },
   en: {
     scan: "Scan",
@@ -91,6 +93,8 @@ const translations = {
     success: "MAC successfully added",
     error: "Failed to add MAC",
     eliminando: "Deleting MAC...",
+    view_ports: "View ports",
+    ports: "Ports",
   },
 };
 
