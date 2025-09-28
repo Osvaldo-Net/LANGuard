@@ -21,16 +21,40 @@ La aplicación fue diseñada para usuarios de habla hispana, sin embargo ya sopo
 
 ---
 
-## Credenciales por defecto
+## Docker Compose
 
-- **Usuario:** `admin@example.com`
-- **Contraseña:** `admin`
+```bash
+services:
+  languard:
+    container_name: LANGuard
+    image: netosvaltools/languard:latest
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data:/app/data
+    user: "1000:1000"
+    network_mode: "host"
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    restart: unless-stopped
+```
 
 Por seguridad, cambie la `SECRET_KEY` generando una nueva con:
 
 ```bash
 openssl rand -hex 32
 ```
+
+---
+
+## Credenciales por defecto
+
+- **Usuario:** `admin@example.com`
+- **Contraseña:** `admin`
 
 ---
 
