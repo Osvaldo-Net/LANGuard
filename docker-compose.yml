@@ -10,7 +10,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./data:/app/data
-    user: "1000:1000"
     network_mode: "host"
     cap_add:
       - NET_RAW
