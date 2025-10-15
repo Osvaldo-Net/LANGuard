@@ -1,179 +1,187 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const root = document.documentElement;
-  const iconoTema = document.getElementById("icono-tema");
+			const root = document.documentElement;
+			const iconoTema = document.getElementById("icono-tema");
 
-  function aplicarTemaDesdeStorage() {
-    const modoOscuro = localStorage.getItem("modoOscuro") === "true";
-    root.classList.toggle("dark", modoOscuro);
-    actualizarIconoTema();
-  }
+			function aplicarTemaDesdeStorage() {
+				const modoOscuro = localStorage.getItem("modoOscuro") === "true";
+				root.classList.toggle("dark", modoOscuro);
+				actualizarIconoTema();
+			}
 
-  function actualizarIconoTema() {
-    const esOscuro = root.classList.contains("dark");
+			function actualizarIconoTema() {
+				const esOscuro = root.classList.contains("dark");
 
-    document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
-    document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
+				document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
+				document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
 
-    const iconoLunaMobile = document.getElementById("icono-luna-mobile");
-    const iconoSolMobile = document.getElementById("icono-sol-mobile");
+				const iconoLunaMobile = document.getElementById("icono-luna-mobile");
+				const iconoSolMobile = document.getElementById("icono-sol-mobile");
 
-    if (iconoLunaMobile && iconoSolMobile) {
-      iconoLunaMobile.classList.toggle("hidden", esOscuro);
-      iconoSolMobile.classList.toggle("hidden", !esOscuro);
-    }
-  }
+				if (iconoLunaMobile && iconoSolMobile) {
+					iconoLunaMobile.classList.toggle("hidden", esOscuro);
+					iconoSolMobile.classList.toggle("hidden", !esOscuro);
+				}
+			}
 
-  window.toggleDarkMode = function () {
-    root.classList.toggle("dark");
-    localStorage.setItem("modoOscuro", root.classList.contains("dark"));
-    actualizarIconoTema();
-  };
+			window.toggleDarkMode = function() {
+				root.classList.toggle("dark");
+				localStorage.setItem("modoOscuro", root.classList.contains("dark"));
+				actualizarIconoTema();
+			};
 
-  aplicarTemaDesdeStorage();
-  lucide.createIcons();
+			aplicarTemaDesdeStorage();
+			lucide.createIcons();
 
-  function mostrarNotificacion(mensaje, tipo = "info") {
-    const noti = document.getElementById("notificacion");
-    const colores = {
-      info: "bg-orange-100 text-orange-800",
-      success: "bg-green-100 text-green-800",
-      error: "bg-red-100 text-red-800",
-      warning: "bg-yellow-100 text-yellow-800",
-    };
+			function mostrarNotificacion(mensaje, tipo = "info") {
+				const noti = document.getElementById("notificacion");
+				const colores = {
+					info: "bg-orange-100 text-orange-800",
+					success: "bg-green-100 text-green-800",
+					error: "bg-red-100 text-red-800",
+					warning: "bg-yellow-100 text-yellow-800",
+				};
 
-    noti.innerHTML = mensaje;
-    noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
-    noti.classList.remove("hidden");
+				noti.innerHTML = mensaje;
+				noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
+				noti.classList.remove("hidden");
 
-    lucide.createIcons();
-    setTimeout(() => noti.classList.add("hidden"), 10000);
-  }
+				lucide.createIcons();
+				setTimeout(() => noti.classList.add("hidden"), 10000);
+			}
 
-  window.cerrarModal = function () {
-    document.getElementById("modal-puertos").classList.add("hidden");
-  };
+			window.cerrarModal = function() {
+				document.getElementById("modal-puertos").classList.add("hidden");
+			};
 
-  document
-    .getElementById("form-agregar")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const mac = document.getElementById("input-mac").value.trim();
-      if (!mac) return;
+			document
+				.getElementById("form-agregar")
+				.addEventListener("submit", async(e) => {
+					e.preventDefault();
+					const mac = document.getElementById("input-mac").value.trim();
+					if (!mac) return;
 
-      mostrarNotificacion(
-        `
+					mostrarNotificacion(
+						`
     <span class="inline-flex items-center gap-2">
       <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
       ${t("adding")}
     </span>
   `,
-        "info",
-      );
+						"info",
+					);
 
-      try {
-        const res = await fetch("/api/agregar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mac }),
-        });
-        const data = await res.json();
+					try {
+						const res = await fetch("/api/agregar", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								mac
+							}),
+						});
+						const data = await res.json();
 
-        if (data.success) {
-          mostrarNotificacion(
-            `
+						if (data.success) {
+							mostrarNotificacion(
+								`
         <span class="inline-flex items-center gap-2">
           <i data-lucide='check' class='w-4 h-4'></i>
           ${t("success")}
         </span>
       `,
-            "success",
-          );
-          setTimeout(() => location.reload(), 1000);
-        } else {
-          mostrarNotificacion(
-            `
+								"success",
+							);
+							setTimeout(() => location.reload(), 1000);
+						} else {
+							mostrarNotificacion(
+								`
         <span class="inline-flex items-center gap-2">
           <i data-lucide='x-circle' class='w-4 h-4'></i>
           ${t("error")}
         </span>
       `,
-            "error",
-          );
-        }
-      } catch (error) {
-        mostrarNotificacion(
-          `
+								"error",
+							);
+						}
+					} catch (error) {
+						mostrarNotificacion(
+							`
       <span class="inline-flex items-center gap-2">
         <i data-lucide='x-circle' class='w-4 h-4'></i>
         ${t("connectionError")}
       </span>
     `,
-          "error",
-        );
-      }
-    });
+							"error",
+						);
+					}
+				});
 
-  window.eliminarMAC = function (mac) {
-    mostrarNotificacion(
-      `
+			window.eliminarMAC = function(mac) {
+				mostrarNotificacion(
+					`
     <span class="inline-flex items-center gap-2">
       <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
       ${t("eliminando")}
     </span>
   `,
-      "info",
-    );
+					"info",
+				);
 
-    fetch("/api/eliminar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mac }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          mostrarNotificacion(
-            `
+				fetch("/api/eliminar", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							mac
+						}),
+					})
+					.then((res) => res.json())
+					.then((data) => {
+						if (data.success) {
+							mostrarNotificacion(
+								`
           <span class="inline-flex items-center gap-2">
             <i data-lucide='check' class='w-4 h-4'></i>
             ${data.message}
           </span>
         `,
-            "success",
-          );
-          setTimeout(() => location.reload(), 1000);
-        } else {
-          mostrarNotificacion(
-            `
+								"success",
+							);
+							setTimeout(() => location.reload(), 1000);
+						} else {
+							mostrarNotificacion(
+								`
           <span class="inline-flex items-center gap-2">
             <i data-lucide='x-circle' class='w-4 h-4'></i>
             ${data.message}
           </span>
         `,
-            "error",
-          );
-        }
-      })
-      .catch(() =>
-        mostrarNotificacion(
-          `
+								"error",
+							);
+						}
+					})
+					.catch(() =>
+						mostrarNotificacion(
+							`
       <span class="inline-flex items-center gap-2">
         <i data-lucide='x-circle' class='w-4 h-4'></i>
         ${t("connectionError")}
       </span>
     `,
-          "error",
-        ),
-      );
-  };
+							"error",
+						),
+					);
+			};
 
-  window.editarNombre = function (mac) {
-    const fila = document.querySelector(
-      `tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`,
-    );
-    const nombreActual = fila.innerText.trim();
+			window.editarNombre = function(mac) {
+				const fila = document.querySelector(
+					`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`,
+				);
+				const nombreActual = fila.innerText.trim();
 
-    fila.innerHTML = `
+				fila.innerHTML = `
     <div class="flex items-center gap-2">
       <input type="text" value="${nombreActual}"
         class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm
@@ -186,150 +194,153 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
 
-    const lang = localStorage.getItem("lang") || "es";
-    setLanguage(lang);
+				const lang = localStorage.getItem("lang") || "es";
+				setLanguage(lang);
 
-    const input = fila.querySelector("input");
-    const boton = fila.querySelector("button");
+				const input = fila.querySelector("input");
+				const boton = fila.querySelector("button");
 
-    boton.addEventListener("click", () => {
-      const nuevoNombre = input.value.trim();
-      if (!nuevoNombre) return;
+				boton.addEventListener("click", () => {
+					const nuevoNombre = input.value.trim();
+					if (!nuevoNombre) return;
 
-      fetch("/api/nombrar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mac: mac, nombre: nuevoNombre }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
-            mostrarNotificacion(
-              `
+					fetch("/api/nombrar", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								mac: mac,
+								nombre: nuevoNombre
+							}),
+						})
+						.then((r) => r.json())
+						.then((data) => {
+							if (data.success) {
+								mostrarNotificacion(
+									`
             <span class="flex items-center gap-2">
               <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
               <span>${t("nombre_guardado")}</span>
             </span>
             `,
-              "success",
-            );
+									"success",
+								);
 
-            setTimeout(() => location.reload(), 1000);
-          } else {
-            mostrarNotificacion(
-              `<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`,
-              "error",
-            );
-          }
-        })
-        .catch(() => {
-          mostrarNotificacion(
-            `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
-            "error",
-          );
-        });
-    });
-  };
+								setTimeout(() => location.reload(), 1000);
+							} else {
+								mostrarNotificacion(
+									`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`,
+									"error",
+								);
+							}
+						})
+						.catch(() => {
+							mostrarNotificacion(
+								`<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
+								"error",
+							);
+						});
+				});
+			};
 
-  function actualizarHoraActual() {
-    const ahora = new Date();
-    const formateada = ahora.toLocaleString("es-CO", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-    document.getElementById("horaActual").textContent = formateada;
-  }
+			function actualizarHoraActual() {
+				const ahora = new Date();
+				const formateada = ahora.toLocaleString("es-CO", {
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit",
+					hour12: true,
+				});
+				document.getElementById("horaActual").textContent = formateada;
+			}
 
-  setInterval(actualizarHoraActual, 1000);
-  actualizarHoraActual();
+			setInterval(actualizarHoraActual, 1000);
+			actualizarHoraActual();
 
-  window.escanearAhora = async () => {
-    mostrarNotificacion(
-      `
+			window.escanearAhora = async() => {
+				mostrarNotificacion(
+					`
     <div class="flex items-center gap-2">
       <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
       <span>${t("scanning")}</span>
     </div>
     `,
-      "info",
-      2000,
-    );
+					"info",
+					2000,
+				);
 
-    try {
-      const [res] = await Promise.all([
-        fetch("/api/scan"),
-        new Promise((resolve) => setTimeout(resolve, 2000)),
-      ]);
+				try {
+					const [res] = await Promise.all([
+						fetch("/api/scan"),
+						new Promise((resolve) => setTimeout(resolve, 2000)),
+					]);
 
-      const dispositivos = await res.json();
+					const dispositivos = await res.json();
 
-      if (Array.isArray(dispositivos)) {
-        mostrarNotificacion(
-          `
+					if (Array.isArray(dispositivos)) {
+						mostrarNotificacion(
+							`
         <div class="flex items-center gap-2">
           <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
           <span>${t("scanDone")}</span>
         </div>
         `,
-          "success",
-          2000,
-        );
-        actualizarTabla(dispositivos);
-      } else {
-        mostrarNotificacion(
-          `
+							"success",
+							2000,
+						);
+						actualizarTabla(dispositivos);
+					} else {
+						mostrarNotificacion(
+							`
         <div class="flex items-center gap-2">
           <i data-lucide="alert-circle" class="w-5 h-5 text-yellow-500"></i>
           <span>${t("scanError")}</span>
         </div>
         `,
-          "error",
-          2000,
-        );
-      }
-    } catch (e) {
-      mostrarNotificacion(
-        `
+							"error",
+							2000,
+						);
+					}
+				} catch (e) {
+					mostrarNotificacion(
+						`
       <div class="flex items-center gap-2">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
         <span>${t("scanError")}</span>
       </div>
       `,
-        "error",
-        2000,
-      );
-      console.error(e);
-    }
-  };
+						"error",
+						2000,
+					);
+					console.error(e);
+				}
+			};
 
-  function actualizarTabla(dispositivos) {
-    const tbody = document.getElementById("tabla-dispositivos");
-    tbody.innerHTML = "";
+			function actualizarTabla(dispositivos) {
+				const tbody = document.getElementById("tabla-dispositivos");
+				tbody.innerHTML = "";
 
-    dispositivos.forEach((d, index) => {
-      const rowClass =
-        (index + 1) % 2 === 0
-          ? "bg-white/70 dark:bg-white/5"
-          : "bg-[#fef6ef]/70 dark:bg-gray-800/50";
+				dispositivos.forEach((d) => {
+							const row = document.createElement("tr");
+							row.className = `
+      transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row
+      border-b border-gray-100 dark:border-gray-700
+    `;
+							row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
+							row.dataset.mac = d.mac.toLowerCase();
+							row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
-      const row = document.createElement("tr");
-      row.className = `dispositivo-row transition-all duration-300 ease-in-out ${rowClass} hover:bg-white/90 dark:hover:bg-gray-700/80 hover:scale-[1.01]`;
-      row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
-      row.dataset.mac = d.mac.toLowerCase();
-      row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
-
-      row.innerHTML = `
+							row.innerHTML = `
       <td class="px-4 py-3">${d.ip}</td>
       <td class="px-4 py-3">${d.mac}</td>
       <td class="px-4 py-3 flex items-center gap-2">
         <span class="text-gray-800 dark:text-gray-200">${d.nombre || "N/A"}</span>
         <button onclick="editarNombre('${d.mac}')" 
-          class="text-blue-700 dark:text-blue-300 hover:underline transition-all duration-200">
+          class="text-accent hover:text-highlight transition">
           <i data-lucide="pencil" class="w-4 h-4"></i>
         </button>
       </td>
@@ -337,32 +348,30 @@ document.addEventListener("DOMContentLoaded", () => {
       <td class="px-4 py-3">
         ${
           d.confiable
-            ? `<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-green-200/20 dark:text-green-300">
-                 <i data-lucide="check-circle" class="w-4 h-4"></i> 
-                 <span data-i18n="trusted">Confiable</span>
-               </span>`
-            : `<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-red-200/20 dark:text-red-300">
-                 <i data-lucide="x-circle" class="w-4 h-4"></i> 
-                 <span data-i18n="untrusted">No confiable</span>
-               </span>`
+            ? `<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm dark:bg-green-200/20 dark:text-green-300">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
+              </span>`
+            : `<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm dark:bg-red-200/20 dark:text-red-300">
+                <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
+              </span>`
         }
       </td>
-      <td id="puertos-${d.ip.replace(/\./g, "-")}" class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
-        <button onclick="verPuertos('${d.ip}')" 
+      <td id="puertos-${d.ip.replace(/\./g, "-")}" class="px-4 py-3">
+        <button onclick="verPuertos('${d.ip}')"
           class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-          <span data-i18n="view_ports">Ver puertos</span>
+          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i> Ver puertos
         </button>
       </td>
     `;
 
-      tbody.appendChild(row);
-    });
+    tbody.appendChild(row);
+  });
 
-    if (window.lucide) {
-      lucide.createIcons();
-    }
+  if (window.lucide) {
+    lucide.createIcons();
   }
+}
+
 
   window.verPuertos = function (ip) {
     const modal = document.getElementById("modal-puertos");
