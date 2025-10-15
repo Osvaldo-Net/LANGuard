@@ -230,12 +230,11 @@ def obtener_fabricante(mac):
     except Exception:
         fabricante = "Desconocido"
 
-  if fabricante != "Desconocido":
+    if fabricante != "Desconocido":
         VENDOR_CACHE[oui] = fabricante
         guardar_json(RUTA_CACHE_VENDORS, VENDOR_CACHE)
 
     return fabricante
-
 
 
 # -------------------------------
