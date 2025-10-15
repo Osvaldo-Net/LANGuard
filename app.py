@@ -225,16 +225,17 @@ def obtener_fabricante(mac):
     if oui in VENDOR_CACHE:
         return VENDOR_CACHE[oui]
     try:
-        resp = requests.get(f"https://api.maclookup.app/v2/macs/{mac}",
-                            timeout=5)
-        fabricante = resp.json().get(
-            "company",
-            "Desconocido") if resp.status_code == 200 else "Desconocido"
+        resp = requests.get(f"https://api.maclookup.app/v2/macs/{mac}", timeout=5)
+        fabricante = resp.json().get("company", "Desconocido") if resp.status_code == 200 else "Desconocido"
     except Exception:
         fabricante = "Desconocido"
-    VENDOR_CACHE[oui] = fabricante
-    guardar_json(RUTA_CACHE_VENDORS, VENDOR_CACHE)
+
+  if fabricante != "Desconocido":
+        VENDOR_CACHE[oui] = fabricante
+        guardar_json(RUTA_CACHE_VENDORS, VENDOR_CACHE)
+
     return fabricante
+
 
 
 # -------------------------------
