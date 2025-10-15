@@ -10,56 +10,68 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
-		      darkMode: "class",
-		      theme: {
-		        extend: {
-		          colors: {
-		            accent: "#f4a261",   
-		            highlight: "#e76f51", 
-		            bgBone: "#f8f6f2",   
-		            dark1: "#202123",    
-		            dark2: "#2D2D2F",    
-		            dark3: "#343541"    
-		          },
-		          fontFamily: {
-		            sans: ["Poppins", "Inter", "sans-serif"],
-		          },
-		        },
-		      },
-		    };
+				      darkMode: "class",
+				      theme: {
+				        extend: {
+				          colors: {
+				            accent: "#f4a261",   
+				            highlight: "#e76f51", 
+				            bgBone: "#f8f6f2",   
+				            dark1: "#202123",    
+				            dark2: "#2D2D2F",    
+				            dark3: "#343541"    
+				          },
+				          fontFamily: {
+				            sans: ["Poppins", "Inter", "sans-serif"],
+				          },
+				        },
+				      },
+				    };
+				
 		
 	</script>
 
 	<style>
 		@keyframes fade-in {
-		      from {
-		        opacity: 0;
-		        transform: translateY(10px);
-		      }
+				      from {
+				        opacity: 0;
+				        transform: translateY(10px);
+				      }
+				
+				      to {
+				        opacity: 1;
+				        transform: translateY(0);
+				      }
+				    }
+				
+				    .animate-fade-in {
+				      animation: fade-in 0.6s ease-out forwards;
+				    }
+				
+				    .custom-scrollbar::-webkit-scrollbar {
+				      width: 6px;
+				    }
+				
+				    .custom-scrollbar::-webkit-scrollbar-thumb {
+				      background: rgba(244, 162, 97, 0.7);
+				      border-radius: 10px;
+				    }
+				
+				    .custom-scrollbar::-webkit-scrollbar-track {
+				      background: transparent;
+				    }
 		
-		      to {
-		        opacity: 1;
-		        transform: translateY(0);
-		      }
-		    }
+		  .ocultar-scroll::-webkit-scrollbar {
+		    display: none;
+		  }
 		
-		    .animate-fade-in {
-		      animation: fade-in 0.6s ease-out forwards;
-		    }
+		  .ocultar-scroll {
+		    -ms-overflow-style: none;  
+		    scrollbar-width: none;       }
 		
-		    .custom-scrollbar::-webkit-scrollbar {
-		      width: 6px;
-		    }
-		
-		    .custom-scrollbar::-webkit-scrollbar-thumb {
-		      background: rgba(244, 162, 97, 0.7);
-		      border-radius: 10px;
-		    }
-		
-		    .custom-scrollbar::-webkit-scrollbar-track {
-		      background: transparent;
-		    }
-		
+	</style>
+
+
 	</style>
 </head>
 
@@ -146,7 +158,7 @@
       </select>
 		</div>
 
-		<section class="overflow-x-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur-lg shadow-md dark:bg-dark2/60">
+		<section class="overflow-x-auto ocultar-scroll rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur-lg shadow-md dark:bg-dark2/60">
 			<table class="min-w-[640px] w-full table-auto text-sm">
 				<thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
 					<tr>
