@@ -144,12 +144,15 @@
 
 
         <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
-            <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
+            <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" data-i18n="filterName" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none"
+            />
+            <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none"
+            />
             <select id="filtro-confianza" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none">
-                <option value="">Todos</option>
-                <option value="confiable">Confiables</option>
-                <option value="no-confiable">No confiables</option>
+                <option value="" data-i18n="filterAll">Todos</option>
+                <option value="confiable" data-i18n="filterTrusted">Confiables</option>
+                <option value="no-confiable" data-i18n="filterUntrusted">No confiables</option>
+
             </select>
         </div>
 
@@ -157,43 +160,75 @@
             <table class="min-w-[640px] w-full table-auto text-sm">
                 <thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium">IP</th>
-                        <th class="px-4 py-3 text-left font-medium">MAC</th>
-                        <th class="px-4 py-3 text-left font-medium">Nombre</th>
-                        <th class="px-4 py-3 text-left font-medium">Fabricante</th>
-                        <th class="px-4 py-3 text-left font-medium">Confianza</th>
-                        <th class="px-4 py-3 text-left font-medium">Puertos</th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="ip" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="ip">IP</span>
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="hash" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="mac">MAC</span>
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="tag" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="name">Nombre</span>
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="factory" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="manufacturer">Fabricante</span>
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="shield" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="trust">Confianza</span>
+                        </th>
+                        <th class="px-4 py-3 text-left font-medium">
+                            <i data-lucide="server" class="inline-block w-4 h-4"></i>
+                            <span data-i18n="ports">Puertos</span>
+                        </th>
                     </tr>
+
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
                     {% for d in dispositivos %}
                     <tr class="transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row" data-nombre="{{ nombres_dispositivos[d.mac]|default('N/A') | lower }}" data-mac="{{ d.mac | lower }}" data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
+
                         <td class="px-4 py-3">{{ d.ip }}</td>
                         <td class="px-4 py-3">{{ d.mac }}</td>
+
                         <td class="px-4 py-3 flex items-center gap-2">
-                            <span class="text-gray-800 dark:text-gray-200">{{ nombres_dispositivos[d.mac]|default("N/A") }}</span>
+                            <span class="text-gray-800 dark:text-gray-200">
+                {{ nombres_dispositivos[d.mac]|default("N/A") }}
+            </span>
                             <button onclick="editarNombre('{{ d.mac }}')" class="text-accent hover:text-highlight transition">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                         </td>
+
                         <td class="px-4 py-3">{{ d.fabricante }}</td>
+
                         <td class="px-4 py-3">
                             {% if d.confiable %}
                             <span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm dark:bg-green-200/20 dark:text-green-300">
-                <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
-              </span> {% else %}
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span data-i18n="trusted">Confiable</span>
+                            </span>
+                            {% else %}
                             <span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm dark:bg-red-200/20 dark:text-red-300">
-                <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
-              </span> {% endif %}
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                <span data-i18n="untrusted">No confiable</span>
+                            </span>
+                            {% endif %}
                         </td>
+
                         <td id="puertos-{{ d.ip | replace('.', '-') }}" class="px-4 py-3">
                             <button onclick="verPuertos('{{ d.ip }}')" class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-                                <i data-lucide="search" class="w-4 h-4 text-blue-600"></i> Ver puertos
+                                <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+                                <span data-i18n="view_ports">Ver puertos</span>
                             </button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
         </section>
 
@@ -201,12 +236,13 @@
         <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
             <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60 animate-fade-in">
                 <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-          <i data-lucide="plus"></i> Agregar MAC confiable
+            <i data-lucide="plus"></i>
+            <span data-i18n="addTrusted">Agregar MAC confiable</span>
         </h2>
                 <form id="form-agregar" class="space-y-4">
                     <input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-dark2 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none"
                     />
-                    <button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105">
+                    <button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105" data-i18n="add">
                         Agregar
                     </button>
                 </form>
@@ -214,18 +250,22 @@
 
             <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60 animate-fade-in">
                 <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-          <i data-lucide="check"></i> Dispositivos Confiables
+            <i data-lucide="check"></i>
+            <span data-i18n="trustedDevices">Dispositivos Confiables</span>
         </h2>
                 <ul id="lista-macs" class="space-y-3 custom-scrollbar overflow-y-auto max-h-64">
                     {% for prefijo in lista_confiables %}
                     <li class="flex justify-between items-center bg-gray-50 dark:bg-dark3/50 p-3 rounded-lg">
                         <div>
-                            <span class="font-semibold text-gray-800 dark:text-white">{{ nombres_dispositivos[prefijo]|default("Sin nombre") }}</span>
+                            <span class="font-semibold text-gray-800 dark:text-white">
+                        {{ nombres_dispositivos[prefijo]|default("Sin nombre") }}
+                    </span>
                             <br />
                             <span class="text-xs text-gray-500 dark:text-gray-400">{{ prefijo }}</span>
                         </div>
                         <button onclick="eliminarMAC('{{ prefijo }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-                            <i data-lucide="trash-2"></i> Eliminar
+                            <i data-lucide="trash-2"></i>
+                            <span data-i18n="delete">Eliminar</span>
                         </button>
                     </li>
                     {% endfor %}
@@ -246,7 +286,7 @@
         <span class="p-2 rounded-full bg-gradient-to-r from-accent to-highlight text-white shadow-md">
           <i data-lucide="server" class="w-5 h-5"></i>
         </span>
-        Puertos Abiertos
+        <span data-i18n="openPorts">Puertos Abiertos</span>
       </h2>
             <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
         </div>
