@@ -122,7 +122,7 @@ function setLanguage(lang) {
 	function applyTranslation() {
 		document.querySelectorAll("[data-i18n]").forEach((el) => {
 			const key = el.getAttribute("data-i18n");
-			const value = translations[lang] ? .[key];
+			cconst value = translations[lang]?.[key];
 			if (!value) return;
 
 			if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
@@ -173,3 +173,4 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 });
+
