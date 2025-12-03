@@ -114,7 +114,7 @@ const translations = {
 
 function t(key, ...args) {
 	const lang = localStorage.getItem("lang") || "es";
-	const value = translations[lang][key];
+	const value = translations[lang]?.[key];
 	return typeof value === "function" ? value(...args) : value;
 }
 
@@ -173,4 +173,5 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 });
+
 
