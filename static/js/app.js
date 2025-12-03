@@ -1,508 +1,455 @@
 document.addEventListener("DOMContentLoaded", () => {
-			const root = document.documentElement;
-			const iconoTema = document.getElementById("icono-tema");
 
-			function aplicarTemaDesdeStorage() {
-				const modoOscuro = localStorage.getItem("modoOscuro") === "true";
-				root.classList.toggle("dark", modoOscuro);
-				actualizarIconoTema();
-			}
+  /* =======================
+      UTILIDADES BÁSICAS
+  ========================== */
 
-			function actualizarIconoTema() {
-				const esOscuro = root.classList.contains("dark");
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
 
-				document.getElementById("icono-luna").classList.toggle("hidden", esOscuro);
-				document.getElementById("icono-sol").classList.toggle("hidden", !esOscuro);
+  const iconosTema = {
+    luna: $("icono-luna"),
+    sol: $("icono-sol"),
+    lunaMob: $("icono-luna-mobile"),
+    solMob: $("icono-sol-mobile")
+  };
 
-				const iconoLunaMobile = document.getElementById("icono-luna-mobile");
-				const iconoSolMobile = document.getElementById("icono-sol-mobile");
+  const noti = $("notificacion");
 
-				if (iconoLunaMobile && iconoSolMobile) {
-					iconoLunaMobile.classList.toggle("hidden", esOscuro);
-					iconoSolMobile.classList.toggle("hidden", !esOscuro);
-				}
-			}
+  const toggleHidden = (el, state) => el && el.classList.toggle("hidden", state);
 
-			window.toggleDarkMode = function() {
-				root.classList.toggle("dark");
-				localStorage.setItem("modoOscuro", root.classList.contains("dark"));
-				actualizarIconoTema();
-			};
 
-			aplicarTemaDesdeStorage();
-			lucide.createIcons();
+  /* =======================
+      MODO OSCURO
+  ========================== */
 
-			function mostrarNotificacion(mensaje, tipo = "info") {
-				const noti = document.getElementById("notificacion");
-				const colores = {
-					info: "bg-orange-100 text-orange-800",
-					success: "bg-green-100 text-green-800",
-					error: "bg-red-100 text-red-800",
-					warning: "bg-yellow-100 text-yellow-800",
-				};
+  const aplicarTema = () => {
+    const dark = localStorage.getItem("modoOscuro") === "true";
+    root.classList.toggle("dark", dark);
+    actualizarIcono();
+  };
 
-				noti.innerHTML = mensaje;
-				noti.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 max-w-sm w-full ${colores[tipo] || colores.info}`;
-				noti.classList.remove("hidden");
+  const actualizarIcono = () => {
+    const dark = root.classList.contains("dark");
 
-				lucide.createIcons();
-				setTimeout(() => noti.classList.add("hidden"), 10000);
-			}
+    toggleHidden(iconosTema.luna, dark);
+    toggleHidden(iconosTema.sol, !dark);
+    toggleHidden(iconosTema.lunaMob, dark);
+    toggleHidden(iconosTema.solMob, !dark);
+  };
 
-			window.cerrarModal = function() {
-				document.getElementById("modal-puertos").classList.add("hidden");
-			};
+  window.toggleDarkMode = () => {
+    const dark = root.classList.toggle("dark");
+    localStorage.setItem("modoOscuro", dark);
+    actualizarIcono();
+  };
 
-			document
-				.getElementById("form-agregar")
-				.addEventListener("submit", async(e) => {
-					e.preventDefault();
-					const mac = document.getElementById("input-mac").value.trim();
-					if (!mac) return;
+  aplicarTema();
 
-					mostrarNotificacion(
-						`
-    <span class="inline-flex items-center gap-2">
-      <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-      ${t("adding")}
-    </span>
-  `,
-						"info",
-					);
 
-					try {
-						const res = await fetch("/api/agregar", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json"
-							},
-							body: JSON.stringify({
-								mac
-							}),
-						});
-						const data = await res.json();
+  /* =======================
+      NOTIFICACIONES
+  ========================== */
 
-						if (data.success) {
-							mostrarNotificacion(
-								`
-        <span class="inline-flex items-center gap-2">
-          <i data-lucide='check' class='w-4 h-4'></i>
-          ${t("success")}
+  function mostrarNotificacion(html, tipo = "info") {
+    const colores = {
+      info: "bg-orange-100 text-orange-800",
+      success: "bg-green-100 text-green-800",
+      error: "bg-red-100 text-red-800",
+      warning: "bg-yellow-100 text-yellow-800"
+    };
+
+    noti.innerHTML = html;
+    noti.className = `
+      fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50
+      transition-all duration-300 max-w-sm w-full ${colores[tipo]}
+    `;
+    noti.classList.remove("hidden");
+
+    lucide.createIcons();
+    setTimeout(() => noti.classList.add("hidden"), 5000);
+  }
+
+
+  /* =======================
+      MODAL
+  ========================== */
+
+  window.cerrarModal = () => $("modal-puertos").classList.add("hidden");
+
+
+  /* =======================
+      AGREGAR MAC
+  ========================== */
+
+  $("form-agregar")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const mac = $("input-mac").value.trim();
+    if (!mac) return;
+
+    mostrarNotificacion(`
+      <span class="flex items-center gap-2">
+        <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
+        ${t("adding")}
+      </span>
+    `);
+
+    try {
+      const res = await fetch("/api/agregar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mac }),
+      });
+
+      const data = await res.json();
+
+      mostrarNotificacion(
+        `
+        <span class="flex items-center gap-2">
+          <i data-lucide="${data.success ? "check" : "x-circle"}" class="w-4 h-4"></i>
+          ${data.success ? t("success") : t("error")}
         </span>
       `,
-								"success",
-							);
-							setTimeout(() => location.reload(), 1000);
-						} else {
-							mostrarNotificacion(
-								`
-        <span class="inline-flex items-center gap-2">
-          <i data-lucide='x-circle' class='w-4 h-4'></i>
-          ${t("error")}
+        data.success ? "success" : "error"
+      );
+
+      if (data.success) setTimeout(() => location.reload(), 900);
+
+    } catch {
+      mostrarNotificacion(`
+        <span class="flex items-center gap-2">
+          <i data-lucide="x-circle" class="w-4 h-4"></i> ${t("connectionError")}
         </span>
-      `,
-								"error",
-							);
-						}
-					} catch (error) {
-						mostrarNotificacion(
-							`
-      <span class="inline-flex items-center gap-2">
-        <i data-lucide='x-circle' class='w-4 h-4'></i>
-        ${t("connectionError")}
+      `, "error");
+    }
+  });
+
+
+  /* =======================
+      ELIMINAR MAC
+  ========================== */
+
+  window.eliminarMAC = (mac) => {
+    mostrarNotificacion(`
+      <span class="flex items-center gap-2">
+        <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
+        ${t("eliminando")}
       </span>
-    `,
-							"error",
-						);
-					}
-				});
+    `);
 
-			window.eliminarMAC = function(mac) {
-				mostrarNotificacion(
-					`
-    <span class="inline-flex items-center gap-2">
-      <i data-lucide="loader" class="w-4 h-4 animate-spin text-orange-800"></i>
-      ${t("eliminando")}
-    </span>
-  `,
-					"info",
-				);
-
-				fetch("/api/eliminar", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							mac
-						}),
-					})
-					.then((res) => res.json())
-					.then((data) => {
-						if (data.success) {
-							mostrarNotificacion(
-								`
-          <span class="inline-flex items-center gap-2">
-            <i data-lucide='check' class='w-4 h-4'></i>
+    fetch("/api/eliminar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mac })
+    })
+      .then(r => r.json())
+      .then(data => {
+        mostrarNotificacion(`
+          <span class="flex items-center gap-2">
+            <i data-lucide="${data.success ? "check" : "x-circle"}" class="w-4 h-4"></i>
             ${data.message}
           </span>
-        `,
-								"success",
-							);
-							setTimeout(() => location.reload(), 1000);
-						} else {
-							mostrarNotificacion(
-								`
-          <span class="inline-flex items-center gap-2">
-            <i data-lucide='x-circle' class='w-4 h-4'></i>
-            ${data.message}
-          </span>
-        `,
-								"error",
-							);
-						}
-					})
-					.catch(() =>
-						mostrarNotificacion(
-							`
-      <span class="inline-flex items-center gap-2">
-        <i data-lucide='x-circle' class='w-4 h-4'></i>
-        ${t("connectionError")}
-      </span>
-    `,
-							"error",
-						),
-					);
-			};
+        `, data.success ? "success" : "error");
 
-			window.editarNombre = function(mac) {
-				const fila = document.querySelector(
-					`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`,
-				);
-				const nombreActual = fila.innerText.trim();
+        if (data.success) setTimeout(() => location.reload(), 900);
+      })
+      .catch(() => mostrarNotificacion(`
+          <i data-lucide="x-circle" class="w-4 h-4"></i> ${t("connectionError")}
+      `, "error"));
+  };
 
-				fila.innerHTML = `
-    <div class="flex items-center gap-2">
-      <input type="text" value="${nombreActual}"
-        class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               text-sm w-40 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
-      <button data-i18n="guardar"
-        class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
-        ${t("guardar")}
-      </button>
-    </div>
-  `;
 
-				const lang = localStorage.getItem("lang") || "es";
-				setLanguage(lang);
+  /* =======================
+      EDITAR NOMBRE
+  ========================== */
 
-				const input = fila.querySelector("input");
-				const boton = fila.querySelector("button");
+  window.editarNombre = (mac) => {
+    const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
+    const actual = fila.innerText.trim();
 
-				boton.addEventListener("click", () => {
-					const nuevoNombre = input.value.trim();
-					if (!nuevoNombre) return;
+    fila.innerHTML = `
+      <div class="flex items-center gap-2">
+        <input class="px-2 py-1 border rounded-lg text-sm w-40
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+               value="${actual}">
+        <button class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
+          ${t("guardar")}
+        </button>
+      </div>
+    `;
 
-					fetch("/api/nombrar", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json"
-							},
-							body: JSON.stringify({
-								mac: mac,
-								nombre: nuevoNombre
-							}),
-						})
-						.then((r) => r.json())
-						.then((data) => {
-							if (data.success) {
-								mostrarNotificacion(
-									`
+    const input = fila.querySelector("input");
+    const btn = fila.querySelector("button");
+
+    btn.onclick = () => {
+      const nombre = input.value.trim();
+      if (!nombre) return;
+
+      fetch("/api/nombrar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mac, nombre }),
+      })
+        .then(r => r.json())
+        .then(d => {
+          mostrarNotificacion(`
             <span class="flex items-center gap-2">
-              <i data-lucide="check" class="w-5 h-5 flex-shrink-0"></i>
-              <span>${t("nombre_guardado")}</span>
+              <i data-lucide="${d.success ? "check" : "x-circle"}" class="w-5 h-5"></i>
+              ${d.success ? t("nombre_guardado") : d.message}
             </span>
-            `,
-									"success",
-								);
+          `, d.success ? "success" : "error");
 
-								setTimeout(() => location.reload(), 1000);
-							} else {
-								mostrarNotificacion(
-									`<i data-lucide='x-circle' class='w-4 h-4'></i> ${data.message}`,
-									"error",
-								);
-							}
-						})
-						.catch(() => {
-							mostrarNotificacion(
-								`<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
-								"error",
-							);
-						});
-				});
-			};
+          if (d.success) setTimeout(() => location.reload(), 900);
+        })
+        .catch(() =>
+          mostrarNotificacion(
+            `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
+            "error"
+          )
+        );
+    };
+  };
 
-			function actualizarHoraActual() {
-				const ahora = new Date();
-				const formateada = ahora.toLocaleString("es-CO", {
-					year: "numeric",
-					month: "2-digit",
-					day: "2-digit",
-					hour: "2-digit",
-					minute: "2-digit",
-					second: "2-digit",
-					hour12: true,
-				});
-				document.getElementById("horaActual").textContent = formateada;
-			}
 
-			setInterval(actualizarHoraActual, 1000);
-			actualizarHoraActual();
+  /* =======================
+      HORA ACTUAL
+  ========================== */
 
-			window.escanearAhora = async() => {
-				mostrarNotificacion(
-					`
+  const actualizarHora = () =>
+    $("horaActual").textContent = new Date().toLocaleString("es-CO", {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hour12: true
+    });
+
+  setInterval(actualizarHora, 1000);
+  actualizarHora();
+
+
+  /* =======================
+      ESCANEO
+  ========================== */
+
+  window.escanearAhora = async () => {
+  mostrarNotificacion(`
     <div class="flex items-center gap-2">
       <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
       <span>${t("scanning")}</span>
     </div>
-    `,
-					"info",
-					2000,
-				);
+  `);
 
-				try {
-					const [res] = await Promise.all([
-						fetch("/api/scan"),
-						new Promise((resolve) => setTimeout(resolve, 2000)),
-					]);
+  const startTime = Date.now();
+  let data;
 
-					const dispositivos = await res.json();
+  try {
+    const res = await fetch("/api/scan");
+    data = await res.json();
+  } catch {
+    // Asegurar que el mensaje de "escaneando" dure al menos 1.5s
+    const delay = 1500 - (Date.now() - startTime);
+    if (delay > 0) await new Promise(r => setTimeout(r, delay));
 
-					if (Array.isArray(dispositivos)) {
-						mostrarNotificacion(
-							`
-        <div class="flex items-center gap-2">
-          <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
-          <span>${t("scanDone")}</span>
-        </div>
-        `,
-							"success",
-							2000,
-						);
-						actualizarTabla(dispositivos);
-					} else {
-						mostrarNotificacion(
-							`
-        <div class="flex items-center gap-2">
-          <i data-lucide="alert-circle" class="w-5 h-5 text-yellow-500"></i>
-          <span>${t("scanError")}</span>
-        </div>
-        `,
-							"error",
-							2000,
-						);
-					}
-				} catch (e) {
-					mostrarNotificacion(
-						`
-      <div class="flex items-center gap-2">
-        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
-        <span>${t("scanError")}</span>
-      </div>
-      `,
-						"error",
-						2000,
-					);
-					console.error(e);
-				}
-			};
+    mostrarNotificacion(`
+      <i data-lucide="alert-circle"></i> ${t("scanError")}
+    `, "error");
+    return;
+  }
 
-			function actualizarTabla(dispositivos) {
-				const tbody = document.getElementById("tabla-dispositivos");
-				tbody.innerHTML = "";
+  const delay = 1500 - (Date.now() - startTime);
+  if (delay > 0) await new Promise(r => setTimeout(r, delay));
 
-				dispositivos.forEach((d) => {
-							const row = document.createElement("tr");
-							row.className = `
-      transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row
-      border-b border-gray-100 dark:border-gray-700
-    `;
-							row.dataset.nombre = d.nombre ? d.nombre.toLowerCase() : "n/a";
-							row.dataset.mac = d.mac.toLowerCase();
-							row.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+  if (Array.isArray(data)) {
+    mostrarNotificacion(`
+      <span class="flex items-center gap-2">
+        <i data-lucide="check-circle-2"></i>${t("scanDone")}
+      </span>
+    `, "success");
 
-							row.innerHTML = `
-      <td class="px-4 py-3">${d.ip}</td>
-      <td class="px-4 py-3">${d.mac}</td>
-      <td class="px-4 py-3 flex items-center gap-2">
-        <span class="text-gray-800 dark:text-gray-200">${d.nombre || "N/A"}</span>
-        <button onclick="editarNombre('${d.mac}')" 
-          class="text-accent hover:text-highlight transition">
-          <i data-lucide="pencil" class="w-4 h-4"></i>
-        </button>
-      </td>
-      <td class="px-4 py-3">${d.fabricante || "—"}</td>
-      <td class="px-4 py-3">
-        ${
-          d.confiable
-            ? `<span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm dark:bg-green-200/20 dark:text-green-300">
-                <i data-lucide="check-circle" class="w-4 h-4"></i> Confiable
-              </span>`
-            : `<span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm dark:bg-red-200/20 dark:text-red-300">
-                <i data-lucide="x-circle" class="w-4 h-4"></i> No confiable
-              </span>`
-        }
-      </td>
-      <td id="puertos-${d.ip.replace(/\./g, "-")}" class="px-4 py-3">
-        <button onclick="verPuertos('${d.ip}')"
-          class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-          <i data-lucide="search" class="w-4 h-4 text-blue-600"></i> Ver puertos
-        </button>
-      </td>
-    `;
+    actualizarTabla(data);
+  } else {
+    mostrarNotificacion(`
+      <i data-lucide="alert-circle"></i> ${t("scanError")}
+    `, "error");
+  }
+};
 
-    tbody.appendChild(row);
-  });
 
-  if (window.lucide) {
+  /* =======================
+      TABLA DISPOSITIVOS
+  ========================== */
+
+  function actualizarTabla(devs) {
+    const tbody = $("tabla-dispositivos");
+    tbody.innerHTML = "";
+
+    devs.forEach(d => {
+      const tr = document.createElement("tr");
+      tr.className = `
+        dispositivo-row hover:bg-gray-50 dark:hover:bg-dark3/60
+        border-b dark:border-gray-700 transition
+      `;
+      tr.dataset.nombre = (d.nombre || "").toLowerCase();
+      tr.dataset.mac = d.mac.toLowerCase();
+      tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+
+      tr.innerHTML = `
+        <td class="px-4 py-3">${d.ip}</td>
+        <td class="px-4 py-3">${d.mac}</td>
+
+        <td class="px-4 py-3 flex items-center gap-2">
+          <span>${d.nombre || "N/A"}</span>
+          <button onclick="editarNombre('${d.mac}')"
+            class="text-accent hover:text-highlight">
+            <i data-lucide="pencil" class="w-4 h-4"></i>
+          </button>
+        </td>
+
+        <td class="px-4 py-3">${d.fabricante || "—"}</td>
+
+        <td class="px-4 py-3">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm
+            ${d.confiable
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"}">
+            <i data-lucide="${d.confiable ? "check-circle" : "x-circle"}"
+               class="w-4 h-4"></i>
+            ${d.confiable ? "Confiable" : "No confiable"}
+          </span>
+        </td>
+
+        <td class="px-4 py-3">
+          <button onclick="verPuertos('${d.ip}')"
+            class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200">
+            <i data-lucide="search"></i> Ver puertos
+          </button>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
     lucide.createIcons();
   }
-}
 
 
-  window.verPuertos = function (ip) {
-    const modal = document.getElementById("modal-puertos");
-    const contenido = document.getElementById("contenido-puertos");
+  /* =======================
+      PUERTOS
+  ========================== */
 
-    contenido.innerHTML = `
-    <div class="flex flex-col items-center gap-4 py-4 text-orange-800 dark:text-orange-400 transition-all duration-300">
-      <i data-lucide="scan" class="animate-pulse w-8 h-8"></i>
-      <span class="text-sm font-semibold tracking-wide">
-        ${t("scanning_ports").replace("{{ip}}", ip)}
-      </span>
-      <div class="w-full max-w-sm h-2 bg-orange-200 dark:bg-orange-800 rounded-full overflow-hidden shadow-inner">
-        <div class="animate-[progress_2s_ease-in-out_infinite] bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 h-full w-1/2"></div>
+  window.verPuertos = (ip) => {
+    const modal = $("modal-puertos");
+    const cont = $("contenido-puertos");
+
+    cont.innerHTML = `
+      <div class="flex flex-col items-center gap-4 py-4">
+        <i data-lucide="scan" class="animate-pulse w-8 h-8"></i>
+        <span>${t("scanning_ports").replace("{{ip}}", ip)}</span>
       </div>
-    </div>
+    `;
 
-    <style>
-      @keyframes progress {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(200%); }
-      }
-    </style>
-  `;
     modal.classList.remove("hidden");
     lucide.createIcons();
 
     fetch("/api/puertos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ip }),
+      body: JSON.stringify({ ip })
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          if (data.puertos.length === 0) {
-            contenido.innerHTML = `
-            <div class="flex items-center gap-2 p-4 rounded-lg bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 shadow-sm">
-              <i data-lucide="check-circle" class="w-5 h-5"></i>
-              <span class="text-sm">${t("no_ports").replace("{{ip}}", ip)}</span>
-            </div>
-          `;
-          } else {
-            const lista = data.puertos
-              .map(
-                (p) => `
-              <div class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="server" class="w-4 h-4 text-orange-500"></i>
-                  <span class="font-mono text-sm font-semibold">${p.puerto}</span>
-                </div>
-                <span class="text-xs text-gray-600 dark:text-gray-300">${p.servicio}</span>
-              </div>`,
-              )
-              .join("");
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) throw new Error(data.message);
 
-            contenido.innerHTML = `
-            <div class="mb-4">
-              <p class="text-sm font-medium mb-2">
-                ${t("host_label")}:
-              </p>
-              <span class="px-3 py-1.5 inline-block rounded-md bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 font-mono text-sm">
-                ${ip}
-              </span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              ${lista}
+        if (data.puertos.length === 0) {
+          cont.innerHTML = `
+            <div class="p-4 bg-green-100 dark:bg-green-800 rounded-lg flex items-center gap-2">
+              <i data-lucide="check-circle"></i>
+              <span>${t("no_ports").replace("{{ip}}", ip)}</span>
             </div>
           `;
-          }
         } else {
-          contenido.innerHTML = `
-          <div class="flex items-center gap-2 p-4 rounded-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 shadow-sm">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-            <span class="text-sm">${data.message}</span>
-          </div>
-        `;
+          cont.innerHTML = `
+            <div class="mb-3">
+              <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900 rounded-md">${ip}</span>
+            </div>
+            <div class="grid gap-3">
+              ${data.puertos.map(p => `
+                <div class="p-3 border rounded-lg flex justify-between bg-white dark:bg-gray-800">
+                  <span class="font-mono">${p.puerto}</span>
+                  <span class="text-xs">${p.servicio}</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
         }
+
         lucide.createIcons();
       })
       .catch(() => {
-        contenido.innerHTML = `
-        <div class="flex items-center gap-2 p-4 rounded-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 shadow-sm">
-          <i data-lucide="x-circle" class="w-5 h-5"></i>
-          <span class="text-sm">${t("error_ports").replace("{{ip}}", ip)}</span>
-        </div>
-      `;
+        cont.innerHTML = `
+          <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg flex items-center gap-2">
+            <i data-lucide="x-circle"></i>
+            <span>${t("error_ports").replace("{{ip}}", ip)}</span>
+          </div>
+        `;
         lucide.createIcons();
       });
   };
-  const inputNombre = document.getElementById("filtro-nombre");
-  const inputMac = document.getElementById("filtro-mac");
-  const selectConfianza = document.getElementById("filtro-confianza");
 
-  function aplicarFiltros() {
+
+  /* =======================
+      FILTROS
+  ========================== */
+
+  const filtros = {
+    nombre: $("filtro-nombre"),
+    mac: $("filtro-mac"),
+    confianza: $("filtro-confianza")
+  };
+
+  const aplicarFiltros = () => {
     const filas = document.querySelectorAll(".dispositivo-row");
-    const filtroNombre = inputNombre.value.toLowerCase();
-    const filtroMac = inputMac.value.toLowerCase();
-    const filtroConfianza = selectConfianza.value;
 
-    filas.forEach((fila) => {
-      const nombre = fila.dataset.nombre;
-      const mac = fila.dataset.mac;
-      const confianza = fila.dataset.confianza;
+    filas.forEach(fila => {
+      const ok =
+        fila.dataset.nombre.includes(filtros.nombre.value.toLowerCase()) &&
+        fila.dataset.mac.includes(filtros.mac.value.toLowerCase()) &&
+        (!filtros.confianza.value ||
+          fila.dataset.confianza === filtros.confianza.value);
 
-      const coincideNombre = nombre.includes(filtroNombre);
-      const coincideMac = mac.includes(filtroMac);
-      const coincideConfianza =
-        filtroConfianza === "" || confianza === filtroConfianza;
-
-      fila.style.display =
-        coincideNombre && coincideMac && coincideConfianza ? "" : "none";
+      fila.style.display = ok ? "" : "none";
     });
-  }
+  };
 
-  inputNombre.addEventListener("input", aplicarFiltros);
-  inputMac.addEventListener("input", aplicarFiltros);
-  selectConfianza.addEventListener("change", aplicarFiltros);
+  filtros.nombre.addEventListener("input", aplicarFiltros);
+  filtros.mac.addEventListener("input", aplicarFiltros);
+  filtros.confianza.addEventListener("change", aplicarFiltros);
 
-  const toggleMenu = document.getElementById("toggleMenu");
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
 
-  toggleMenu.addEventListener("click", () => {
+  /* =======================
+      MENU RESPONSIVE
+  ========================== */
+
+  const sidebar = $("sidebar");
+  const overlay = $("overlay");
+
+  $("toggleMenu")?.addEventListener("click", () => {
     sidebar.classList.toggle("-translate-x-full");
     overlay.classList.toggle("hidden");
   });
 
-  overlay.addEventListener("click", () => {
+  overlay?.addEventListener("click", () => {
     sidebar.classList.add("-translate-x-full");
     overlay.classList.add("hidden");
   });
 
+
+  /* =======================
+      ESCANEO AUTOMÁTICO
+  ========================== */
+
   setInterval(() => window.escanearAhora(), 60000);
+
+  lucide.createIcons();
+
 });
