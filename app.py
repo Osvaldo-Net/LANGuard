@@ -268,9 +268,22 @@ def obtener_red_local():
 def escanear_red():
     try:
         red = obtener_red_local()
+
+        cmd = [
+            "nmap",
+            "-T4",             
+            "-n",              
+            "-sn",            
+            "-PR",           
+            "--max-retries", "5",
+            "--host-timeout", "5s",
+            "--min-rate", "100",
+            red
+        ]
+
         salida = subprocess.check_output(
-            ["nmap", "-T4", "-n", "-sn", "--max-retries", "3", red],
-            timeout=30
+            cmd,
+            timeout=45
         ).decode()
 
         dispositivos_nmap = []
@@ -325,7 +338,7 @@ def escanear_red():
             ).decode()
 
             for linea in salida_arp.splitlines():
-                if "REACHABLE" not in linea.upper():
+                if not any(state in linea.upper() for state in ["REACHABLE", "STALE"]):
                     continue
 
                 match = re.match(
