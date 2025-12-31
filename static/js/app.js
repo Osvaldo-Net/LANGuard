@@ -1,174 +1,182 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =======================
-      UTILIDADES BÁSICAS
-  ========================== */
+    /* =======================
+        UTILIDADES BÁSICAS
+    ========================== */
 
-  const $ = (id) => document.getElementById(id);
-  const root = document.documentElement;
+    const $ = (id) => document.getElementById(id);
+    const root = document.documentElement;
 
-  const iconosTema = {
-    luna: $("icono-luna"),
-    sol: $("icono-sol"),
-    lunaMob: $("icono-luna-mobile"),
-    solMob: $("icono-sol-mobile")
-  };
-
-  const noti = $("notificacion");
-
-  const toggleHidden = (el, state) => el && el.classList.toggle("hidden", state);
-
-
-  /* =======================
-      MODO OSCURO
-  ========================== */
-
-  const aplicarTema = () => {
-    const dark = localStorage.getItem("modoOscuro") === "true";
-    root.classList.toggle("dark", dark);
-    actualizarIcono();
-  };
-
-  const actualizarIcono = () => {
-    const dark = root.classList.contains("dark");
-
-    toggleHidden(iconosTema.luna, dark);
-    toggleHidden(iconosTema.sol, !dark);
-    toggleHidden(iconosTema.lunaMob, dark);
-    toggleHidden(iconosTema.solMob, !dark);
-  };
-
-  window.toggleDarkMode = () => {
-    const dark = root.classList.toggle("dark");
-    localStorage.setItem("modoOscuro", dark);
-    actualizarIcono();
-  };
-
-  aplicarTema();
-
-
-  /* =======================
-      NOTIFICACIONES
-  ========================== */
-
-  function mostrarNotificacion(html, tipo = "info") {
-    const colores = {
-      info: "bg-orange-100 text-orange-800",
-      success: "bg-green-100 text-green-800",
-      error: "bg-red-100 text-red-800",
-      warning: "bg-yellow-100 text-yellow-800"
+    const iconosTema = {
+        luna: $("icono-luna"),
+        sol: $("icono-sol"),
+        lunaMob: $("icono-luna-mobile"),
+        solMob: $("icono-sol-mobile")
     };
 
-    noti.innerHTML = html;
-    noti.className = `
+    const noti = $("notificacion");
+
+    const toggleHidden = (el, state) => el && el.classList.toggle("hidden", state);
+
+
+    /* =======================
+        MODO OSCURO
+    ========================== */
+
+    const aplicarTema = () => {
+        const dark = localStorage.getItem("modoOscuro") === "true";
+        root.classList.toggle("dark", dark);
+        actualizarIcono();
+    };
+
+    const actualizarIcono = () => {
+        const dark = root.classList.contains("dark");
+
+        toggleHidden(iconosTema.luna, dark);
+        toggleHidden(iconosTema.sol, !dark);
+        toggleHidden(iconosTema.lunaMob, dark);
+        toggleHidden(iconosTema.solMob, !dark);
+    };
+
+    window.toggleDarkMode = () => {
+        const dark = root.classList.toggle("dark");
+        localStorage.setItem("modoOscuro", dark);
+        actualizarIcono();
+    };
+
+    aplicarTema();
+
+
+    /* =======================
+        NOTIFICACIONES
+    ========================== */
+
+    function mostrarNotificacion(html, tipo = "info") {
+        const colores = {
+            info: "bg-orange-100 text-orange-800",
+            success: "bg-green-100 text-green-800",
+            error: "bg-red-100 text-red-800",
+            warning: "bg-yellow-100 text-yellow-800"
+        };
+
+        noti.innerHTML = html;
+        noti.className = `
       fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg z-50
       transition-all duration-300 max-w-sm w-full ${colores[tipo]}
     `;
-    noti.classList.remove("hidden");
+        noti.classList.remove("hidden");
 
-    lucide.createIcons();
-    setTimeout(() => noti.classList.add("hidden"), 5000);
-  }
-
-
-  /* =======================
-      MODAL
-  ========================== */
-
-  window.cerrarModal = () => $("modal-puertos").classList.add("hidden");
+        lucide.createIcons();
+        setTimeout(() => noti.classList.add("hidden"), 5000);
+    }
 
 
-  /* =======================
-      AGREGAR MAC
-  ========================== */
+    /* =======================
+        MODAL
+    ========================== */
 
-  $("form-agregar")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    window.cerrarModal = () => $("modal-puertos").classList.add("hidden");
 
-    const mac = $("input-mac").value.trim();
-    if (!mac) return;
 
-    mostrarNotificacion(`
+    /* =======================
+        AGREGAR MAC
+    ========================== */
+
+    $("form-agregar")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const mac = $("input-mac").value.trim();
+        if (!mac) return;
+
+        mostrarNotificacion(`
       <span class="flex items-center gap-2">
         <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
         ${t("adding")}
       </span>
     `);
 
-    try {
-      const res = await fetch("/api/agregar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mac }),
-      });
+        try {
+            const res = await fetch("/api/agregar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    mac
+                }),
+            });
 
-      const data = await res.json();
+            const data = await res.json();
 
-      mostrarNotificacion(
-        `
+            mostrarNotificacion(
+                `
         <span class="flex items-center gap-2">
           <i data-lucide="${data.success ? "check" : "x-circle"}" class="w-4 h-4"></i>
           ${data.success ? t("success") : t("error")}
         </span>
       `,
-        data.success ? "success" : "error"
-      );
+                data.success ? "success" : "error"
+            );
 
-      if (data.success) setTimeout(() => location.reload(), 900);
+            if (data.success) setTimeout(() => location.reload(), 900);
 
-    } catch {
-      mostrarNotificacion(`
+        } catch {
+            mostrarNotificacion(`
         <span class="flex items-center gap-2">
           <i data-lucide="x-circle" class="w-4 h-4"></i> ${t("connectionError")}
         </span>
       `, "error");
-    }
-  });
+        }
+    });
 
 
-  /* =======================
-      ELIMINAR MAC
-  ========================== */
+    /* =======================
+        ELIMINAR MAC
+    ========================== */
 
-  window.eliminarMAC = (mac) => {
-    mostrarNotificacion(`
+    window.eliminarMAC = (mac) => {
+        mostrarNotificacion(`
       <span class="flex items-center gap-2">
         <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
         ${t("eliminando")}
       </span>
     `);
 
-    fetch("/api/eliminar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mac })
-    })
-      .then(r => r.json())
-      .then(data => {
-        mostrarNotificacion(`
+        fetch("/api/eliminar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    mac
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                mostrarNotificacion(`
           <span class="flex items-center gap-2">
             <i data-lucide="${data.success ? "check" : "x-circle"}" class="w-4 h-4"></i>
             ${data.message}
           </span>
         `, data.success ? "success" : "error");
 
-        if (data.success) setTimeout(() => location.reload(), 900);
-      })
-      .catch(() => mostrarNotificacion(`
+                if (data.success) setTimeout(() => location.reload(), 900);
+            })
+            .catch(() => mostrarNotificacion(`
           <i data-lucide="x-circle" class="w-4 h-4"></i> ${t("connectionError")}
       `, "error"));
-  };
+    };
 
 
-  /* =======================
-      EDITAR NOMBRE
-  ========================== */
+    /* =======================
+        EDITAR NOMBRE
+    ========================== */
 
-  window.editarNombre = (mac) => {
-    const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
-    const actual = fila.innerText.trim();
+    window.editarNombre = (mac) => {
+        const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
+        const actual = fila.innerText.trim();
 
-    fila.innerHTML = `
+        fila.innerHTML = `
       <div class="flex items-center gap-2">
         <input class="px-2 py-1 border rounded-lg text-sm w-40
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -179,121 +187,130 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    const input = fila.querySelector("input");
-    const btn = fila.querySelector("button");
+        const input = fila.querySelector("input");
+        const btn = fila.querySelector("button");
 
-    btn.onclick = () => {
-      const nombre = input.value.trim();
-      if (!nombre) return;
+        btn.onclick = () => {
+            const nombre = input.value.trim();
+            if (!nombre) return;
 
-      fetch("/api/nombrar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mac, nombre }),
-      })
-        .then(r => r.json())
-        .then(d => {
-          mostrarNotificacion(`
+            fetch("/api/nombrar", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        mac,
+                        nombre
+                    }),
+                })
+                .then(r => r.json())
+                .then(d => {
+                    mostrarNotificacion(`
             <span class="flex items-center gap-2">
               <i data-lucide="${d.success ? "check" : "x-circle"}" class="w-5 h-5"></i>
               ${d.success ? t("nombre_guardado") : d.message}
             </span>
           `, d.success ? "success" : "error");
 
-          if (d.success) setTimeout(() => location.reload(), 900);
-        })
-        .catch(() =>
-          mostrarNotificacion(
-            `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
-            "error"
-          )
-        );
+                    if (d.success) setTimeout(() => location.reload(), 900);
+                })
+                .catch(() =>
+                    mostrarNotificacion(
+                        `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
+                        "error"
+                    )
+                );
+        };
     };
-  };
 
 
-  /* =======================
-      HORA ACTUAL
-  ========================== */
+    /* =======================
+        HORA ACTUAL
+    ========================== */
 
-  const actualizarHora = () =>
-    $("horaActual").textContent = new Date().toLocaleString("es-CO", {
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
-      hour12: true
-    });
+    const actualizarHora = () =>
+        $("horaActual").textContent = new Date().toLocaleString("es-CO", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
 
-  setInterval(actualizarHora, 1000);
-  actualizarHora();
+    setInterval(actualizarHora, 1000);
+    actualizarHora();
 
 
-  /* =======================
-      ESCANEO
-  ========================== */
+    /* =======================
+        ESCANEO
+    ========================== */
 
-  window.escanearAhora = async () => {
-  mostrarNotificacion(`
+    window.escanearAhora = async () => {
+        mostrarNotificacion(`
     <div class="flex items-center gap-2">
       <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
       <span>${t("scanning")}</span>
     </div>
   `);
 
-  const startTime = Date.now();
-  let data;
+        const startTime = Date.now();
+        let data;
 
-  try {
-    const res = await fetch("/api/scan");
-    data = await res.json();
-  } catch {
-    // Asegurar que el mensaje de "escaneando" dure al menos 1.5s
-    const delay = 1500 - (Date.now() - startTime);
-    if (delay > 0) await new Promise(r => setTimeout(r, delay));
+        try {
+            const res = await fetch("/api/scan");
+            data = await res.json();
+        } catch {
+            // Asegurar que el mensaje de "escaneando" dure al menos 1.5s
+            const delay = 1500 - (Date.now() - startTime);
+            if (delay > 0) await new Promise(r => setTimeout(r, delay));
 
-    mostrarNotificacion(`
+            mostrarNotificacion(`
       <i data-lucide="alert-circle"></i> ${t("scanError")}
     `, "error");
-    return;
-  }
+            return;
+        }
 
-  const delay = 1500 - (Date.now() - startTime);
-  if (delay > 0) await new Promise(r => setTimeout(r, delay));
+        const delay = 1500 - (Date.now() - startTime);
+        if (delay > 0) await new Promise(r => setTimeout(r, delay));
 
-  if (Array.isArray(data)) {
-    mostrarNotificacion(`
+        if (Array.isArray(data)) {
+            mostrarNotificacion(`
       <span class="flex items-center gap-2">
         <i data-lucide="check-circle-2"></i>${t("scanDone")}
       </span>
     `, "success");
 
-    actualizarTabla(data);
-  } else {
-    mostrarNotificacion(`
+            actualizarTabla(data);
+        } else {
+            mostrarNotificacion(`
       <i data-lucide="alert-circle"></i> ${t("scanError")}
     `, "error");
-  }
-};
+        }
+    };
 
 
-  /* =======================
-      TABLA DISPOSITIVOS
-  ========================== */
+    /* =======================
+        TABLA DISPOSITIVOS
+    ========================== */
 
-  function actualizarTabla(devs) {
-    const tbody = $("tabla-dispositivos");
-    tbody.innerHTML = "";
+    function actualizarTabla(devs) {
+        const tbody = $("tabla-dispositivos");
+        tbody.innerHTML = "";
 
-    devs.forEach(d => {
-      const tr = document.createElement("tr");
-      tr.className = `
+        devs.forEach(d => {
+            const tr = document.createElement("tr");
+            tr.className = `
         dispositivo-row hover:bg-gray-50 dark:hover:bg-dark3/60
         border-b dark:border-gray-700 transition
       `;
-      tr.dataset.nombre = (d.nombre || "").toLowerCase();
-      tr.dataset.mac = d.mac.toLowerCase();
-      tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
+            tr.dataset.nombre = (d.nombre || "").toLowerCase();
+            tr.dataset.mac = d.mac.toLowerCase();
+            tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
-      tr.innerHTML = `
+            tr.innerHTML = `
         <td class="px-4 py-3">${d.ip}</td>
         <td class="px-4 py-3">${d.mac}</td>
 
@@ -326,49 +343,53 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
       `;
 
-      tbody.appendChild(tr);
-    });
+            tbody.appendChild(tr);
+        });
 
-    lucide.createIcons();
-  }
+        lucide.createIcons();
+    }
 
 
-  /* =======================
-      PUERTOS
-  ========================== */
+    /* =======================
+        PUERTOS
+    ========================== */
 
-  window.verPuertos = (ip) => {
-    const modal = $("modal-puertos");
-    const cont = $("contenido-puertos");
+    window.verPuertos = (ip) => {
+        const modal = $("modal-puertos");
+        const cont = $("contenido-puertos");
 
-    cont.innerHTML = `
+        cont.innerHTML = `
       <div class="flex flex-col items-center gap-4 py-4">
         <i data-lucide="scan" class="animate-pulse w-8 h-8"></i>
         <span>${t("scanning_ports").replace("{{ip}}", ip)}</span>
       </div>
     `;
 
-    modal.classList.remove("hidden");
-    lucide.createIcons();
+        modal.classList.remove("hidden");
+        lucide.createIcons();
 
-    fetch("/api/puertos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ip })
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (!data.success) throw new Error(data.message);
+        fetch("/api/puertos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ip
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) throw new Error(data.message);
 
-        if (data.puertos.length === 0) {
-          cont.innerHTML = `
+                if (data.puertos.length === 0) {
+                    cont.innerHTML = `
             <div class="p-4 bg-green-100 dark:bg-green-800 rounded-lg flex items-center gap-2">
               <i data-lucide="check-circle"></i>
               <span>${t("no_ports").replace("{{ip}}", ip)}</span>
             </div>
           `;
-        } else {
-          cont.innerHTML = `
+                } else {
+                    cont.innerHTML = `
             <div class="mb-3">
               <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900 rounded-md">${ip}</span>
             </div>
@@ -381,75 +402,105 @@ document.addEventListener("DOMContentLoaded", () => {
               `).join("")}
             </div>
           `;
-        }
+                }
 
-        lucide.createIcons();
-      })
-      .catch(() => {
-        cont.innerHTML = `
+                lucide.createIcons();
+            })
+            .catch(() => {
+                cont.innerHTML = `
           <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg flex items-center gap-2">
             <i data-lucide="x-circle"></i>
             <span>${t("error_ports").replace("{{ip}}", ip)}</span>
           </div>
         `;
-        lucide.createIcons();
-      });
-  };
+                lucide.createIcons();
+            });
+    };
+    /* =======================
+       SELECTS
+    ========================== */
 
+    const btn = document.getElementById("langBtn");
+    const menu = document.getElementById("langMenu");
 
-  /* =======================
-      FILTROS
-  ========================== */
-
-  const filtros = {
-    nombre: $("filtro-nombre"),
-    mac: $("filtro-mac"),
-    confianza: $("filtro-confianza")
-  };
-
-  const aplicarFiltros = () => {
-    const filas = document.querySelectorAll(".dispositivo-row");
-
-    filas.forEach(fila => {
-      const ok =
-        fila.dataset.nombre.includes(filtros.nombre.value.toLowerCase()) &&
-        fila.dataset.mac.includes(filtros.mac.value.toLowerCase()) &&
-        (!filtros.confianza.value ||
-          fila.dataset.confianza === filtros.confianza.value);
-
-      fila.style.display = ok ? "" : "none";
+    btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
     });
-  };
 
-  filtros.nombre.addEventListener("input", aplicarFiltros);
-  filtros.mac.addEventListener("input", aplicarFiltros);
-  filtros.confianza.addEventListener("change", aplicarFiltros);
+    window.setLang = function(lang, flag, label) {
+        document.getElementById("langFlag").textContent = flag;
+        document.getElementById("langLabel").textContent = label;
+        document.getElementById("langMenu").classList.add("hidden");
+        setLanguage(lang);
+    };
+
+    const trustBtn = document.getElementById("trustBtn");
+    const trustMenu = document.getElementById("trustMenu");
+    const trustLabel = document.getElementById("trustLabel");
+
+    trustBtn.addEventListener("click", () => {
+        trustMenu.classList.toggle("hidden");
+    });
+
+    window.setTrustFilter = function(valor, texto) {
+        filtroConfianza = valor;
+        document.getElementById("trustLabel").textContent = texto;
+        document.getElementById("trustMenu").classList.add("hidden");
+        aplicarFiltros();
+    };
+
+    /* =======================
+       FILTROS
+    ========================== */
+
+    let filtroConfianza = "";
+
+    const filtros = {
+        nombre: document.getElementById("filtro-nombre"),
+        mac: document.getElementById("filtro-mac")
+    };
+
+    const aplicarFiltros = () => {
+        const filas = document.querySelectorAll(".dispositivo-row");
+
+        filas.forEach(fila => {
+            const ok =
+                fila.dataset.nombre.includes(filtros.nombre.value.toLowerCase()) &&
+                fila.dataset.mac.includes(filtros.mac.value.toLowerCase()) &&
+                (!filtroConfianza || fila.dataset.confianza === filtroConfianza);
+
+            fila.style.display = ok ? "" : "none";
+        });
+    };
+
+    filtros.nombre.addEventListener("input", aplicarFiltros);
+    filtros.mac.addEventListener("input", aplicarFiltros);
 
 
-  /* =======================
-      MENU RESPONSIVE
-  ========================== */
+    /* =======================
+        MENU RESPONSIVE
+    ========================== */
 
-  const sidebar = $("sidebar");
-  const overlay = $("overlay");
+    const sidebar = $("sidebar");
+    const overlay = $("overlay");
 
-  $("toggleMenu")?.addEventListener("click", () => {
-    sidebar.classList.toggle("-translate-x-full");
-    overlay.classList.toggle("hidden");
-  });
+    $("toggleMenu")?.addEventListener("click", () => {
+        sidebar.classList.toggle("-translate-x-full");
+        overlay.classList.toggle("hidden");
+    });
 
-  overlay?.addEventListener("click", () => {
-    sidebar.classList.add("-translate-x-full");
-    overlay.classList.add("hidden");
-  });
+    overlay?.addEventListener("click", () => {
+        sidebar.classList.add("-translate-x-full");
+        overlay.classList.add("hidden");
+    });
 
 
-  /* =======================
-      ESCANEO AUTOMÁTICO
-  ========================== */
+    /* =======================
+        ESCANEO AUTOMÁTICO
+    ========================== */
 
-  setInterval(() => window.escanearAhora(), 60000);
+    setInterval(() => window.escanearAhora(), 60000);
 
-  lucide.createIcons();
+    lucide.createIcons();
 
 });
