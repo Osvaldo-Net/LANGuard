@@ -416,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 lucide.createIcons();
             });
     };
+
     /* =======================
        SELECTS
     ========================== */
@@ -427,11 +428,13 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.classList.toggle("hidden");
     });
 
-    window.setLang = function(lang, flag, label) {
-        document.getElementById("langFlag").textContent = flag;
-        document.getElementById("langLabel").textContent = label;
-        document.getElementById("langMenu").classList.add("hidden");
-        setLanguage(lang);
+   window.setLang = function(lang, country, label) {
+   const flag = document.getElementById("langFlag");
+   flag.className = "";
+   flag.classList.add("fi", `fi-${country}`, "w-5", "h-4", "rounded-sm");
+   document.getElementById("langLabel").textContent = label;
+   document.getElementById("langMenu").classList.add("hidden");
+   setLanguage(lang);
     };
 
     const trustBtn = document.getElementById("trustBtn");
