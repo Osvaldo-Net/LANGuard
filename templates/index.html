@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LAN Guard</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -99,7 +100,7 @@
                 <button id="langBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-accent bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
 
                     <div class="flex items-center gap-2">
-                        <span id="langFlag">🇪🇸</span>
+                        <span id="langFlag" class="fi fi-es w-5 h-4 rounded-sm"></span>
                         <span id="langLabel">Español</span>
                     </div>
 
@@ -108,12 +109,12 @@
 
                 <div id="langMenu" class="absolute z-50 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
 
-                    <button onclick="setLang('es','🇪🇸','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
-                        🇪🇸 Español
+                    <button onclick="setLang('es','es','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
+                        <span class="fi fi-es w-5 h-4 rounded-sm"></span> Español
                     </button>
 
-                    <button onclick="setLang('en','🇺🇸','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
-                        🇺🇸 English
+                    <button onclick="setLang('en','us','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
+                        <span class="fi fi-us w-5 h-4 rounded-sm"></span> English
                     </button>
                 </div>
             </div>
