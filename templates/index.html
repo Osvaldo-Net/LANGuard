@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -10,62 +9,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-        				      darkMode: "class",
-        				      theme: {
-        				        extend: {
-        				          colors: {
-        				            accent: "#f4a261",   
-        				            highlight: "#e76f51", 
-        				            bgBone: "#f8f6f2",   
-        				            dark1: "#202123",    
-        				            dark2: "#2D2D2F",    
-        				            dark3: "#343541"    
-        				          },
-        				          fontFamily: {
-        				            sans: ["Poppins", "Inter", "sans-serif"],
-        				          },
-        				        },
-        				      },
-        				    };
+                                              darkMode: "class",
+                                              theme: {
+                                                extend: {
+                                                  colors: {
+                                                    accent: "#f4a261",
+                                                    highlight: "#e76f51",
+                                                    bgBone: "#f8f6f2",
+                                                    dark1: "#202123",
+                                                    dark2: "#2D2D2F",
+                                                    dark3: "#343541"
+                                                  },
+                                                  fontFamily: {
+                                                    sans: ["Poppins", "Inter", "sans-serif"],
+                                                  },
+                                                },
+                                              },
+                                            };
     </script>
 
     <style>
         @keyframes fade-in {
-        				      from {
-        				        opacity: 0;
-        				        transform: translateY(10px);
-        				      }
-        				
-        				      to {
-        				        opacity: 1;
-        				        transform: translateY(0);
-        				      }
-        				    }
-        				
-        				    .animate-fade-in {
-        				      animation: fade-in 0.6s ease-out forwards;
-        				    }
-        				
-        				    .custom-scrollbar::-webkit-scrollbar {
-        				      width: 6px;
-        				    }
-        				
-        				    .custom-scrollbar::-webkit-scrollbar-thumb {
-        				      background: rgba(244, 162, 97, 0.7);
-        				      border-radius: 10px;
-        				    }
-        				
-        				    .custom-scrollbar::-webkit-scrollbar-track {
-        				      background: transparent;
-        				    }
-        		
-        		  .ocultar-scroll::-webkit-scrollbar {
-        		    display: none;
-        		  }
-        		
-        		  .ocultar-scroll {
-        		    -ms-overflow-style: none;  
-        		    scrollbar-width: none;       }
+                                              from {
+                                                opacity: 0;
+                                                transform: translateY(10px);
+                                              }
+
+                                              to {
+                                                opacity: 1;
+                                                transform: translateY(0);
+                                              }
+                                            }
+
+                                            .animate-fade-in {
+                                              animation: fade-in 0.6s ease-out forwards;
+                                            }
+
+                                            .custom-scrollbar::-webkit-scrollbar {
+                                              width: 6px;
+                                            }
+
+                                            .custom-scrollbar::-webkit-scrollbar-thumb {
+                                              background: rgba(244, 162, 97, 0.7);
+                                              border-radius: 10px;
+                                            }
+
+                                            .custom-scrollbar::-webkit-scrollbar-track {
+                                              background: transparent;
+                                            }
+
+                          .ocultar-scroll::-webkit-scrollbar {
+                            display: none;
+                          }
+
+                          .ocultar-scroll {
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;       }
     </style>
 
 </head>
@@ -96,17 +95,30 @@
             </button>
 
 
-            <div class="relative">
-                <select class="language-select appearance-none w-full text-sm border border-accent rounded-lg px-3 py-2 pr-9 bg-white dark:bg-dark2 dark:text-gray-200 focus:ring-2 focus:ring-accent cursor-pointer">
-                    <option value="es">Español</option>
-                    <option value="en">English</option>
-                </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-          <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </span>
+            <div class="relative inline-block w-full">
+                <button id="langBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-accent bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
+
+                    <div class="flex items-center gap-2">
+                        <span id="langFlag">🇪🇸</span>
+                        <span id="langLabel">Español</span>
+                    </div>
+
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
+                </button>
+
+                <div id="langMenu" class="absolute z-50 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
+
+                    <button onclick="setLang('es','🇪🇸','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
+                        🇪🇸 Español
+                    </button>
+
+                    <button onclick="setLang('en','🇺🇸','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
+                        🇺🇸 English
+                    </button>
+                </div>
             </div>
+
+
 
 
             <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
@@ -148,12 +160,29 @@
             />
             <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none"
             />
-            <select id="filtro-confianza" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none">
-                <option value="" data-i18n="filterAll">Todos</option>
-                <option value="confiable" data-i18n="filterTrusted">Confiables</option>
-                <option value="no-confiable" data-i18n="filterUntrusted">No confiables</option>
+            <div class="relative inline-block w-full">
+                <button id="trustBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
 
-            </select>
+                    <span id="trustLabel" data-i18n="filterAll">Todos</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
+                </button>
+
+                <div id="trustMenu" class="absolute z-40 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
+
+                    <button onclick="setTrustFilter('','Todos')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
+                        Todos
+                    </button>
+
+                    <button onclick="setTrustFilter('confiable','Confiables')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
+                        Confiables
+                    </button>
+
+                    <button onclick="setTrustFilter('no-confiable','No confiables')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
+                        No confiables
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <section class="overflow-x-auto ocultar-scroll rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur-lg shadow-md dark:bg-dark2/60">
@@ -295,6 +324,7 @@
     <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="https://unpkg.com/lucide@latest" defer></script>
+
 </body>
 
 </html>
