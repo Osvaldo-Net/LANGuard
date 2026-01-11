@@ -445,12 +445,21 @@ document.addEventListener("DOMContentLoaded", () => {
         trustMenu.classList.toggle("hidden");
     });
 
-    window.setTrustFilter = function(valor, texto) {
-        filtroConfianza = valor;
-        document.getElementById("trustLabel").textContent = texto;
-        document.getElementById("trustMenu").classList.add("hidden");
-        aplicarFiltros();
+window.setTrustFilter = function(valor) {
+    filtroConfianza = valor === "all" ? "" : valor;
+
+    const labelMap = {
+        all: "filterAll",
+        trusted: "filterTrusted",
+        untrusted: "filterUntrusted",
     };
+
+    trustLabel.textContent = t(labelMap[valor]);
+
+    trustMenu.classList.add("hidden");
+    aplicarFiltros();
+};
+
 
     /* =======================
        FILTROS
