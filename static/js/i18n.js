@@ -144,11 +144,26 @@ function setLanguage(lang) {
       }
     });
 
+
+    if (typeof filtroConfianza !== "undefined") {
+      const map = {
+        "": "filterAll",
+        trusted: "filterTrusted",
+        untrusted: "filterUntrusted",
+      };
+
+      const key = map[filtroConfianza ?? ""];
+      if (key) {
+        document.getElementById("trustLabel").textContent = t(key);
+      }
+    }
+
     localStorage.setItem("lang", lang);
   }
 
   applyTranslation();
 }
+
 
 window.t = t;
 window.setLanguage = setLanguage;
