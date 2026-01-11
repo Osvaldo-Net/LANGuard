@@ -11,11 +11,9 @@ Integra el poder de Nmap y ARP para lograr una detección más precisa, sin nece
 
 Entre sus principales características se incluyen:
 
-Historial de detecciones para un mejor seguimiento.
-
-Posibilidad de asignar nombres personalizados a los dispositivos.
-
-Interfaz moderna, responsiva y fácil de usar, diseñada para una administración intuitiva de la red.
+- Historial de detecciones para un mejor seguimiento.
+- Posibilidad de asignar nombres personalizados a los dispositivos.
+- Interfaz moderna, responsiva y fácil de usar, diseñada para una administración intuitiva de la red.
 
 La aplicación fue diseñada para usuarios de habla hispana, sin embargo ya soporta idioma inglés, lo que amplía su alcance a usuarios de habla inglesa. Se planea añadir más idiomas en el futuro, al tiempo que se perfeccionan las traducciones existentes.
 
