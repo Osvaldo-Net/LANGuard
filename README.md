@@ -13,13 +13,13 @@ La información de dispositivos, historial de detecciones, accesos y configuraci
 
 Entre sus principales características se incluyen:
 
-Historial de detecciones para un mejor seguimiento.
+- Historial de detecciones para un mejor seguimiento.
 
-Posibilidad de asignar nombres personalizados a los dispositivos.
+- Posibilidad de asignar nombres personalizados a los dispositivos.
 
-Almacenamiento persistente usando SQLite.
+- Almacenamiento persistente usando SQLite.
 
-Interfaz moderna, responsiva y fácil de usar, diseñada para una administración intuitiva de la red.
+- Interfaz moderna, responsiva y fácil de usar, diseñada para una administración intuitiva de la red.
 
 La aplicación fue diseñada para usuarios de habla hispana, sin embargo ya soporta idioma inglés, lo que amplía su alcance a usuarios de habla inglesa. Se planea añadir más idiomas en el futuro, al tiempo que se perfeccionan las traducciones existentes.
 
