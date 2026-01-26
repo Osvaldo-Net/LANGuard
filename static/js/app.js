@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =======================
@@ -169,26 +170,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =======================
-        EDITAR NOMBRE
+       EDITAR NOMBRE (PRO)
     ========================== */
 
     window.editarNombre = (mac) => {
-        const fila = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
-        const actual = fila.innerText.trim();
+        const celda = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"] td:nth-child(3)`);
+        const actual = celda.querySelector("span")?.innerText.trim() || "";
 
-        fila.innerHTML = `
-      <div class="flex items-center gap-2">
-        <input class="px-2 py-1 border rounded-lg text-sm w-40
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-               value="${actual}">
-        <button class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
-          ${t("guardar")}
-        </button>
-      </div>
+        celda.innerHTML = `
+        <div class="flex items-center gap-2">
+            <input id="input-nombre-${mac.replace(/:/g, '')}"
+                   class="px-2 py-1 border rounded-lg text-sm w-40
+                          bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                   value="${actual}">
+            <button id="btn-guardar-${mac.replace(/:/g, '')}"
+                    class="bg-accent hover:bg-highlight text-white px-3 py-1 rounded-lg text-sm">
+                ${t("guardar")}
+            </button>
+        </div>
     `;
 
-        const input = fila.querySelector("input");
-        const btn = fila.querySelector("button");
+        const input = document.getElementById(`input-nombre-${mac.replace(/:/g, '')}`);
+        const btn = document.getElementById(`btn-guardar-${mac.replace(/:/g, '')}`);
 
         btn.onclick = () => {
             const nombre = input.value.trim();
@@ -202,28 +205,72 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({
                         mac,
                         nombre
-                    }),
+                    })
                 })
                 .then(r => r.json())
                 .then(d => {
-                    mostrarNotificacion(`
-            <span class="flex items-center gap-2">
-              <i data-lucide="${d.success ? "check" : "x-circle"}" class="w-5 h-5"></i>
-              ${d.success ? t("nombre_guardado") : d.message}
-            </span>
-          `, d.success ? "success" : "error");
 
-                    if (d.success) setTimeout(() => location.reload(), 900);
+                    mostrarNotificacion(`
+        <span class="flex items-center gap-2">
+          <i data-lucide="${d.success ? "check" : "x-circle"}" class="w-5 h-5"></i>
+          ${d.success ? t("nombre_guardado") : d.message}
+        </span>
+    `, d.success ? "success" : "error");
+
+                    if (!d.success) return;
+
+                    /* =============================
+                       1️⃣ TABLA PRINCIPAL
+                    ============================== */
+
+                    const fila = document.querySelector(
+                        `tr[data-mac="${mac.toLowerCase()}"]`
+                    );
+
+                    if (fila) {
+                        // dataset para filtros
+                        fila.dataset.nombre = nombre.toLowerCase();
+
+                        const celdaNombre = fila.querySelector("td:nth-child(3)");
+                        if (celdaNombre) {
+                            celdaNombre.innerHTML = `
+                <span class="text-gray-800 dark:text-gray-200">
+                    ${nombre}
+                </span>
+                <button onclick="editarNombre('${mac}')"
+                        class="ml-2 text-accent hover:text-highlight transition">
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+            `;
+                        }
+                    }
+
+                    /* =============================
+                       2️⃣ LISTA DE CONFIABLES
+                    ============================== */
+
+                    const liConfiable = document.querySelector(
+                        `#lista-macs li[data-mac="${mac.toLowerCase()}"]`
+                    );
+
+                    if (liConfiable) {
+                        const spanNombre = liConfiable.querySelector(".nombre-confiable");
+                        if (spanNombre) {
+                            spanNombre.textContent = nombre || "Sin nombre";
+                        }
+                    }
+
+                    lucide.createIcons();
                 })
-                .catch(() =>
+                .catch(() => {
                     mostrarNotificacion(
-                        `<i data-lucide='x-circle' class='w-4 h-4'></i> ${t("error_guardar_nombre")}`,
+                        `<i data-lucide="x-circle" class="w-4 h-4"></i> ${t("error_guardar_nombre")}`,
                         "error"
-                    )
-                );
+                    );
+                });
+
         };
     };
-
 
     /* =======================
         HORA ACTUAL
@@ -428,13 +475,13 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.classList.toggle("hidden");
     });
 
-   window.setLang = function(lang, country, label) {
-   const flag = document.getElementById("langFlag");
-   flag.className = "";
-   flag.classList.add("fi", `fi-${country}`, "w-5", "h-4", "rounded-sm");
-   document.getElementById("langLabel").textContent = label;
-   document.getElementById("langMenu").classList.add("hidden");
-   setLanguage(lang);
+    window.setLang = function(lang, country, label) {
+        const flag = document.getElementById("langFlag");
+        flag.className = "";
+        flag.classList.add("fi", `fi-${country}`, "w-5", "h-4", "rounded-sm");
+        document.getElementById("langLabel").textContent = label;
+        document.getElementById("langMenu").classList.add("hidden");
+        setLanguage(lang);
     };
 
     const trustBtn = document.getElementById("trustBtn");
@@ -445,20 +492,20 @@ document.addEventListener("DOMContentLoaded", () => {
         trustMenu.classList.toggle("hidden");
     });
 
-window.setTrustFilter = function(valor) {
-    filtroConfianza = valor === "all" ? "" : valor;
+    window.setTrustFilter = function(valor) {
+        filtroConfianza = valor === "all" ? "" : valor;
 
-    const labelMap = {
-        all: "filterAll",
-        trusted: "filterTrusted",
-        untrusted: "filterUntrusted",
+        const labelMap = {
+            all: "filterAll",
+            trusted: "filterTrusted",
+            untrusted: "filterUntrusted",
+        };
+
+        trustLabel.textContent = t(labelMap[valor]);
+
+        trustMenu.classList.add("hidden");
+        aplicarFiltros();
     };
-
-    trustLabel.textContent = t(labelMap[valor]);
-
-    trustMenu.classList.add("hidden");
-    aplicarFiltros();
-};
 
 
     /* =======================
