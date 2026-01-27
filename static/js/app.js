@@ -1,3 +1,10 @@
+// =======================
+// ESTADO GLOBAL DE FILTROS
+// =======================
+
+let filtroConfianza = "";
+let filtroConfianzaKey = "filterAll";
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -493,27 +500,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.setTrustFilter = function(valor) {
-        filtroConfianza = valor === "all" ? "" : valor;
+  const map = {
+    all: { valor: "", key: "filterAll" },
+    trusted: { valor: "confiable", key: "filterTrusted" },
+    untrusted: { valor: "no-confiable", key: "filterUntrusted" },
+  };
 
-        const labelMap = {
-            all: "filterAll",
-            trusted: "filterTrusted",
-            untrusted: "filterUntrusted",
-        };
+  const conf = map[valor];
 
-        trustLabel.textContent = t(labelMap[valor]);
+  filtroConfianza = conf.valor;
+  filtroConfianzaKey = conf.key;
 
-        trustMenu.classList.add("hidden");
-        aplicarFiltros();
-    };
+  aplicarFiltros();
+  actualizarLabelFiltro();
+
+  trustMenu.classList.add("hidden");
+};
+
 
 
     /* =======================
        FILTROS
     ========================== */
 
-    let filtroConfianza = "";
-    let filtroConfianzaKey = "filterAll";
 
     const filtros = {
         nombre: document.getElementById("filtro-nombre"),
@@ -547,18 +556,14 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
-   function actualizarLabelFiltro() {
+ function actualizarLabelFiltro() {
   const label = document.getElementById("trustLabel");
   if (!label) return;
 
-  const key = filtroConfianzaKey || "filterAll";
-  const texto = translations[langActual]?.[key];
-
-  if (!texto) return; 
-
-  label.textContent = texto;
-  label.setAttribute("data-i18n", key);
+  label.textContent = t(filtroConfianzaKey);
+  label.setAttribute("data-i18n", filtroConfianzaKey);
 }
+
 
 
 
@@ -589,6 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
 
 
 
