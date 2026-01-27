@@ -118,7 +118,10 @@ function t(key, ...args) {
   return typeof value === "function" ? value(...args) : value;
 }
 
+let langActual = localStorage.getItem("lang") || "es";
+
 function setLanguage(lang) {
+  langActual = lang;
   function applyTranslation() {
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
@@ -144,17 +147,16 @@ function setLanguage(lang) {
       }
     });
 
-
-if (typeof filtroConfianzaKey !== "undefined") {
-  actualizarLabelFiltro();
-}
-
+    if (typeof filtroConfianzaKey !== "undefined") {
+      actualizarLabelFiltro();
+    }
 
     localStorage.setItem("lang", lang);
   }
 
   applyTranslation();
 }
+
 
 
 window.t = t;
@@ -180,5 +182,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
 
 
