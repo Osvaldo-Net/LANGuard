@@ -513,6 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================== */
 
     let filtroConfianza = "";
+    let filtroConfianzaKey = "filterAll";
 
     const filtros = {
         nombre: document.getElementById("filtro-nombre"),
@@ -563,3 +564,4 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
