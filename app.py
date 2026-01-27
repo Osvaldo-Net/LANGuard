@@ -196,44 +196,72 @@ def obtener_red_local():
 
 def escanear_red():
     red = obtener_red_local()
-    salida = subprocess.check_output(["nmap", "-sn", red]).decode()
-
-    dispositivos = []
-    ip = None
     ahora = time.time()
     confiables = obtener_confiables()
 
+    salida = subprocess.check_output(["nmap", "-sn", "-PR", red]).decode()
+
+    ips_vivas = []
     for linea in salida.splitlines():
         if "Nmap scan report for" in linea:
             ip = linea.split()[-1]
-        elif "MAC Address:" in linea:
-            mac = re.search(r"MAC Address: ([\w:]+)", linea).group(1).lower()
-            fab = obtener_fabricante(mac)
-            confiable = mac in confiables
-            nombre = obtener_nombre(mac)
+            ips_vivas.append(ip)
 
-            dispositivos.append({
-                "ip": ip,
-                "mac": mac,
-                "fabricante": fab,
-                "confiable": confiable,
-                "nombre": nombre
-            })
+    arp_table = {}
+    try:
+        salida_arp = subprocess.check_output(["ip", "neigh", "show"]).decode()
 
-            if not confiable:
-                reg = obtener_deteccion(mac)
-                if not reg:
-                    guardar_deteccion(mac, 1, False, ahora)
-                else:
-                    count = reg["count"] + 1
-                    notificado = reg["notificado"]
-                    guardar_deteccion(mac, count, notificado, ahora)
+        for linea in salida_arp.splitlines():
+            if not any(state in linea.upper() for state in ["REACHABLE", "STALE"]):
+                continue
 
-                    if count >= 3 and not notificado:
-                        enviar_telegram(mac, ip, fab)
-                        guardar_deteccion(mac, count, True, ahora)
+            m = re.match(
+                r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})",
+                linea, re.I
+            )
+            if m:
+                ip_arp, mac_arp = m.groups()
+                arp_table[ip_arp] = mac_arp.lower()
+
+    except Exception as e:
+        print(f"[!] Error leyendo ARP: {e}")
+
+    dispositivos = []
+
+    for ip in ips_vivas:
+        mac = arp_table.get(ip)
+
+        if not mac:
+            continue  # sin MAC no sirve para control
+
+        fab = obtener_fabricante(mac)
+        confiable = mac in confiables
+        nombre = obtener_nombre(mac)
+
+        dispositivos.append({
+            "ip": ip,
+            "mac": mac,
+            "fabricante": fab,
+            "confiable": confiable,
+            "nombre": nombre
+        })
+
+        # ---- TU lógica intacta ----
+        if not confiable:
+            reg = obtener_deteccion(mac)
+            if not reg:
+                guardar_deteccion(mac, 1, False, ahora)
+            else:
+                count = reg["count"] + 1
+                notificado = reg["notificado"]
+                guardar_deteccion(mac, count, notificado, ahora)
+
+                if count >= 3 and not notificado:
+                    enviar_telegram(mac, ip, fab)
+                    guardar_deteccion(mac, count, True, ahora)
 
     return dispositivos
+
 
 # ---------------- PUERTOS ----------------
 
