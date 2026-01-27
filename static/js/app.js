@@ -540,8 +540,10 @@ document.addEventListener("DOMContentLoaded", () => {
     filtroConfianza = valor;
     filtroConfianzaKey = i18nKey;
 
-    aplicarFiltros(); // reutiliza tus filtros existentes
+    // aplicar filtros combinados
+    aplicarFiltros();
 
+    // actualizar texto del botón correctamente
     actualizarLabelFiltro();
 
     // cerrar menú
@@ -549,15 +551,16 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
-    function actualizarLabelFiltro() {
+   function actualizarLabelFiltro() {
     const label = document.getElementById("trustLabel");
 
-    // usar tu sistema de traducciones actual
-    const texto = traducciones[idiomaActual][filtroConfianzaKey];
+    // usar SIEMPRE la clave actual
+    const texto = translations[langActual || "es"][filtroConfianzaKey];
 
     label.textContent = texto;
     label.setAttribute("data-i18n", filtroConfianzaKey);
 }
+
 
 
 
@@ -588,5 +591,6 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
 
 
