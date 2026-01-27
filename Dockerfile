@@ -1,24 +1,25 @@
-FROM python:3.14-slim-bookworm
+FROM python:3.11-slim-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential \
-        libffi-dev \
-        python3-dev \
         nmap \
         net-tools \
-        iproute2 && \
-    pip install --no-cache-dir flask requests bcrypt && \
-    apt-get purge -y build-essential python3-dev libffi-dev && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /root/.cache
+        iproute2 \
+        sqlite3 && \
+    pip install --no-cache-dir \
+        flask \
+        requests \
+        bcrypt && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . .
 
+RUN mkdir -p /app/data
+
 EXPOSE 5555
 
-CMD ["python", "app.py"]
+CMD sh -c "python init_db.py && python app.py"
