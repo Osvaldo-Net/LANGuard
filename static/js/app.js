@@ -536,31 +536,29 @@ document.addEventListener("DOMContentLoaded", () => {
     filtros.nombre.addEventListener("input", aplicarFiltros);
     filtros.mac.addEventListener("input", aplicarFiltros);
 
-    function setTrustFilter(valor, i18nKey) {
-    filtroConfianza = valor;
-    filtroConfianzaKey = i18nKey;
+   function setTrustFilter(valor, i18nKey) {
+  filtroConfianza = valor;
+  filtroConfianzaKey = i18nKey;
 
-    // aplicar filtros combinados
-    aplicarFiltros();
+  aplicarFiltros();
+  actualizarLabelFiltro();
 
-    // actualizar texto del botón correctamente
-    actualizarLabelFiltro();
-
-    // cerrar menú
-    document.getElementById("trustMenu").classList.add("hidden");
+  document.getElementById("trustMenu").classList.add("hidden");
 }
 
 
    function actualizarLabelFiltro() {
-    const label = document.getElementById("trustLabel");
+  const label = document.getElementById("trustLabel");
+  if (!label) return;
 
-    // usar SIEMPRE la clave actual
-    const texto = translations[langActual || "es"][filtroConfianzaKey];
+  const key = filtroConfianzaKey || "filterAll";
+  const texto = translations[langActual]?.[key];
 
-    label.textContent = texto;
-    label.setAttribute("data-i18n", filtroConfianzaKey);
+  if (!texto) return; 
+
+  label.textContent = texto;
+  label.setAttribute("data-i18n", key);
 }
-
 
 
 
@@ -591,6 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
 
 
 
