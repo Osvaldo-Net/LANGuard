@@ -159,9 +159,6 @@ function setLanguage(lang) {
 
 
 
-window.t = t;
-window.setLanguage = setLanguage;
-
 window.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("lang") || "es";
   setLanguage(savedLang);
@@ -181,7 +178,13 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
+
+  if (typeof filtroConfianzaKey !== "undefined") {
+    actualizarLabelFiltro();
+  }
 });
+
+
 
 
 
