@@ -536,6 +536,30 @@ document.addEventListener("DOMContentLoaded", () => {
     filtros.nombre.addEventListener("input", aplicarFiltros);
     filtros.mac.addEventListener("input", aplicarFiltros);
 
+    function setTrustFilter(valor, i18nKey) {
+    filtroConfianza = valor;
+    filtroConfianzaKey = i18nKey;
+
+    aplicarFiltros(); // reutiliza tus filtros existentes
+
+    actualizarLabelFiltro();
+
+    // cerrar menú
+    document.getElementById("trustMenu").classList.add("hidden");
+}
+
+
+    function actualizarLabelFiltro() {
+    const label = document.getElementById("trustLabel");
+
+    // usar tu sistema de traducciones actual
+    const texto = traducciones[idiomaActual][filtroConfianzaKey];
+
+    label.textContent = texto;
+    label.setAttribute("data-i18n", filtroConfianzaKey);
+}
+
+
 
     /* =======================
         MENU RESPONSIVE
@@ -564,4 +588,5 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
 
