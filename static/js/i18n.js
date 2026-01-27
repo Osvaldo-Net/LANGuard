@@ -145,20 +145,10 @@ function setLanguage(lang) {
     });
 
 
-    if (typeof filtroConfianza !== "undefined") {
-  const map = {
-    "": "filterAll",
-    "confiable": "filterTrusted",
-    "no-confiable": "filterUntrusted",
-  };
-
-  const key = map[filtroConfianza ?? ""];
-  if (key) {
-    const label = document.getElementById("trustLabel");
-    label.textContent = translations[lang][key];
-    label.setAttribute("data-i18n", key);
-  }
+if (typeof filtroConfianzaKey !== "undefined") {
+  actualizarLabelFiltro();
 }
+
 
     localStorage.setItem("lang", lang);
   }
@@ -190,4 +180,5 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
 
