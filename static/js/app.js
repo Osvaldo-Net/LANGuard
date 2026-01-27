@@ -5,6 +5,14 @@
 let filtroConfianza = "";
 let filtroConfianzaKey = "filterAll";
 
+function actualizarLabelFiltro() {
+  const label = document.getElementById("trustLabel");
+  if (!label) return;
+
+  label.textContent = t(filtroConfianzaKey);
+  label.setAttribute("data-i18n", filtroConfianzaKey);
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -499,7 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trustMenu.classList.toggle("hidden");
     });
 
-    window.setTrustFilter = function(valor) {
+  window.setTrustFilter = function(valor) {
   const map = {
     all: { valor: "", key: "filterAll" },
     trusted: { valor: "confiable", key: "filterTrusted" },
@@ -507,6 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const conf = map[valor];
+  if (!conf) return; // seguridad
 
   filtroConfianza = conf.valor;
   filtroConfianzaKey = conf.key;
@@ -514,8 +523,9 @@ document.addEventListener("DOMContentLoaded", () => {
   aplicarFiltros();
   actualizarLabelFiltro();
 
-  trustMenu.classList.add("hidden");
+  document.getElementById("trustMenu").classList.add("hidden");
 };
+
 
 
 
@@ -556,17 +566,6 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
- function actualizarLabelFiltro() {
-  const label = document.getElementById("trustLabel");
-  if (!label) return;
-
-  label.textContent = t(filtroConfianzaKey);
-  label.setAttribute("data-i18n", filtroConfianzaKey);
-}
-
-
-
-
     /* =======================
         MENU RESPONSIVE
     ========================== */
@@ -594,6 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
 });
+
 
 
 
