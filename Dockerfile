@@ -22,4 +22,4 @@ RUN mkdir -p /app/data
 
 EXPOSE 5555
 
-CMD sh -c "python init_db.py && python app.py"
+CMD ["sh", "-c", "python init_db.py && python app.py"]
