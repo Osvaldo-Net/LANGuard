@@ -8,7 +8,6 @@
 Detecta intrusos, escanea puertos y recibe alertas en Telegram — todo autohospedado, todo tuyo.
 
 [![Docker](https://img.shields.io/badge/docker-netosvaltools%2Flanguard-0ea5e9?style=flat-square&logo=docker&logoColor=white&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
-[![License](https://img.shields.io/badge/license-MIT-a855f7?style=flat-square&labelColor=0f172a)](LICENSE)
 [![Idiomas](https://img.shields.io/badge/idiomas-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
 
 </div>
