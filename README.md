@@ -6,7 +6,7 @@
 
 **Monitoreo y seguridad de tu red LAN, desde tu propio servidor.**  
 Detecta intrusos, escanea puertos y recibe alertas en Telegram — todo autohospedado, todo tuyo.
-
+[![Docker Pulls](https://img.shields.io/docker/pulls/netosvaltools/languard?style=flat-square&color=0ea5e9&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Docker](https://img.shields.io/badge/docker-netosvaltools%2Flanguard-0ea5e9?style=flat-square&logo=docker&logoColor=white&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Idiomas](https://img.shields.io/badge/idiomas-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
 
