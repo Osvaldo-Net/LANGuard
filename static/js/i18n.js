@@ -9,7 +9,7 @@ const translations = {
     // Header
     header: "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
 
-    // Tabla
+    // Tabla principal
     ip:           "IP",
     mac:          "MAC",
     name:         "Nombre",
@@ -28,27 +28,27 @@ const translations = {
     filterUntrusted: "No confiables",
 
     // Panel confiables
-    addTrusted:    "Agregar MAC confiable",
-    trustedDevices:"Dispositivos Confiables",
-    delete:        "Eliminar",
-    add:           "Agregar",
+    addTrusted:     "Agregar MAC confiable",
+    trustedDevices: "Dispositivos Confiables",
+    delete:         "Eliminar",
+    add:            "Agregar",
 
     // Nombres
-    guardar:             "Guardar",
-    nombre_guardado:     "Nombre guardado",
-    error_guardar_nombre:"Error al guardar nombre",
+    guardar:              "Guardar",
+    nombre_guardado:      "Nombre guardado",
+    error_guardar_nombre: "Error al guardar nombre",
 
     // Notificaciones MAC
-    adding:       "Agregando MAC...",
-    success:      "MAC agregada con éxito",
-    error:        "Error al agregar la MAC",
-    eliminando:   "Eliminando MAC...",
-    eliminado:    "MAC eliminada con éxito",          // ← faltaba
+    adding:     "Agregando MAC...",
+    success:    "MAC agregada con éxito",
+    error:      "Error al agregar la MAC",
+    eliminando: "Eliminando MAC...",
+    eliminado:  "MAC eliminada con éxito",
 
     // Escaneo
-    scanning:     "Escaneando red...",
-    scanDone:     "Escaneo completo",
-    scanError:    "Error al escanear",
+    scanning:  "Escaneando red...",
+    scanDone:  "Escaneo completo",
+    scanError: "Error al escanear",
 
     // Puertos
     openPorts:      "Puertos Abiertos",
@@ -63,8 +63,8 @@ const translations = {
     host_label:      "Host",
 
     // Historial
-    history:             "Historial",
     historyTitle:        "Historial de dispositivos",
+    historySubtitle:     "Solo registra conexiones y desconexiones",
     historySearch:       "Buscar",
     historyMacPlaceholder: "MAC (opcional)",
     historyEmpty:        "Presiona Buscar para cargar el historial",
@@ -75,6 +75,7 @@ const translations = {
     historyDate:         "Fecha",
     historyTrusted:      "✓ Confiable",
     historyUntrusted:    "✗ No confiable",
+    historyClear:        "Limpiar historial",
 
     // Login
     login_title:   "Bienvenido a <span class='gradient-text'>LANGuard</span>",
@@ -96,7 +97,7 @@ const translations = {
     // Header
     header: "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
 
-    // Tabla
+    // Tabla principal
     ip:           "IP",
     mac:          "MAC",
     name:         "Name",
@@ -115,27 +116,27 @@ const translations = {
     filterUntrusted: "Untrusted",
 
     // Panel confiables
-    addTrusted:    "Add trusted MAC",
-    trustedDevices:"Trusted Devices",
-    delete:        "Delete",
-    add:           "Add",
+    addTrusted:     "Add trusted MAC",
+    trustedDevices: "Trusted Devices",
+    delete:         "Delete",
+    add:            "Add",
 
     // Nombres
-    guardar:             "Save",
-    nombre_guardado:     "Name saved",
-    error_guardar_nombre:"Error saving name",
+    guardar:              "Save",
+    nombre_guardado:      "Name saved",
+    error_guardar_nombre: "Error saving name",
 
     // Notificaciones MAC
-    adding:       "Adding MAC...",
-    success:      "MAC successfully added",
-    error:        "Failed to add MAC",
-    eliminando:   "Deleting MAC...",
-    eliminado:    "MAC successfully deleted",          // ← faltaba
+    adding:     "Adding MAC...",
+    success:    "MAC successfully added",
+    error:      "Failed to add MAC",
+    eliminando: "Deleting MAC...",
+    eliminado:  "MAC successfully deleted",
 
     // Escaneo
-    scanning:     "Scanning network...",
-    scanDone:     "Scan complete",
-    scanError:    "Error while scanning",
+    scanning:  "Scanning network...",
+    scanDone:  "Scan complete",
+    scanError: "Error while scanning",
 
     // Puertos
     openPorts:      "Open Ports",
@@ -150,8 +151,8 @@ const translations = {
     host_label:      "Host",
 
     // Historial
-    history:               "History",
     historyTitle:          "Device history",
+    historySubtitle:       "Only records connections and disconnections",
     historySearch:         "Search",
     historyMacPlaceholder: "MAC (optional)",
     historyEmpty:          "Press Search to load history",
@@ -162,6 +163,7 @@ const translations = {
     historyDate:           "Date",
     historyTrusted:        "✓ Trusted",
     historyUntrusted:      "✗ Untrusted",
+    historyClear:          "Clear history",
 
     // Login
     login_title:   "Welcome to <span class='gradient-text'>LANGuard</span>",
@@ -177,7 +179,6 @@ const translations = {
 // =======================
 // FUNCIÓN t()
 // =======================
-
 function t(key) {
   const lang  = localStorage.getItem("lang") || "es";
   const value = translations[lang]?.[key] ?? translations["es"]?.[key] ?? key;
@@ -187,11 +188,10 @@ function t(key) {
 // =======================
 // APLICAR TRADUCCIONES AL DOM
 // =======================
-
 let langActual = localStorage.getItem("lang") || "es";
 
 function setLanguage(lang) {
-  if (!translations[lang]) return;   // idioma no soportado → no rompe nada
+  if (!translations[lang]) return;
   langActual = lang;
   localStorage.setItem("lang", lang);
 
@@ -203,7 +203,6 @@ function setLanguage(lang) {
     if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
       el.setAttribute("placeholder", value);
     } else if (el.tagName === "BUTTON" || (el.tagName === "INPUT" && el.type === "submit")) {
-      // Preservar hijos (íconos lucide) si existen
       const icon = el.querySelector("i, svg");
       if (icon) {
         el.textContent = value;
@@ -224,7 +223,6 @@ function setLanguage(lang) {
 // =======================
 // INIT
 // =======================
-
 window.addEventListener("DOMContentLoaded", () => {
   setLanguage(localStorage.getItem("lang") || "es");
 });
