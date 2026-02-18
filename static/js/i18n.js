@@ -1,190 +1,230 @@
 const translations = {
   es: {
-    scan: "Escanear",
-    logout: "Cerrar sesión",
-    header:
-      "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
-    trusted: "Confiable",
-    untrusted: "No confiable",
-    addTrusted: "Agregar MAC confiable",
-    trustedDevices: "Dispositivos Confiables",
-    delete: "Eliminar",
-    openPorts: "Puertos Abiertos",
-    filterName: "Filtrar por nombre",
-    filterMac: "Filtrar por MAC",
-    filterAll: "Todos",
-    filterTrusted: "Confiables",
-    filterUntrusted: "No confiables",
-    detectedDevices: "Dispositivos detectados:",
-    currentTime: "Hora actual:",
-    changeTheme: "Cambiar tema",
-    scanning: "Escaneando red...",
-    scanDone: "Escaneo completo",
-    scanError: "Error al escanear",
-    scanningPorts: (ip) => `Escaneando puertos en <strong>${ip}</strong>...`,
-    noPorts: (ip) =>
-      `No se encontraron puertos abiertos en <strong>${ip}</strong>.`,
-    viewPorts: "Ver puertos",
-    nameSaved: "Nombre guardado",
-    addMac: "Agregando MAC...",
-    removeMac: "Eliminando MAC...",
-    connectionError: "Error de conexión",
-    ip: "IP",
-    mac: "MAC",
-    name: "Nombre",
+    // Navegación
+    scan:         "Escanear",
+    logout:       "Cerrar sesión",
+    changeTheme:  "Cambiar tema",
+    history:      "Historial",
+
+    // Header
+    header: "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
+
+    // Tabla
+    ip:           "IP",
+    mac:          "MAC",
+    name:         "Nombre",
     manufacturer: "Fabricante",
-    trust: "Confianza",
-    guardar: "Guardar",
-    nombre_guardado: "Nombre guardado",
-    error_guardar_nombre: "Error al guardar nombre",
+    trust:        "Confianza",
+    ports:        "Puertos",
+    trusted:      "Confiable",
+    untrusted:    "No confiable",
+    view_ports:   "Ver puertos",
+
+    // Filtros
+    filterName:      "Filtrar por nombre",
+    filterMac:       "Filtrar por MAC",
+    filterAll:       "Todos",
+    filterTrusted:   "Confiables",
+    filterUntrusted: "No confiables",
+
+    // Panel confiables
+    addTrusted:    "Agregar MAC confiable",
+    trustedDevices:"Dispositivos Confiables",
+    delete:        "Eliminar",
+    add:           "Agregar",
+
+    // Nombres
+    guardar:             "Guardar",
+    nombre_guardado:     "Nombre guardado",
+    error_guardar_nombre:"Error al guardar nombre",
+
+    // Notificaciones MAC
+    adding:       "Agregando MAC...",
+    success:      "MAC agregada con éxito",
+    error:        "Error al agregar la MAC",
+    eliminando:   "Eliminando MAC...",
+    eliminado:    "MAC eliminada con éxito",          // ← faltaba
+
+    // Escaneo
+    scanning:     "Escaneando red...",
+    scanDone:     "Escaneo completo",
+    scanError:    "Error al escanear",
+
+    // Puertos
+    openPorts:      "Puertos Abiertos",
     scanning_ports: "Escaneando puertos en <strong>{{ip}}</strong>...",
-    no_ports: "No se encontraron puertos abiertos en <strong>{{ip}}</strong>.",
-    host_label: "Host",
-    error_ports: "Error al consultar puertos para <strong>{{ip}}</strong>",
-    adding: "Agregando MAC...",
-    success: "MAC agregada con éxito",
-    error: "Error al agregar la MAC",
-    eliminando: "Eliminando MAC...",
-    view_ports: "Ver puertos",
-    ports: "Puertos",
-    login_title: "Bienvenido a <span class='gradient-text'>LANGuard</span>",
-    login_subtitle: "Inicia sesión para continuar",
-    username: "Usuario",
-    password: "Contraseña",
-    login_button: "Ingresar",
-    login_footer: "Seguridad avanzada y monitoreo de tu red.",
+    no_ports:       "No se encontraron puertos abiertos en <strong>{{ip}}</strong>.",
+    error_ports:    "Error al consultar puertos para <strong>{{ip}}</strong>",
+
+    // General
+    connectionError: "Error de conexión",
+    currentTime:     "Hora actual:",
+    detectedDevices: "Dispositivos detectados:",
+    host_label:      "Host",
+
+    // Historial
+    history:             "Historial",
+    historyTitle:        "Historial de dispositivos",
+    historySearch:       "Buscar",
+    historyMacPlaceholder: "MAC (opcional)",
+    historyEmpty:        "Presiona Buscar para cargar el historial",
+    historyNoResults:    "Sin registros",
+    historyLoading:      "Cargando...",
+    historyError:        "Error al cargar historial",
+    historyCount:        "registros encontrados",
+    historyDate:         "Fecha",
+    historyTrusted:      "✓ Confiable",
+    historyUntrusted:    "✗ No confiable",
+
+    // Login
+    login_title:   "Bienvenido a <span class='gradient-text'>LANGuard</span>",
+    login_subtitle:"Inicia sesión para continuar",
+    username:      "Usuario",
+    password:      "Contraseña",
+    login_button:  "Ingresar",
+    login_footer:  "Seguridad avanzada y monitoreo de tu red.",
     footer_github: "Ver en GitHub",
   },
+
   en: {
-    scan: "Scan",
-    logout: "Logout",
-    header:
-      "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
-    trusted: "Trusted",
-    untrusted: "Untrusted",
-    addTrusted: "Add trusted MAC",
-    trustedDevices: "Trusted Devices",
-    delete: "Delete",
-    openPorts: "Open Ports",
-    filterName: "Filter by name",
-    filterMac: "Filter by MAC",
-    filterAll: "All",
-    filterTrusted: "Trusted",
-    filterUntrusted: "Untrusted",
-    detectedDevices: "Detected devices:",
-    currentTime: "Current time:",
-    changeTheme: "Change theme",
-    scanning: "Scanning network...",
-    scanDone: "Scan complete",
-    scanError: "Error while scanning",
-    scanningPorts: (ip) => `Scanning ports on <strong>${ip}</strong>...`,
-    noPorts: (ip) => `No open ports found on <strong>${ip}</strong>.`,
-    viewPorts: "View ports",
-    nameSaved: "Name saved",
-    addMac: "Adding MAC...",
-    removeMac: "Removing MAC...",
-    connectionError: "Connection error",
-    ip: "IP",
-    mac: "MAC",
-    name: "Name",
+    // Navegación
+    scan:         "Scan",
+    logout:       "Logout",
+    changeTheme:  "Change theme",
+    history:      "History",
+
+    // Header
+    header: "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
+
+    // Tabla
+    ip:           "IP",
+    mac:          "MAC",
+    name:         "Name",
     manufacturer: "Manufacturer",
-    trust: "Trust",
-    guardar: "Save",
-    nombre_guardado: "Name saved",
-    error_guardar_nombre: "Error saving name",
+    trust:        "Trust",
+    ports:        "Ports",
+    trusted:      "Trusted",
+    untrusted:    "Untrusted",
+    view_ports:   "View ports",
+
+    // Filtros
+    filterName:      "Filter by name",
+    filterMac:       "Filter by MAC",
+    filterAll:       "All",
+    filterTrusted:   "Trusted",
+    filterUntrusted: "Untrusted",
+
+    // Panel confiables
+    addTrusted:    "Add trusted MAC",
+    trustedDevices:"Trusted Devices",
+    delete:        "Delete",
+    add:           "Add",
+
+    // Nombres
+    guardar:             "Save",
+    nombre_guardado:     "Name saved",
+    error_guardar_nombre:"Error saving name",
+
+    // Notificaciones MAC
+    adding:       "Adding MAC...",
+    success:      "MAC successfully added",
+    error:        "Failed to add MAC",
+    eliminando:   "Deleting MAC...",
+    eliminado:    "MAC successfully deleted",          // ← faltaba
+
+    // Escaneo
+    scanning:     "Scanning network...",
+    scanDone:     "Scan complete",
+    scanError:    "Error while scanning",
+
+    // Puertos
+    openPorts:      "Open Ports",
     scanning_ports: "Scanning ports on <strong>{{ip}}</strong>...",
-    no_ports: "No open ports found on <strong>{{ip}}</strong>.",
-    host_label: "Host",
-    error_ports: "Error fetching ports for <strong>{{ip}}</strong>",
-    adding: "Adding MAC...",
-    success: "MAC successfully added",
-    error: "Failed to add MAC",
-    eliminando: "Deleting MAC...",
-    view_ports: "View ports",
-    ports: "Ports",
-    login_title: "Welcome to <span class='gradient-text'>LANGuard</span>",
-    login_subtitle: "Log in to continue",
-    username: "Username",
-    password: "Password",
-    login_button: "Log in",
-    login_footer: "Advanced security and network monitoring.",
+    no_ports:       "No open ports found on <strong>{{ip}}</strong>.",
+    error_ports:    "Error fetching ports for <strong>{{ip}}</strong>",
+
+    // General
+    connectionError: "Connection error",
+    currentTime:     "Current time:",
+    detectedDevices: "Detected devices:",
+    host_label:      "Host",
+
+    // Historial
+    history:               "History",
+    historyTitle:          "Device history",
+    historySearch:         "Search",
+    historyMacPlaceholder: "MAC (optional)",
+    historyEmpty:          "Press Search to load history",
+    historyNoResults:      "No records found",
+    historyLoading:        "Loading...",
+    historyError:          "Error loading history",
+    historyCount:          "records found",
+    historyDate:           "Date",
+    historyTrusted:        "✓ Trusted",
+    historyUntrusted:      "✗ Untrusted",
+
+    // Login
+    login_title:   "Welcome to <span class='gradient-text'>LANGuard</span>",
+    login_subtitle:"Log in to continue",
+    username:      "Username",
+    password:      "Password",
+    login_button:  "Log in",
+    login_footer:  "Advanced security and network monitoring.",
     footer_github: "View on GitHub",
-  },
+  }
 };
 
-function t(key, ...args) {
-  const lang = localStorage.getItem("lang") || "es";
-  const value = translations[lang][key];
-  return typeof value === "function" ? value(...args) : value;
+// =======================
+// FUNCIÓN t()
+// =======================
+
+function t(key) {
+  const lang  = localStorage.getItem("lang") || "es";
+  const value = translations[lang]?.[key] ?? translations["es"]?.[key] ?? key;
+  return value;
 }
+
+// =======================
+// APLICAR TRADUCCIONES AL DOM
+// =======================
 
 let langActual = localStorage.getItem("lang") || "es";
 
 function setLanguage(lang) {
+  if (!translations[lang]) return;   // idioma no soportado → no rompe nada
   langActual = lang;
-  function applyTranslation() {
-    document.querySelectorAll("[data-i18n]").forEach((el) => {
-      const key = el.getAttribute("data-i18n");
-      const value = translations[lang]?.[key];
-      if (!value) return;
+  localStorage.setItem("lang", lang);
 
-      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
-        el.setAttribute("placeholder", value);
-      } else if (
-        el.tagName === "BUTTON" ||
-        (el.tagName === "INPUT" && el.type === "submit")
-      ) {
-        el.value = value;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key   = el.getAttribute("data-i18n");
+    const value = translations[lang]?.[key];
+    if (!value) return;
+
+    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+      el.setAttribute("placeholder", value);
+    } else if (el.tagName === "BUTTON" || (el.tagName === "INPUT" && el.type === "submit")) {
+      // Preservar hijos (íconos lucide) si existen
+      const icon = el.querySelector("i, svg");
+      if (icon) {
         el.textContent = value;
-      } else if (el.tagName === "OPTION") {
-        el.textContent = value;
+        el.prepend(icon);
       } else {
-        if (value.includes("<")) {
-          el.innerHTML = value;
-        } else {
-          el.textContent = value;
-        }
+        el.textContent = value;
       }
-    });
-
-    if (typeof filtroConfianzaKey !== "undefined") {
-      actualizarLabelFiltro();
+    } else if (el.tagName === "OPTION") {
+      el.textContent = value;
+    } else {
+      el[value.includes("<") ? "innerHTML" : "textContent"] = value;
     }
-
-    localStorage.setItem("lang", lang);
-  }
-
-  applyTranslation();
-}
-
-
-
-window.addEventListener("DOMContentLoaded", () => {
-  const savedLang = localStorage.getItem("lang") || "es";
-  setLanguage(savedLang);
-
-  const selectors = document.querySelectorAll(".language-select");
-
-  selectors.forEach((selector) => {
-    selector.value = savedLang;
-
-    selector.addEventListener("change", (e) => {
-      const newLang = e.target.value;
-      localStorage.setItem("lang", newLang);
-      setLanguage(newLang);
-
-      selectors.forEach((sel) => {
-        sel.value = newLang;
-      });
-    });
   });
 
-  if (typeof filtroConfianzaKey !== "undefined") {
-    actualizarLabelFiltro();
-  }
+  if (typeof actualizarLabelFiltro === "function") actualizarLabelFiltro();
+}
+
+// =======================
+// INIT
+// =======================
+
+window.addEventListener("DOMContentLoaded", () => {
+  setLanguage(localStorage.getItem("lang") || "es");
 });
-
-
-
-
-
