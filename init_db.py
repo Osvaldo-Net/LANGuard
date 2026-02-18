@@ -7,11 +7,9 @@ DB_PATH  = os.path.join(BASE_DIR, "data", "lan_guard.db")
 
 conn = sqlite3.connect(DB_PATH)
 cur  = conn.cursor()
-
 cur.execute("PRAGMA journal_mode=WAL")
 cur.execute("PRAGMA synchronous=NORMAL")
 
-# Usuarios
 cur.execute("""
 CREATE TABLE IF NOT EXISTS usuarios (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,14 +19,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
 )
 """)
 
-# MAC confiables
 cur.execute("""
 CREATE TABLE IF NOT EXISTS mac_confiables (
     mac TEXT PRIMARY KEY
 )
 """)
 
-# Nombres dispositivos
 cur.execute("""
 CREATE TABLE IF NOT EXISTS nombres_dispositivos (
     mac    TEXT PRIMARY KEY,
@@ -36,15 +32,13 @@ CREATE TABLE IF NOT EXISTS nombres_dispositivos (
 )
 """)
 
-# Cache fabricantes (OUI → empresa)
 cur.execute("""
 CREATE TABLE IF NOT EXISTS vendor_cache (
-    oui       TEXT PRIMARY KEY,
+    oui        TEXT PRIMARY KEY,
     fabricante TEXT NOT NULL
 )
 """)
 
-# Detecciones para alertas Telegram
 cur.execute("""
 CREATE TABLE IF NOT EXISTS detecciones_mac (
     mac          TEXT PRIMARY KEY,
@@ -54,7 +48,6 @@ CREATE TABLE IF NOT EXISTS detecciones_mac (
 )
 """)
 
-# Historial de dispositivos (solo cambios: conectado / desconectado)
 cur.execute("""
 CREATE TABLE IF NOT EXISTS historial_dispositivos (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,38 +61,32 @@ CREATE TABLE IF NOT EXISTS historial_dispositivos (
 )
 """)
 
-# Migración segura: agregar columna evento si no existe (para DBs antiguas)
+# NUEVA TABLA: configuracion dinamica (Telegram, intervalo, etc.)
+cur.execute("""
+CREATE TABLE IF NOT EXISTS configuracion (
+    clave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL
+)
+""")
+
+# Migracion segura
 try:
     cur.execute("ALTER TABLE historial_dispositivos ADD COLUMN evento TEXT NOT NULL DEFAULT 'conectado'")
-    print("Columna 'evento' añadida a historial_dispositivos.")
+    print("Columna 'evento' anadida.")
 except Exception:
-    pass  # Ya existe, no hay problema
+    pass
 
-# Índices
-cur.execute("""
-CREATE INDEX IF NOT EXISTS idx_historial_mac
-ON historial_dispositivos(mac)
-""")
-cur.execute("""
-CREATE INDEX IF NOT EXISTS idx_historial_visto
-ON historial_dispositivos(visto_en)
-""")
-cur.execute("""
-CREATE INDEX IF NOT EXISTS idx_historial_evento
-ON historial_dispositivos(evento)
-""")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_mac    ON historial_dispositivos(mac)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_visto  ON historial_dispositivos(visto_en)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_evento ON historial_dispositivos(evento)")
 
-# Usuario por defecto
-USUARIO_DEFECTO   = "admin@example.com"
+USUARIO_DEFECTO    = "admin@example.com"
 CONTRASENA_DEFECTO = "admin"
-
 cur.execute("SELECT COUNT(*) FROM usuarios")
 if cur.fetchone()[0] == 0:
     hash_pwd = bcrypt.hashpw(CONTRASENA_DEFECTO.encode(), bcrypt.gensalt(12)).decode()
-    cur.execute("""
-        INSERT INTO usuarios (usuario, contrasena, rol)
-        VALUES (?, ?, ?)
-    """, (USUARIO_DEFECTO, hash_pwd, "admin"))
+    cur.execute("INSERT INTO usuarios (usuario, contrasena, rol) VALUES (?, ?, ?)",
+                (USUARIO_DEFECTO, hash_pwd, "admin"))
 
 conn.commit()
 conn.close()
