@@ -14,12 +14,12 @@
             theme: {
                 extend: {
                     colors: {
-                        accent: "#f4a261",
+                        accent:    "#f4a261",
                         highlight: "#e76f51",
-                        bgBone: "#f8f6f2",
-                        dark1: "#202123",
-                        dark2: "#2D2D2F",
-                        dark3: "#343541"
+                        bgBone:    "#f8f6f2",
+                        dark1:     "#202123",
+                        dark2:     "#2D2D2F",
+                        dark3:     "#343541"
                     },
                     fontFamily: {
                         sans: ["Poppins", "Inter", "sans-serif"],
@@ -42,6 +42,11 @@
 
         .ocultar-scroll::-webkit-scrollbar { display: none; }
         .ocultar-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Scrollbar visible pero estilizado para el historial */
+        .historial-scroll::-webkit-scrollbar { width: 5px; }
+        .historial-scroll::-webkit-scrollbar-thumb { background: rgba(244,162,97,.5); border-radius: 10px; }
+        .historial-scroll::-webkit-scrollbar-track { background: transparent; }
     </style>
 </head>
 
@@ -91,11 +96,11 @@
             <!-- Tema -->
             <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
                 <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
-                <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
+                <i id="icono-sol"  data-lucide="sun"  class="w-5 h-5 hidden"></i>
                 <span data-i18n="changeTheme">Cambiar tema</span>
             </button>
 
-            <!-- ── ATAJO: HISTORIAL en sidebar ── -->
+            <!-- Historial -->
             <button onclick="toggleHistorial()" class="w-full text-accent hover:text-highlight py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
                 <i data-lucide="history" class="w-5 h-5"></i>
                 <span data-i18n="history">Historial</span>
@@ -112,7 +117,7 @@
                 <i data-lucide="log-out"></i>
                 <span data-i18n="logout">Cerrar sesión</span>
             </a>
-            <p class="text-center text-xs text-gray-500 dark:text-gray-400">LANGuard Beta v3.1.0</p>
+            <p class="text-center text-xs text-gray-500 dark:text-gray-400">LANGuard Beta v3.2.0</p>
         </div>
     </aside>
 
@@ -140,8 +145,8 @@
                     <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
                 </button>
                 <div id="trustMenu" class="absolute z-40 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
-                    <button data-i18n="filterAll"      onclick="setTrustFilter('all')"       class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
-                    <button data-i18n="filterTrusted"  onclick="setTrustFilter('trusted')"   class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
+                    <button data-i18n="filterAll"       onclick="setTrustFilter('all')"       class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
+                    <button data-i18n="filterTrusted"   onclick="setTrustFilter('trusted')"   class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
                     <button data-i18n="filterUntrusted" onclick="setTrustFilter('untrusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
                 </div>
             </div>
@@ -247,22 +252,37 @@
         </div>
 
         <!-- ══════════════════════════════════════
-             SECCIÓN HISTORIAL  ← NUEVO
+             SECCIÓN HISTORIAL — solo cambios
         ════════════════════════════════════════ -->
         <section id="seccion-historial" class="mt-10 hidden animate-fade-in">
             <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-highlight dark:bg-dark2/60">
 
+                <!-- Encabezado + buscador -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white">
-                        <i data-lucide="history" class="text-highlight"></i>
-                        <span data-i18n="historyTitle">Historial de dispositivos</span>
-                    </h2>
+                    <div>
+                        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white">
+                            <i data-lucide="history" class="text-highlight"></i>
+                            <span data-i18n="historyTitle">Historial de dispositivos</span>
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-0.5" data-i18n="historySubtitle">
+                            Solo registra conexiones y desconexiones
+                        </p>
+                    </div>
 
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 flex-wrap">
+                        <!-- Filtro por MAC -->
                         <input id="historial-mac-input" type="text"
-                            data-i18n="historyMacPlaceholder"
                             placeholder="MAC (opcional)"
-                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm w-48" />
+                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm w-44" />
+
+                        <!-- Filtro por evento -->
+                        <select id="historial-evento-select"
+                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm">
+                            <option value="">Todos los eventos</option>
+                            <option value="conectado">🔌 Conectado</option>
+                            <option value="desconectado">⏏ Desconectado</option>
+                        </select>
+
                         <button onclick="cargarHistorial()"
                             class="bg-accent hover:bg-highlight text-white px-4 py-2 rounded-lg text-sm transition">
                             <span data-i18n="historySearch">Buscar</span>
@@ -270,29 +290,56 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto ocultar-scroll rounded-lg border border-gray-200 dark:border-gray-700">
-                    <table class="min-w-[640px] w-full table-auto text-sm">
-                        <thead class="bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
-                            <tr>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="historyDate">Fecha</span></th>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="ip">IP</span></th>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="mac">MAC</span></th>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="name">Nombre</span></th>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="manufacturer">Fabricante</span></th>
-                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="trust">Confianza</span></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-historial" class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <tr>
-                                <td colspan="6" class="px-4 py-6 text-center text-gray-400">
-                                    <span data-i18n="historyEmpty">Presiona Buscar para cargar el historial</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Tabla con altura FIJA y scroll interno -->
+                <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div class="overflow-x-auto">
+                        <div class="overflow-y-auto max-h-72 historial-scroll">
+                            <table class="min-w-[700px] w-full table-auto text-xs">
+                                <thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200 z-10">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-medium whitespace-nowrap">
+                                            <span data-i18n="historyDate">Fecha</span>
+                                        </th>
+                                        <th class="px-3 py-2 text-left font-medium">Evento</th>
+                                        <th class="px-3 py-2 text-left font-medium">
+                                            <span data-i18n="ip">IP</span>
+                                        </th>
+                                        <th class="px-3 py-2 text-left font-medium">
+                                            <span data-i18n="mac">MAC</span>
+                                        </th>
+                                        <th class="px-3 py-2 text-left font-medium">
+                                            <span data-i18n="name">Nombre</span>
+                                        </th>
+                                        <th class="px-3 py-2 text-left font-medium">
+                                            <span data-i18n="manufacturer">Fabricante</span>
+                                        </th>
+                                        <th class="px-3 py-2 text-left font-medium">
+                                            <span data-i18n="trust">Confianza</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-historial" class="divide-y divide-gray-100 dark:divide-gray-700">
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-6 text-center text-gray-400">
+                                            <span data-i18n="historyEmpty">Presiona Buscar para cargar el historial</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
-                <p id="historial-info" class="mt-2 text-xs text-gray-400 text-right"></p>
+                <!-- Contador + botón limpiar -->
+                <div class="mt-2 flex items-center justify-between">
+                    <p id="historial-info" class="text-xs text-gray-400"></p>
+                    <button onclick="limpiarHistorial()"
+                        class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        <span data-i18n="historyClear">Limpiar historial</span>
+                    </button>
+                </div>
+
             </div>
         </section>
 
@@ -321,7 +368,7 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="https://unpkg.com/lucide@latest" defer></script>
 
-    <!-- ── Historial JS (inline, pequeño) ── -->
+    <!-- ── Historial JS ── -->
     <script>
     function toggleHistorial() {
         const sec = document.getElementById("seccion-historial");
@@ -330,52 +377,75 @@
     }
 
     async function cargarHistorial() {
-        const mac   = document.getElementById("historial-mac-input").value.trim();
-        const tbody = document.getElementById("tabla-historial");
-        const info  = document.getElementById("historial-info");
+        const mac    = document.getElementById("historial-mac-input").value.trim();
+        const evento = document.getElementById("historial-evento-select").value;
+        const tbody  = document.getElementById("tabla-historial");
+        const info   = document.getElementById("historial-info");
 
-        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">
-            <span class="animate-pulse">${t("historyLoading")}</span></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400 animate-pulse">
+            Cargando...</td></tr>`;
 
-        const url = mac
-            ? `/api/historial?mac=${encodeURIComponent(mac)}&limit=200`
-            : `/api/historial?limit=200`;
+        let url = `/api/historial?limit=100`;
+        if (mac)    url += `&mac=${encodeURIComponent(mac)}`;
+        if (evento) url += `&evento=${encodeURIComponent(evento)}`;
 
         try {
             const res  = await fetch(url);
             const data = await res.json();
 
             if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">
-                    ${t("historyNoResults")}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-gray-400">
+                    Sin registros</td></tr>`;
                 info.textContent = "";
                 return;
             }
 
-            tbody.innerHTML = data.map(r => `
-                <tr class="hover:bg-gray-50 dark:hover:bg-dark3/60 transition">
-                    <td class="px-4 py-2 text-xs text-gray-500">${r.fecha}</td>
-                    <td class="px-4 py-2">${r.ip}</td>
-                    <td class="px-4 py-2 font-mono text-xs">${r.mac}</td>
-                    <td class="px-4 py-2">${r.nombre || '—'}</td>
-                    <td class="px-4 py-2">${r.fabricante || '—'}</td>
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-0.5 rounded-full text-xs
-                            ${r.confiable
-                                ? 'bg-green-100 text-green-700 dark:bg-green-200/20 dark:text-green-300'
-                                : 'bg-red-100 text-red-700 dark:bg-red-200/20 dark:text-red-300'}">
-                            ${r.confiable ? t("historyTrusted") : t("historyUntrusted")}
-                        </span>
-                    </td>
-                </tr>
-            `).join("");
+            tbody.innerHTML = data.map(r => {
+                const esConectado = r.evento === "conectado";
 
-            info.textContent = `${data.length} ${t("historyCount")}`;
-            lucide.createIcons();
+                const eventoBadge = esConectado
+                    ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+                           🔌 Conectado
+                       </span>`
+                    : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 font-medium">
+                           ⏏ Desconectado
+                       </span>`;
+
+                const confianzaBadge = r.confiable
+                    ? `<span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">✓</span>`
+                    : `<span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">✗</span>`;
+
+                const rowBg = esConectado
+                    ? "hover:bg-blue-50/40 dark:hover:bg-blue-900/10"
+                    : "hover:bg-gray-50 dark:hover:bg-dark3/60";
+
+                return `<tr class="${rowBg} transition">
+                    <td class="px-3 py-2 text-gray-400 whitespace-nowrap">${r.fecha}</td>
+                    <td class="px-3 py-2">${eventoBadge}</td>
+                    <td class="px-3 py-2">${r.ip}</td>
+                    <td class="px-3 py-2 font-mono">${r.mac}</td>
+                    <td class="px-3 py-2">${r.nombre || '—'}</td>
+                    <td class="px-3 py-2 text-gray-500">${r.fabricante || '—'}</td>
+                    <td class="px-3 py-2">${confianzaBadge}</td>
+                </tr>`;
+            }).join("");
+
+            info.textContent = `${data.length} registros encontrados`;
 
         } catch {
-            tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-red-400">
-                ${t("historyError")}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-red-400">
+                Error al cargar historial</td></tr>`;
+        }
+    }
+
+    async function limpiarHistorial() {
+        if (!confirm("¿Eliminar todo el historial? Esta acción no se puede deshacer.")) return;
+        try {
+            const res  = await fetch("/api/historial/limpiar", { method: "POST" });
+            const data = await res.json();
+            if (data.success) cargarHistorial();
+        } catch {
+            alert("Error al limpiar el historial");
         }
     }
     </script>
