@@ -9,12 +9,13 @@ from db import get_db
 #  CONFIGURACIÓN
 # ──────────────────────────────────────────────
 TIEMPO_BLOQUEO    = 300
-CACHE_INTERVALO   = 120   # ← subido de 60 a 120 s para reducir carga
+CACHE_INTERVALO   = 120
 INTENTOS_MAXIMOS  = 3
-HISTORIAL_DIAS    = 30    # días que se conserva el historial
+HISTORIAL_DIAS    = 30
 
 CACHE_RESULTADO   = []
-_cache_lock       = threading.Lock()  # protege escrituras concurrentes
+_cache_lock       = threading.Lock()
+_estado_anterior  = {}   # mac → dict del dispositivo (para detectar cambios)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "lan_guard_secret")
@@ -159,19 +160,42 @@ def obtener_confiables_con_nombre():
 
 
 # ──────────────────────────────────────────────
-#  HISTORIAL
+#  HISTORIAL — solo registra cambios (conectado / desconectado)
 # ──────────────────────────────────────────────
 def guardar_historial(dispositivos: list, ahora: float):
-    """Inserta una fila por dispositivo y limpia registros viejos."""
-    if not dispositivos:
+    """Registra SOLO cuando un dispositivo aparece o desaparece."""
+    global _estado_anterior
+
+    macs_actuales   = {d["mac"] for d in dispositivos}
+    macs_anteriores = set(_estado_anterior.keys())
+
+    nuevos        = macs_actuales - macs_anteriores
+    desconectados = macs_anteriores - macs_actuales
+
+    registros = []
+
+    for d in dispositivos:
+        if d["mac"] in nuevos:
+            registros.append({**d, "evento": "conectado", "ahora": ahora})
+
+    for mac in desconectados:
+        d = _estado_anterior[mac]
+        registros.append({**d, "evento": "desconectado", "ahora": ahora})
+
+    # Actualizar estado anterior SIEMPRE
+    _estado_anterior = {d["mac"]: d for d in dispositivos}
+
+    if not registros:
         return
+
     db = get_db()
     db.executemany("""
-        INSERT INTO historial_dispositivos (mac, ip, fabricante, confiable, nombre, visto_en)
-        VALUES (:mac, :ip, :fabricante, :confiable, :nombre, :ahora)
-    """, [{**d, "ahora": ahora} for d in dispositivos])
+        INSERT INTO historial_dispositivos
+            (mac, ip, fabricante, confiable, nombre, visto_en, evento)
+        VALUES (:mac, :ip, :fabricante, :confiable, :nombre, :ahora, :evento)
+    """, registros)
 
-    # Limpieza automática: borrar entradas más antiguas que HISTORIAL_DIAS
+    # Limpieza automática
     limite = ahora - HISTORIAL_DIAS * 86400
     db.execute("DELETE FROM historial_dispositivos WHERE visto_en < ?", (limite,))
     db.commit()
@@ -179,7 +203,7 @@ def guardar_historial(dispositivos: list, ahora: float):
 
 
 # ──────────────────────────────────────────────
-#  FABRICANTE (con caché local para no llamar la API siempre)
+#  FABRICANTE
 # ──────────────────────────────────────────────
 def obtener_fabricante(mac):
     oui = mac.replace(":", "")[:6].upper()
@@ -207,14 +231,13 @@ def obtener_red_local():
 
 
 # ──────────────────────────────────────────────
-#  ESCANEO  (más ligero: -T3, sin resolución DNS)
+#  ESCANEO
 # ──────────────────────────────────────────────
 def escanear_red():
-    red      = obtener_red_local()
-    ahora    = time.time()
+    red        = obtener_red_local()
+    ahora      = time.time()
     confiables = obtener_confiables()
 
-    # -T3 (normal) en vez de default -T4; -n suprime DNS lookup → más rápido
     salida = subprocess.check_output(
         ["nmap", "-sn", "-PR", "-T3", "-n", red],
         timeout=60
@@ -226,7 +249,6 @@ def escanear_red():
         if "Nmap scan report for" in linea
     ]
 
-    # Tabla ARP local — sin llamadas de red adicionales
     arp_table = {}
     try:
         salida_arp = subprocess.check_output(["ip", "neigh", "show"]).decode()
@@ -274,7 +296,6 @@ def escanear_red():
                     enviar_telegram(mac, ip, fab)
                     guardar_deteccion(mac, count, True, ahora)
 
-    # Guardar historial en background para no bloquear el escaneo
     threading.Thread(
         target=guardar_historial,
         args=(dispositivos, ahora),
@@ -311,32 +332,48 @@ def api_puertos():
 # ──────────────────────────────────────────────
 #  HISTORIAL — ruta API
 # ──────────────────────────────────────────────
+@app.route('/api/historial/limpiar', methods=['POST'])
+def api_historial_limpiar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    db = get_db()
+    db.execute("DELETE FROM historial_dispositivos")
+    db.commit()
+    db.close()
+    return jsonify({"success": True})
+
+
 @app.route('/api/historial')
 def api_historial():
     if 'usuario' not in session:
         return jsonify({"error": "No autorizado"}), 401
 
-    mac   = request.args.get("mac", "").lower()
-    limit = min(int(request.args.get("limit", 200)), 1000)
+    mac    = request.args.get("mac", "").lower()
+    evento = request.args.get("evento", "").lower()
+    limit  = min(int(request.args.get("limit", 100)), 500)
 
-    db = get_db()
+    db     = get_db()
+    where  = []
+    params = []
+
     if mac:
-        rows = db.execute("""
-            SELECT mac, ip, fabricante, confiable, nombre,
-                   datetime(visto_en, 'unixepoch', 'localtime') AS fecha
-            FROM historial_dispositivos
-            WHERE mac = ?
-            ORDER BY visto_en DESC
-            LIMIT ?
-        """, (mac, limit)).fetchall()
-    else:
-        rows = db.execute("""
-            SELECT mac, ip, fabricante, confiable, nombre,
-                   datetime(visto_en, 'unixepoch', 'localtime') AS fecha
-            FROM historial_dispositivos
-            ORDER BY visto_en DESC
-            LIMIT ?
-        """, (limit,)).fetchall()
+        where.append("mac = ?")
+        params.append(mac)
+    if evento in ("conectado", "desconectado"):
+        where.append("evento = ?")
+        params.append(evento)
+
+    where_sql = f"WHERE {' AND '.join(where)}" if where else ""
+    params.append(limit)
+
+    rows = db.execute(f"""
+        SELECT mac, ip, fabricante, confiable, nombre, evento,
+               datetime(visto_en, 'unixepoch', 'localtime') AS fecha
+        FROM historial_dispositivos
+        {where_sql}
+        ORDER BY visto_en DESC
+        LIMIT ?
+    """, params).fetchall()
     db.close()
 
     return jsonify([dict(r) for r in rows])
