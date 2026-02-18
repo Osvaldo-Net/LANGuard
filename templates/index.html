@@ -31,48 +31,21 @@
 
     <style>
         @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
+        .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
 
-        .animate-fade-in {
-            animation: fade-in 0.6s ease-out forwards;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244,162,97,.7); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(244, 162, 97, 0.7);
-            border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .ocultar-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .ocultar-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .ocultar-scroll::-webkit-scrollbar { display: none; }
+        .ocultar-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-
 </head>
 
 <body class="bg-white text-gray-800 font-sans antialiased text-sm dark:bg-dark1 dark:text-gray-200">
-
 
     <button id="toggleMenu" class="fixed top-4 left-4 z-50 bg-accent text-white p-2 rounded-lg shadow-lg sm:hidden">
         <i data-lucide="menu"></i>
@@ -80,7 +53,7 @@
 
     <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden sm:hidden"></div>
 
-
+    <!-- ── SIDEBAR ── -->
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-dark2/90 backdrop-blur-lg border-r border-gray-200 dark:border-gray-700 flex flex-col z-50 transform -translate-x-full sm:translate-x-0 transition-transform duration-300">
 
         <div class="h-20 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
@@ -96,38 +69,38 @@
                 <span data-i18n="scan">Escanear</span>
             </button>
 
-
+            <!-- Idioma -->
             <div class="relative inline-block w-full">
                 <button id="langBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-accent bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
-
                     <div class="flex items-center gap-2">
                         <span id="langFlag" class="fi fi-es w-5 h-4 rounded-sm"></span>
                         <span id="langLabel">Español</span>
                     </div>
-
                     <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
                 </button>
-
                 <div id="langMenu" class="absolute z-50 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
-
                     <button onclick="setLang('es','es','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
                         <span class="fi fi-es w-5 h-4 rounded-sm"></span> Español
                     </button>
-
                     <button onclick="setLang('en','us','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
                         <span class="fi fi-us w-5 h-4 rounded-sm"></span> English
                     </button>
                 </div>
             </div>
 
-
-
-
+            <!-- Tema -->
             <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
                 <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
                 <i id="icono-sol" data-lucide="sun" class="w-5 h-5 hidden"></i>
                 <span data-i18n="changeTheme">Cambiar tema</span>
             </button>
+
+            <!-- ── ATAJO: HISTORIAL en sidebar ── -->
+            <button onclick="toggleHistorial()" class="w-full text-accent hover:text-highlight py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
+                <i data-lucide="history" class="w-5 h-5"></i>
+                <span data-i18n="history">Historial</span>
+            </button>
+
         </nav>
 
         <div class="px-4 py-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
@@ -135,17 +108,15 @@
                 <i data-lucide="clock" class="w-4 h-4 text-accent"></i>
                 <span id="horaActual">--:--:--</span>
             </div>
-
             <a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
                 <i data-lucide="log-out"></i>
                 <span data-i18n="logout">Cerrar sesión</span>
             </a>
-
-            <p class="text-center text-xs text-gray-500 dark:text-gray-400">LANGuard Beta v3.0.0</p>
+            <p class="text-center text-xs text-gray-500 dark:text-gray-400">LANGuard Beta v3.1.0</p>
         </div>
     </aside>
 
-
+    <!-- ── MAIN ── -->
     <main class="sm:ml-64 ml-0 px-6 py-10 animate-fade-in">
 
         <header class="text-center mb-10 max-w-3xl mx-auto">
@@ -156,78 +127,51 @@
             </p>
         </header>
 
-
+        <!-- Filtros -->
         <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" data-i18n="filterName" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none"
-            />
-            <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac" class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none"
-            />
+            <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" data-i18n="filterName"
+                class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
+            <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac"
+                class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
+
             <div class="relative inline-block w-full">
                 <button id="trustBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
-
                     <span id="trustLabel" data-i18n="filterAll">Todos</span>
                     <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
                 </button>
-
                 <div id="trustMenu" class="absolute z-40 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
-
-                    <button data-i18n="filterAll" onclick="setTrustFilter('all')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
-                    </button>
-
-                    <button data-i18n="filterTrusted" onclick="setTrustFilter('trusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
-                    </button>
-
-                    <button data-i18n="filterUntrusted" onclick="setTrustFilter('untrusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10">
-                    </button>
-
+                    <button data-i18n="filterAll"      onclick="setTrustFilter('all')"       class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
+                    <button data-i18n="filterTrusted"  onclick="setTrustFilter('trusted')"   class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
+                    <button data-i18n="filterUntrusted" onclick="setTrustFilter('untrusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
                 </div>
-
             </div>
-
         </div>
 
+        <!-- Tabla de dispositivos -->
         <section class="overflow-x-auto ocultar-scroll rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur-lg shadow-md dark:bg-dark2/60">
             <table class="min-w-[640px] w-full table-auto text-sm">
                 <thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="ip" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="ip">IP</span>
-                        </th>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="hash" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="mac">MAC</span>
-                        </th>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="tag" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="name">Nombre</span>
-                        </th>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="factory" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="manufacturer">Fabricante</span>
-                        </th>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="shield" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="trust">Confianza</span>
-                        </th>
-                        <th class="px-4 py-3 text-left font-medium">
-                            <i data-lucide="server" class="inline-block w-4 h-4"></i>
-                            <span data-i18n="ports">Puertos</span>
-                        </th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="ip">IP</span></th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="mac">MAC</span></th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="name">Nombre</span></th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="manufacturer">Fabricante</span></th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="trust">Confianza</span></th>
+                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="ports">Puertos</span></th>
                     </tr>
-
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
                     {% for d in dispositivos %}
-                    <tr class="transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row" data-nombre="{{ (d.nombre or 'N/A') | lower }}" data-mac="{{ d.mac | lower }}" data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
+                    <tr class="transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row"
+                        data-nombre="{{ (d.nombre or 'N/A') | lower }}"
+                        data-mac="{{ d.mac | lower }}"
+                        data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
 
                         <td class="px-4 py-3">{{ d.ip }}</td>
                         <td class="px-4 py-3">{{ d.mac }}</td>
 
                         <td class="px-4 py-3 flex items-center gap-2">
-                            <span class="text-gray-800 dark:text-gray-200">
-                                {{ d.nombre or "N/A" }}
-                            </span>
+                            <span class="text-gray-800 dark:text-gray-200">{{ d.nombre or "N/A" }}</span>
                             <button onclick="editarNombre('{{ d.mac }}')" class="text-accent hover:text-highlight transition">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
@@ -249,7 +193,7 @@
                             {% endif %}
                         </td>
 
-                        <td id="puertos-{{ d.ip | replace('.', '-') }}" class="px-4 py-3">
+                        <td class="px-4 py-3">
                             <button onclick="verPuertos('{{ d.ip }}')" class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
                                 <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
                                 <span data-i18n="view_ports">Ver puertos</span>
@@ -258,20 +202,20 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-
             </table>
         </section>
 
-
+        <!-- Agregar MAC + Confiables -->
         <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
+
             <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60 animate-fade-in">
                 <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
                     <i data-lucide="plus"></i>
                     <span data-i18n="addTrusted">Agregar MAC confiable</span>
                 </h2>
                 <form id="form-agregar" class="space-y-4">
-                    <input type="text" id="input-mac" name="prefijo" placeholder="Ej: 00:1A:2B:3C:4D:5E" required class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-dark2 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none"
-                    />
+                    <input type="text" id="input-mac" placeholder="Ej: 00:1A:2B:3C:4D:5E" required
+                        class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-dark2 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none" />
                     <button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105" data-i18n="add">
                         Agregar
                     </button>
@@ -286,17 +230,12 @@
                 <ul id="lista-macs" class="space-y-3 custom-scrollbar overflow-y-auto max-h-64">
                     {% for item in lista_confiables %}
                     <li data-mac="{{ item.mac|lower }}" class="flex justify-between items-center bg-gray-50 dark:bg-dark3/50 p-3 rounded-lg">
-
                         <div>
                             <span class="nombre-confiable font-semibold text-gray-800 dark:text-white">
                                 {{ item.nombre if item.nombre else 'Sin nombre' }}
-                            </span>
-                            <br />
-                            <span class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ item.mac }}
-                            </span>
+                            </span><br />
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ item.mac }}</span>
                         </div>
-
                         <button onclick="eliminarMAC('{{ item.mac }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
                             <i data-lucide="trash-2"></i>
                             <span data-i18n="delete">Eliminar</span>
@@ -306,11 +245,63 @@
                 </ul>
             </div>
         </div>
+
+        <!-- ══════════════════════════════════════
+             SECCIÓN HISTORIAL  ← NUEVO
+        ════════════════════════════════════════ -->
+        <section id="seccion-historial" class="mt-10 hidden animate-fade-in">
+            <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-highlight dark:bg-dark2/60">
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white">
+                        <i data-lucide="history" class="text-highlight"></i>
+                        <span data-i18n="historyTitle">Historial de dispositivos</span>
+                    </h2>
+
+                    <div class="flex gap-2">
+                        <input id="historial-mac-input" type="text"
+                            data-i18n="historyMacPlaceholder"
+                            placeholder="MAC (opcional)"
+                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm w-48" />
+                        <button onclick="cargarHistorial()"
+                            class="bg-accent hover:bg-highlight text-white px-4 py-2 rounded-lg text-sm transition">
+                            <span data-i18n="historySearch">Buscar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto ocultar-scroll rounded-lg border border-gray-200 dark:border-gray-700">
+                    <table class="min-w-[640px] w-full table-auto text-sm">
+                        <thead class="bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="historyDate">Fecha</span></th>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="ip">IP</span></th>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="mac">MAC</span></th>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="name">Nombre</span></th>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="manufacturer">Fabricante</span></th>
+                                <th class="px-4 py-2 text-left font-medium"><span data-i18n="trust">Confianza</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-historial" class="divide-y divide-gray-100 dark:divide-gray-700">
+                            <tr>
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-400">
+                                    <span data-i18n="historyEmpty">Presiona Buscar para cargar el historial</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="historial-info" class="mt-2 text-xs text-gray-400 text-right"></p>
+            </div>
+        </section>
+
     </main>
 
-    <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800">
-    </div>
+    <!-- Notificación -->
+    <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
 
+    <!-- Modal puertos -->
     <div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-dark2 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
             <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
@@ -330,6 +321,64 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="https://unpkg.com/lucide@latest" defer></script>
 
-</body>
+    <!-- ── Historial JS (inline, pequeño) ── -->
+    <script>
+    function toggleHistorial() {
+        const sec = document.getElementById("seccion-historial");
+        const oculto = sec.classList.toggle("hidden");
+        if (!oculto) cargarHistorial();
+    }
 
+    async function cargarHistorial() {
+        const mac   = document.getElementById("historial-mac-input").value.trim();
+        const tbody = document.getElementById("tabla-historial");
+        const info  = document.getElementById("historial-info");
+
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">
+            <span class="animate-pulse">${t("historyLoading")}</span></td></tr>`;
+
+        const url = mac
+            ? `/api/historial?mac=${encodeURIComponent(mac)}&limit=200`
+            : `/api/historial?limit=200`;
+
+        try {
+            const res  = await fetch(url);
+            const data = await res.json();
+
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">
+                    ${t("historyNoResults")}</td></tr>`;
+                info.textContent = "";
+                return;
+            }
+
+            tbody.innerHTML = data.map(r => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-dark3/60 transition">
+                    <td class="px-4 py-2 text-xs text-gray-500">${r.fecha}</td>
+                    <td class="px-4 py-2">${r.ip}</td>
+                    <td class="px-4 py-2 font-mono text-xs">${r.mac}</td>
+                    <td class="px-4 py-2">${r.nombre || '—'}</td>
+                    <td class="px-4 py-2">${r.fabricante || '—'}</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-0.5 rounded-full text-xs
+                            ${r.confiable
+                                ? 'bg-green-100 text-green-700 dark:bg-green-200/20 dark:text-green-300'
+                                : 'bg-red-100 text-red-700 dark:bg-red-200/20 dark:text-red-300'}">
+                            ${r.confiable ? t("historyTrusted") : t("historyUntrusted")}
+                        </span>
+                    </td>
+                </tr>
+            `).join("");
+
+            info.textContent = `${data.length} ${t("historyCount")}`;
+            lucide.createIcons();
+
+        } catch {
+            tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-red-400">
+                ${t("historyError")}</td></tr>`;
+        }
+    }
+    </script>
+
+</body>
 </html>
