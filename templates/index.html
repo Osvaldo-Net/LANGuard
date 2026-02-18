@@ -1,454 +1,665 @@
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LAN Guard</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        accent:    "#f4a261",
-                        highlight: "#e76f51",
-                        bgBone:    "#f8f6f2",
-                        dark1:     "#202123",
-                        dark2:     "#2D2D2F",
-                        dark3:     "#343541"
-                    },
-                    fontFamily: {
-                        sans: ["Poppins", "Inter", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
-
-    <style>
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAN Guard</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            accent:    "#f4a261",
+            highlight: "#e76f51",
+            bgBone:    "#f8f6f2",
+            dark1:     "#202123",
+            dark2:     "#2D2D2F",
+            dark3:     "#343541"
+          },
+          fontFamily: { sans: ["Poppins", "sans-serif"] }
         }
-        .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244,162,97,.7); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-
-        .ocultar-scroll::-webkit-scrollbar { display: none; }
-        .ocultar-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Scrollbar visible pero estilizado para el historial */
-        .historial-scroll::-webkit-scrollbar { width: 5px; }
-        .historial-scroll::-webkit-scrollbar-thumb { background: rgba(244,162,97,.5); border-radius: 10px; }
-        .historial-scroll::-webkit-scrollbar-track { background: transparent; }
-    </style>
+      }
+    };
+  </script>
+  <style>
+    @keyframes fade-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+    @keyframes pulse-ring { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.8);opacity:0} }
+    .pulse-ring::before { content:''; position:absolute; inset:0; border-radius:50%; background:inherit; animation: pulse-ring 1.5s ease-out infinite; }
+    .custom-scrollbar::-webkit-scrollbar { width:5px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background:rgba(244,162,97,.6); border-radius:10px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background:transparent; }
+    .ocultar-scroll::-webkit-scrollbar { display:none; }
+    .ocultar-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+    /* Historia cards */
+    .hist-card { transition: transform 0.15s, box-shadow 0.15s; }
+    .hist-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+    /* Session bar */
+    #session-bar { transition: width linear 1s; }
+  </style>
 </head>
-
 <body class="bg-white text-gray-800 font-sans antialiased text-sm dark:bg-dark1 dark:text-gray-200">
 
-    <button id="toggleMenu" class="fixed top-4 left-4 z-50 bg-accent text-white p-2 rounded-lg shadow-lg sm:hidden">
-        <i data-lucide="menu"></i>
-    </button>
+  <!-- Session timeout warning -->
+  <div id="timeout-warning" class="hidden fixed top-0 left-0 right-0 z-[100] bg-red-500 text-white text-xs text-center py-1.5 font-medium shadow">
+    ⚠️ Tu sesión expirará pronto. <a href="#" onclick="refreshSession()" class="underline">Mantener activa</a>
+  </div>
+  <!-- Session progress bar -->
+  <div class="fixed top-0 left-0 right-0 z-[99] h-0.5 bg-gray-200 dark:bg-gray-700">
+    <div id="session-bar" class="h-full bg-gradient-to-r from-accent to-highlight" style="width:100%"></div>
+  </div>
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden sm:hidden"></div>
+  <button id="toggleMenu" class="fixed top-5 left-4 z-50 bg-accent text-white p-2 rounded-lg shadow-lg sm:hidden">
+    <i data-lucide="menu"></i>
+  </button>
+  <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden sm:hidden"></div>
 
-    <!-- ── SIDEBAR ── -->
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-dark2/90 backdrop-blur-lg border-r border-gray-200 dark:border-gray-700 flex flex-col z-50 transform -translate-x-full sm:translate-x-0 transition-transform duration-300">
-
-        <div class="h-20 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
-            <span class="text-3xl font-semibold tracking-tight">
-                <span class="text-accent">LAN</span><span class="text-gray-800 dark:text-gray-100">Guard</span>
-            </span>
-        </div>
-
-        <nav class="flex-1 px-4 py-6 space-y-4 overflow-y-auto custom-scrollbar">
-
-            <button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
-                <i data-lucide="scan" class="w-5 h-5"></i>
-                <span data-i18n="scan">Escanear</span>
-            </button>
-
-            <!-- Idioma -->
-            <div class="relative inline-block w-full">
-                <button id="langBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-accent bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
-                    <div class="flex items-center gap-2">
-                        <span id="langFlag" class="fi fi-es w-5 h-4 rounded-sm"></span>
-                        <span id="langLabel">Español</span>
-                    </div>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
-                </button>
-                <div id="langMenu" class="absolute z-50 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
-                    <button onclick="setLang('es','es','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
-                        <span class="fi fi-es w-5 h-4 rounded-sm"></span> Español
-                    </button>
-                    <button onclick="setLang('en','us','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left">
-                        <span class="fi fi-us w-5 h-4 rounded-sm"></span> English
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tema -->
-            <button onclick="toggleDarkMode()" class="w-full text-highlight hover:text-accent py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
-                <i id="icono-luna" data-lucide="moon" class="w-5 h-5"></i>
-                <i id="icono-sol"  data-lucide="sun"  class="w-5 h-5 hidden"></i>
-                <span data-i18n="changeTheme">Cambiar tema</span>
-            </button>
-
-            <!-- Historial -->
-            <button onclick="toggleHistorial()" class="w-full text-accent hover:text-highlight py-2 px-4 rounded-lg border border-accent flex items-center gap-2 text-sm transition hover:bg-accent/10 dark:hover:bg-dark3/40">
-                <i data-lucide="history" class="w-5 h-5"></i>
-                <span data-i18n="history">Historial</span>
-            </button>
-
-        </nav>
-
-        <div class="px-4 py-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
-            <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
-                <i data-lucide="clock" class="w-4 h-4 text-accent"></i>
-                <span id="horaActual">--:--:--</span>
-            </div>
-            <a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg shadow-md flex items-center gap-2 text-sm transition hover:scale-105">
-                <i data-lucide="log-out"></i>
-                <span data-i18n="logout">Cerrar sesión</span>
-            </a>
-            <p class="text-center text-xs text-gray-500 dark:text-gray-400">LANGuard Beta v3.2.0</p>
-        </div>
-    </aside>
-
-    <!-- ── MAIN ── -->
-    <main class="sm:ml-64 ml-0 px-6 py-10 animate-fade-in">
-
-        <header class="text-center mb-10 max-w-3xl mx-auto">
-            <p class="text-2xl font-medium text-gray-700 dark:text-gray-200 leading-relaxed" data-i18n="header">
-                Escaneo avanzado de red LAN:
-                <span class="text-accent font-semibold">detecta accesos no autorizados</span> y evalúa la
-                <span class="text-highlight font-semibold">confianza</span> de cada dispositivo conectado.
-            </p>
-        </header>
-
-        <!-- Filtros -->
-        <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" data-i18n="filterName"
-                class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
-            <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac"
-                class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none" />
-
-            <div class="relative inline-block w-full">
-                <button id="trustBtn" class="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
-                    <span id="trustLabel" data-i18n="filterAll">Todos</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
-                </button>
-                <div id="trustMenu" class="absolute z-40 mt-2 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
-                    <button data-i18n="filterAll"       onclick="setTrustFilter('all')"       class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
-                    <button data-i18n="filterTrusted"   onclick="setTrustFilter('trusted')"   class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
-                    <button data-i18n="filterUntrusted" onclick="setTrustFilter('untrusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10"></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla de dispositivos -->
-        <section class="overflow-x-auto ocultar-scroll rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur-lg shadow-md dark:bg-dark2/60">
-            <table class="min-w-[640px] w-full table-auto text-sm">
-                <thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200">
-                    <tr>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="ip">IP</span></th>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="mac">MAC</span></th>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="name">Nombre</span></th>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="manufacturer">Fabricante</span></th>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="trust">Confianza</span></th>
-                        <th class="px-4 py-3 text-left font-medium"><span data-i18n="ports">Puertos</span></th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
-                    {% for d in dispositivos %}
-                    <tr class="transition-all duration-300 hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row"
-                        data-nombre="{{ (d.nombre or 'N/A') | lower }}"
-                        data-mac="{{ d.mac | lower }}"
-                        data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
-
-                        <td class="px-4 py-3">{{ d.ip }}</td>
-                        <td class="px-4 py-3">{{ d.mac }}</td>
-
-                        <td class="px-4 py-3 flex items-center gap-2">
-                            <span class="text-gray-800 dark:text-gray-200">{{ d.nombre or "N/A" }}</span>
-                            <button onclick="editarNombre('{{ d.mac }}')" class="text-accent hover:text-highlight transition">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                        </td>
-
-                        <td class="px-4 py-3">{{ d.fabricante }}</td>
-
-                        <td class="px-4 py-3">
-                            {% if d.confiable %}
-                            <span class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm dark:bg-green-200/20 dark:text-green-300">
-                                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                                <span data-i18n="trusted">Confiable</span>
-                            </span>
-                            {% else %}
-                            <span class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm dark:bg-red-200/20 dark:text-red-300">
-                                <i data-lucide="x-circle" class="w-4 h-4"></i>
-                                <span data-i18n="untrusted">No confiable</span>
-                            </span>
-                            {% endif %}
-                        </td>
-
-                        <td class="px-4 py-3">
-                            <button onclick="verPuertos('{{ d.ip }}')" class="inline-flex items-center gap-2 text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition duration-200">
-                                <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-                                <span data-i18n="view_ports">Ver puertos</span>
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Agregar MAC + Confiables -->
-        <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 mt-10">
-
-            <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60 animate-fade-in">
-                <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-                    <i data-lucide="plus"></i>
-                    <span data-i18n="addTrusted">Agregar MAC confiable</span>
-                </h2>
-                <form id="form-agregar" class="space-y-4">
-                    <input type="text" id="input-mac" placeholder="Ej: 00:1A:2B:3C:4D:5E" required
-                        class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-gray-800 dark:bg-dark2 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none" />
-                    <button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow-md transition hover:scale-105" data-i18n="add">
-                        Agregar
-                    </button>
-                </form>
-            </div>
-
-            <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60 animate-fade-in">
-                <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white mb-4">
-                    <i data-lucide="check"></i>
-                    <span data-i18n="trustedDevices">Dispositivos Confiables</span>
-                </h2>
-                <ul id="lista-macs" class="space-y-3 custom-scrollbar overflow-y-auto max-h-64">
-                    {% for item in lista_confiables %}
-                    <li data-mac="{{ item.mac|lower }}" class="flex justify-between items-center bg-gray-50 dark:bg-dark3/50 p-3 rounded-lg">
-                        <div>
-                            <span class="nombre-confiable font-semibold text-gray-800 dark:text-white">
-                                {{ item.nombre if item.nombre else 'Sin nombre' }}
-                            </span><br />
-                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ item.mac }}</span>
-                        </div>
-                        <button onclick="eliminarMAC('{{ item.mac }}')" class="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium">
-                            <i data-lucide="trash-2"></i>
-                            <span data-i18n="delete">Eliminar</span>
-                        </button>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════════
-             SECCIÓN HISTORIAL — solo cambios
-        ════════════════════════════════════════ -->
-        <section id="seccion-historial" class="mt-10 hidden animate-fade-in">
-            <div class="bg-white/60 backdrop-blur p-6 rounded-xl shadow border-l-4 border-highlight dark:bg-dark2/60">
-
-                <!-- Encabezado + buscador -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-white">
-                            <i data-lucide="history" class="text-highlight"></i>
-                            <span data-i18n="historyTitle">Historial de dispositivos</span>
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5" data-i18n="historySubtitle">
-                            Solo registra conexiones y desconexiones
-                        </p>
-                    </div>
-
-                    <div class="flex gap-2 flex-wrap">
-                        <!-- Filtro por MAC -->
-                        <input id="historial-mac-input" type="text"
-                            placeholder="MAC (opcional)"
-                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm w-44" />
-
-                        <!-- Filtro por evento -->
-                        <select id="historial-evento-select"
-                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm">
-                            <option value="">Todos los eventos</option>
-                            <option value="conectado">🔌 Conectado</option>
-                            <option value="desconectado">⏏ Desconectado</option>
-                        </select>
-
-                        <button onclick="cargarHistorial()"
-                            class="bg-accent hover:bg-highlight text-white px-4 py-2 rounded-lg text-sm transition">
-                            <span data-i18n="historySearch">Buscar</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tabla con altura FIJA y scroll interno -->
-                <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div class="overflow-x-auto">
-                        <div class="overflow-y-auto max-h-72 historial-scroll">
-                            <table class="min-w-[700px] w-full table-auto text-xs">
-                                <thead class="sticky top-0 bg-gray-100 dark:bg-dark3 text-gray-700 dark:text-gray-200 z-10">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left font-medium whitespace-nowrap">
-                                            <span data-i18n="historyDate">Fecha</span>
-                                        </th>
-                                        <th class="px-3 py-2 text-left font-medium">Evento</th>
-                                        <th class="px-3 py-2 text-left font-medium">
-                                            <span data-i18n="ip">IP</span>
-                                        </th>
-                                        <th class="px-3 py-2 text-left font-medium">
-                                            <span data-i18n="mac">MAC</span>
-                                        </th>
-                                        <th class="px-3 py-2 text-left font-medium">
-                                            <span data-i18n="name">Nombre</span>
-                                        </th>
-                                        <th class="px-3 py-2 text-left font-medium">
-                                            <span data-i18n="manufacturer">Fabricante</span>
-                                        </th>
-                                        <th class="px-3 py-2 text-left font-medium">
-                                            <span data-i18n="trust">Confianza</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabla-historial" class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    <tr>
-                                        <td colspan="7" class="px-4 py-6 text-center text-gray-400">
-                                            <span data-i18n="historyEmpty">Presiona Buscar para cargar el historial</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contador + botón limpiar -->
-                <div class="mt-2 flex items-center justify-between">
-                    <p id="historial-info" class="text-xs text-gray-400"></p>
-                    <button onclick="limpiarHistorial()"
-                        class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition">
-                        <i data-lucide="trash-2" class="w-3 h-3"></i>
-                        <span data-i18n="historyClear">Limpiar historial</span>
-                    </button>
-                </div>
-
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Notificación -->
-    <div id="notificacion" class="fixed bottom-6 right-6 hidden px-5 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-sm w-full bg-green-100 text-green-800"></div>
-
-    <!-- Modal puertos -->
-    <div id="modal-puertos" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-dark2 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700">
-            <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <h2 class="text-lg font-semibold mb-4 flex items-center gap-3 text-highlight">
-                <span class="p-2 rounded-full bg-gradient-to-r from-accent to-highlight text-white shadow-md">
-                    <i data-lucide="server" class="w-5 h-5"></i>
-                </span>
-                <span data-i18n="openPorts">Puertos Abiertos</span>
-            </h2>
-            <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
-        </div>
+  <!-- ── SIDEBAR ── -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-dark2/90 backdrop-blur-lg border-r border-gray-200 dark:border-gray-700 flex flex-col z-50 transform -translate-x-full sm:translate-x-0 transition-transform duration-300">
+    <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
+      <span class="text-2xl font-semibold tracking-tight">
+        <span class="text-accent">LAN</span><span class="text-gray-800 dark:text-gray-100">Guard</span>
+      </span>
     </div>
 
-    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <nav class="flex-1 px-4 py-4 space-y-2.5 overflow-y-auto custom-scrollbar">
 
-    <!-- ── Historial JS ── -->
-    <script>
-    function toggleHistorial() {
-        const sec = document.getElementById("seccion-historial");
-        const oculto = sec.classList.toggle("hidden");
-        if (!oculto) cargarHistorial();
+      <button onclick="escanearAhora()" class="w-full bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-4 rounded-lg shadow flex items-center gap-2 text-sm transition hover:scale-105">
+        <i data-lucide="scan" class="w-4 h-4"></i>
+        <span data-i18n="scan">Escanear</span>
+      </button>
+
+      <!-- Idioma -->
+      <div class="relative">
+        <button id="langBtn" class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-accent/50 bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
+          <div class="flex items-center gap-2">
+            <span id="langFlag" class="fi fi-es w-5 h-4 rounded-sm"></span>
+            <span id="langLabel">Español</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
+        </button>
+        <div id="langMenu" class="absolute z-50 mt-1 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
+          <button onclick="setLang('es','es','Español')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left text-sm">
+            <span class="fi fi-es w-5 h-4 rounded-sm"></span> Español
+          </button>
+          <button onclick="setLang('en','us','English')" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-left text-sm">
+            <span class="fi fi-us w-5 h-4 rounded-sm"></span> English
+          </button>
+        </div>
+      </div>
+
+      <!-- Tema -->
+      <button onclick="toggleDarkMode()" class="w-full text-gray-600 dark:text-gray-300 hover:text-accent py-2 px-4 rounded-lg border border-gray-200 dark:border-gray-600 flex items-center gap-2 text-sm transition hover:bg-accent/10">
+        <i id="icono-luna" data-lucide="moon" class="w-4 h-4"></i>
+        <i id="icono-sol"  data-lucide="sun"  class="w-4 h-4 hidden"></i>
+        <span data-i18n="changeTheme">Cambiar tema</span>
+      </button>
+
+      <!-- Historial -->
+      <button onclick="toggleHistorial()" class="w-full text-accent hover:text-highlight py-2 px-4 rounded-lg border border-accent/40 flex items-center gap-2 text-sm transition hover:bg-accent/10">
+        <i data-lucide="history" class="w-4 h-4"></i>
+        <span data-i18n="history">Historial</span>
+      </button>
+
+      <!-- Configuración -->
+      <button onclick="abrirConfig()" class="w-full text-gray-600 dark:text-gray-300 hover:text-accent py-2 px-4 rounded-lg border border-gray-200 dark:border-gray-600 flex items-center gap-2 text-sm transition hover:bg-accent/10">
+        <i data-lucide="settings" class="w-4 h-4"></i>
+        <span>Configuración</span>
+      </button>
+
+    </nav>
+
+    <div class="px-4 py-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+      <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-accent"></i>
+        <span id="horaActual">--:--:--</span>
+      </div>
+      <!-- Session timer -->
+      <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+        <i data-lucide="shield" class="w-3.5 h-3.5 text-green-500"></i>
+        <span>Sesión: <span id="session-countdown" class="text-green-500 font-medium">8h 00m</span></span>
+      </div>
+      <a href="/logout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition hover:scale-105">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        <span data-i18n="logout">Cerrar sesión</span>
+      </a>
+      <p class="text-center text-xs text-gray-400">LANGuard v3.3.0</p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="sm:ml-64 ml-0 px-5 py-8 animate-fade-in pt-3">
+
+    <header class="text-center mb-8 max-w-3xl mx-auto">
+      <p class="text-xl font-medium text-gray-700 dark:text-gray-200 leading-relaxed" data-i18n="header">
+        Escaneo avanzado de red LAN:
+        <span class="text-accent font-semibold">detecta accesos no autorizados</span> y evalúa la
+        <span class="text-highlight font-semibold">confianza</span> de cada dispositivo conectado.
+      </p>
+    </header>
+
+    <!-- Filtros -->
+    <div class="mb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <input id="filtro-nombre" type="text" placeholder="Filtrar por nombre" data-i18n="filterName"
+        class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none text-sm" />
+      <input id="filtro-mac" type="text" placeholder="Filtrar por MAC" data-i18n="filterMac"
+        class="p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 focus:ring-2 focus:ring-accent text-gray-800 dark:text-gray-200 focus:outline-none text-sm" />
+      <div class="relative">
+        <button id="trustBtn" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 text-sm hover:bg-accent/10 transition">
+          <span id="trustLabel" data-i18n="filterAll">Todos</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
+        </button>
+        <div id="trustMenu" class="absolute z-40 mt-1 w-full bg-white dark:bg-dark2 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden">
+          <button data-i18n="filterAll"       onclick="setTrustFilter('all')"       class="w-full px-3 py-2 text-left hover:bg-accent/10 text-sm">Todos</button>
+          <button data-i18n="filterTrusted"   onclick="setTrustFilter('trusted')"   class="w-full px-3 py-2 text-left hover:bg-accent/10 text-sm">Confiables</button>
+          <button data-i18n="filterUntrusted" onclick="setTrustFilter('untrusted')" class="w-full px-3 py-2 text-left hover:bg-accent/10 text-sm">No confiables</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla dispositivos -->
+    <section class="overflow-x-auto ocultar-scroll rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 backdrop-blur shadow dark:bg-dark2/60">
+      <table class="min-w-[700px] w-full table-auto text-sm">
+        <thead class="sticky top-0 bg-gray-50 dark:bg-dark3 text-gray-600 dark:text-gray-300">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">IP</th>
+            <th class="px-4 py-3 text-left font-medium">MAC</th>
+            <th class="px-4 py-3 text-left font-medium">Nombre</th>
+            <th class="px-4 py-3 text-left font-medium">Fabricante</th>
+            <th class="px-4 py-3 text-left font-medium">Confianza</th>
+            <th class="px-4 py-3 text-left font-medium">Acción</th>
+            <th class="px-4 py-3 text-left font-medium">Puertos</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700" id="tabla-dispositivos">
+          {% for d in dispositivos %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-dark3/60 dispositivo-row transition"
+              data-nombre="{{ (d.nombre or '') | lower }}"
+              data-mac="{{ d.mac | lower }}"
+              data-confianza="{{ 'confiable' if d.confiable else 'no-confiable' }}">
+            <td class="px-4 py-3 font-mono text-xs">{{ d.ip }}</td>
+            <td class="px-4 py-3 font-mono text-xs text-gray-500 dark:text-gray-400">{{ d.mac }}</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-800 dark:text-gray-200">{{ d.nombre or "—" }}</span>
+                <button onclick="editarNombre('{{ d.mac }}')" class="text-accent hover:text-highlight transition opacity-60 hover:opacity-100">
+                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">{{ d.fabricante }}</td>
+            <td class="px-4 py-3">
+              {% if d.confiable %}
+              <span class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-2.5 py-1 rounded-full text-xs font-medium">
+                <span class="relative flex w-2 h-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-2 h-2 bg-emerald-500"></span></span>
+                Confiable
+              </span>
+              {% else %}
+              <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-2.5 py-1 rounded-full text-xs font-medium">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                No confiable
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">
+              {% if not d.confiable %}
+              <button onclick="marcarConfiable('{{ d.mac }}')"
+                class="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 hover:bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800 transition">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Confiar
+              </button>
+              {% else %}
+              <button onclick="eliminarMAC('{{ d.mac }}')"
+                class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-600 transition">
+                <i data-lucide="shield-off" class="w-3.5 h-3.5"></i> Quitar
+              </button>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">
+              <button onclick="verPuertos('{{ d.ip }}')" class="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 hover:bg-blue-100 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800 transition">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i> Puertos
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Agregar MAC + Lista confiables -->
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 mt-8">
+
+      <div class="bg-white/60 backdrop-blur p-5 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60">
+        <h2 class="flex items-center gap-2 text-base font-semibold text-gray-700 dark:text-white mb-4">
+          <i data-lucide="plus-circle" class="text-accent w-5 h-5"></i>
+          <span data-i18n="addTrusted">Agregar MAC confiable</span>
+        </h2>
+        <form id="form-agregar" class="space-y-3">
+          <input type="text" id="input-mac" placeholder="Ej: 00:1A:2B:3C:4D:5E" required
+            class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark2 dark:text-white focus:ring-2 focus:ring-accent focus:outline-none text-sm font-mono" />
+          <button type="submit" class="bg-gradient-to-r from-accent to-highlight hover:opacity-90 text-white py-2 px-5 rounded-full shadow text-sm transition hover:scale-105" data-i18n="add">
+            Agregar
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-white/60 backdrop-blur p-5 rounded-xl shadow border-l-4 border-accent dark:bg-dark2/60">
+        <h2 class="flex items-center gap-2 text-base font-semibold text-gray-700 dark:text-white mb-4">
+          <i data-lucide="shield" class="text-accent w-5 h-5"></i>
+          <span data-i18n="trustedDevices">Dispositivos Confiables</span>
+        </h2>
+        <ul id="lista-macs" class="space-y-2 custom-scrollbar overflow-y-auto max-h-56">
+          {% for item in lista_confiables %}
+          <li data-mac="{{ item.mac|lower }}" class="flex justify-between items-center bg-gray-50 dark:bg-dark3/50 p-2.5 rounded-lg">
+            <div>
+              <p class="nombre-confiable font-medium text-gray-800 dark:text-white text-sm">{{ item.nombre if item.nombre else 'Sin nombre' }}</p>
+              <p class="text-xs text-gray-400 font-mono">{{ item.mac }}</p>
+            </div>
+            <button onclick="eliminarMAC('{{ item.mac }}')" class="text-red-400 hover:text-red-600 transition p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- ══ HISTORIAL ══ -->
+    <section id="seccion-historial" class="mt-8 hidden animate-fade-in">
+      <div class="bg-white/60 backdrop-blur p-5 rounded-xl shadow border-l-4 border-highlight dark:bg-dark2/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <h2 class="flex items-center gap-2 text-base font-semibold text-gray-700 dark:text-white">
+              <i data-lucide="history" class="text-highlight w-5 h-5"></i>
+              <span>Historial de dispositivos</span>
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">Solo registra conexiones y desconexiones</p>
+          </div>
+          <div class="flex gap-2 flex-wrap items-center">
+            <input id="historial-mac-input" type="text" placeholder="MAC (opcional)"
+              class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm w-40 font-mono" />
+            <select id="historial-evento-select"
+              class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 focus:ring-2 focus:ring-accent focus:outline-none text-sm">
+              <option value="">Todos</option>
+              <option value="conectado">Conectado</option>
+              <option value="desconectado">Desconectado</option>
+            </select>
+            <button onclick="cargarHistorial()" class="bg-accent hover:bg-highlight text-white px-4 py-2 rounded-lg text-sm transition">Buscar</button>
+          </div>
+        </div>
+
+        <!-- Cards de historial -->
+        <div id="historial-cards" class="space-y-2 overflow-y-auto max-h-96 custom-scrollbar pr-1">
+          <div class="text-center text-gray-400 py-8 text-sm">
+            <i data-lucide="search" class="w-8 h-8 mx-auto mb-2 opacity-30"></i>
+            Presiona Buscar para cargar el historial
+          </div>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between">
+          <p id="historial-info" class="text-xs text-gray-400"></p>
+          <button onclick="limpiarHistorial()" class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition">
+            <i data-lucide="trash-2" class="w-3 h-3"></i> Limpiar historial
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notificación -->
+  <div id="notificacion" class="fixed bottom-6 right-6 hidden px-4 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 max-w-xs w-full"></div>
+
+  <!-- Modal puertos -->
+  <div id="modal-puertos" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-dark2 p-6 rounded-xl shadow-xl w-full max-w-md relative border border-gray-200 dark:border-gray-700 animate-fade-in">
+      <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h2 class="text-base font-semibold mb-4 flex items-center gap-2 text-highlight">
+        <i data-lucide="server" class="w-5 h-5"></i> Puertos Abiertos
+      </h2>
+      <div id="contenido-puertos" class="text-sm text-gray-800 dark:text-gray-100 space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- Modal configuración -->
+  <div id="modal-config" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-dark2 p-6 rounded-xl shadow-xl w-full max-w-lg relative border border-gray-200 dark:border-gray-700 animate-fade-in">
+      <button onclick="cerrarConfig()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h2 class="text-base font-semibold mb-5 flex items-center gap-2 text-accent">
+        <i data-lucide="settings" class="w-5 h-5"></i> Configuración del sistema
+      </h2>
+
+      <div class="space-y-5">
+        <!-- Telegram -->
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+          <h3 class="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-3 flex items-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i> Notificaciones Telegram
+          </h3>
+          <div class="space-y-2">
+            <div>
+              <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Bot Token</label>
+              <input id="cfg-token" type="text" placeholder="123456:ABC-DEF..."
+                class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none font-mono" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Chat ID</label>
+              <input id="cfg-chat" type="text" placeholder="-100123456789"
+                class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none font-mono" />
+            </div>
+            <button onclick="testTelegram()" class="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 hover:bg-blue-200 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i> Enviar mensaje de prueba
+            </button>
+          </div>
+        </div>
+
+        <!-- Monitoreo -->
+        <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
+          <h3 class="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-3 flex items-center gap-2">
+            <i data-lucide="timer" class="w-4 h-4"></i> Intervalo de monitoreo
+          </h3>
+          <div class="flex items-center gap-3">
+            <input id="cfg-intervalo" type="number" min="30" max="3600" value="120"
+              class="w-28 p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none" />
+            <span class="text-sm text-gray-600 dark:text-gray-400">segundos <span class="text-xs text-gray-400">(mín. 30s)</span></span>
+          </div>
+          <div class="mt-2 flex gap-2">
+            <button onclick="setIntervalo(60)"  class="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 hover:bg-orange-200 px-2.5 py-1 rounded-full transition">1 min</button>
+            <button onclick="setIntervalo(120)" class="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 hover:bg-orange-200 px-2.5 py-1 rounded-full transition">2 min</button>
+            <button onclick="setIntervalo(300)" class="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 hover:bg-orange-200 px-2.5 py-1 rounded-full transition">5 min</button>
+            <button onclick="setIntervalo(600)" class="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 hover:bg-orange-200 px-2.5 py-1 rounded-full transition">10 min</button>
+          </div>
+        </div>
+
+        <!-- Sesión -->
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+            <i data-lucide="shield" class="w-4 h-4 text-green-500"></i> Seguridad de sesión
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">La sesión expira automáticamente después de <strong>8 horas</strong> de inactividad. Se mostrará una advertencia 10 minutos antes.</p>
+        </div>
+      </div>
+
+      <div class="mt-5 flex justify-end gap-3">
+        <button onclick="cerrarConfig()" class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-dark3 transition">Cancelar</button>
+        <button onclick="guardarConfig()" class="px-5 py-2 text-sm bg-gradient-to-r from-accent to-highlight text-white rounded-lg hover:opacity-90 transition">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
+  <script>
+  // ══════════════════════════════════════
+  // SESSION TIMER
+  // ══════════════════════════════════════
+  const SESSION_TOTAL = {{ session_timeout }} * 1000;
+  let sessionStart    = Date.now();
+  let warningShown    = false;
+
+  function refreshSession() {
+    fetch('/api/scan').then(() => {
+      sessionStart  = Date.now();
+      warningShown  = false;
+      document.getElementById('timeout-warning').classList.add('hidden');
+    });
+  }
+
+  function actualizarSessionTimer() {
+    const elapsed   = Date.now() - sessionStart;
+    const remaining = SESSION_TOTAL - elapsed;
+    if (remaining <= 0) {
+      window.location.href = '/login?timeout=1';
+      return;
     }
 
-    async function cargarHistorial() {
-        const mac    = document.getElementById("historial-mac-input").value.trim();
-        const evento = document.getElementById("historial-evento-select").value;
-        const tbody  = document.getElementById("tabla-historial");
-        const info   = document.getElementById("historial-info");
-
-        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-400 animate-pulse">
-            Cargando...</td></tr>`;
-
-        let url = `/api/historial?limit=100`;
-        if (mac)    url += `&mac=${encodeURIComponent(mac)}`;
-        if (evento) url += `&evento=${encodeURIComponent(evento)}`;
-
-        try {
-            const res  = await fetch(url);
-            const data = await res.json();
-
-            if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-gray-400">
-                    Sin registros</td></tr>`;
-                info.textContent = "";
-                return;
-            }
-
-            tbody.innerHTML = data.map(r => {
-                const esConectado = r.evento === "conectado";
-
-                const eventoBadge = esConectado
-                    ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
-                           🔌 Conectado
-                       </span>`
-                    : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 font-medium">
-                           ⏏ Desconectado
-                       </span>`;
-
-                const confianzaBadge = r.confiable
-                    ? `<span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">✓</span>`
-                    : `<span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">✗</span>`;
-
-                const rowBg = esConectado
-                    ? "hover:bg-blue-50/40 dark:hover:bg-blue-900/10"
-                    : "hover:bg-gray-50 dark:hover:bg-dark3/60";
-
-                return `<tr class="${rowBg} transition">
-                    <td class="px-3 py-2 text-gray-400 whitespace-nowrap">${r.fecha}</td>
-                    <td class="px-3 py-2">${eventoBadge}</td>
-                    <td class="px-3 py-2">${r.ip}</td>
-                    <td class="px-3 py-2 font-mono">${r.mac}</td>
-                    <td class="px-3 py-2">${r.nombre || '—'}</td>
-                    <td class="px-3 py-2 text-gray-500">${r.fabricante || '—'}</td>
-                    <td class="px-3 py-2">${confianzaBadge}</td>
-                </tr>`;
-            }).join("");
-
-            info.textContent = `${data.length} registros encontrados`;
-
-        } catch {
-            tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-red-400">
-                Error al cargar historial</td></tr>`;
-        }
+    // Barra de progreso
+    const pct = (remaining / SESSION_TOTAL) * 100;
+    const bar = document.getElementById('session-bar');
+    if (bar) {
+      bar.style.width = pct + '%';
+      bar.style.background = pct < 20 ? '#ef4444' : pct < 40 ? '#f59e0b' : '';
     }
 
-    async function limpiarHistorial() {
-        if (!confirm("¿Eliminar todo el historial? Esta acción no se puede deshacer.")) return;
-        try {
-            const res  = await fetch("/api/historial/limpiar", { method: "POST" });
-            const data = await res.json();
-            if (data.success) cargarHistorial();
-        } catch {
-            alert("Error al limpiar el historial");
-        }
+    // Countdown
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    const horas = Math.floor(mins / 60);
+    const minRest = mins % 60;
+    const el = document.getElementById('session-countdown');
+    if (el) {
+      el.textContent = horas > 0 ? `${horas}h ${minRest}m` : `${mins}m ${secs}s`;
+      el.className = remaining < 600000 ? 'text-red-500 font-medium' : remaining < 1800000 ? 'text-yellow-500 font-medium' : 'text-green-500 font-medium';
     }
-    </script>
+
+    // Warning 10 min antes
+    if (remaining < 600000 && !warningShown) {
+      warningShown = true;
+      document.getElementById('timeout-warning').classList.remove('hidden');
+    }
+  }
+
+  setInterval(actualizarSessionTimer, 1000);
+  actualizarSessionTimer();
+
+  // ══════════════════════════════════════
+  // HISTORIAL — CARDS VISUALES
+  // ══════════════════════════════════════
+  function toggleHistorial() {
+    const sec = document.getElementById('seccion-historial');
+    const oculto = sec.classList.toggle('hidden');
+    if (!oculto) cargarHistorial();
+  }
+
+  async function cargarHistorial() {
+    const mac    = document.getElementById('historial-mac-input').value.trim();
+    const evento = document.getElementById('historial-evento-select').value;
+    const cont   = document.getElementById('historial-cards');
+    const info   = document.getElementById('historial-info');
+
+    cont.innerHTML = `<div class="text-center text-gray-400 py-8 animate-pulse text-sm">
+      <i data-lucide="loader-2" class="w-6 h-6 mx-auto mb-2 animate-spin"></i> Cargando...
+    </div>`;
+    lucide.createIcons();
+
+    let url = '/api/historial?limit=100';
+    if (mac)    url += `&mac=${encodeURIComponent(mac)}`;
+    if (evento) url += `&evento=${encodeURIComponent(evento)}`;
+
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        cont.innerHTML = `<div class="text-center text-gray-400 py-8 text-sm">
+          <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-30"></i> Sin registros
+        </div>`;
+        lucide.createIcons();
+        info.textContent = '';
+        return;
+      }
+
+      cont.innerHTML = data.map(r => {
+        const esConectado = r.evento === 'conectado';
+
+        const iconoColor  = esConectado
+          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+          : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500';
+
+        const icono = esConectado ? 'wifi' : 'wifi-off';
+
+        const dotColor = esConectado
+          ? 'bg-emerald-500 shadow-emerald-300'
+          : 'bg-gray-300 dark:bg-gray-600';
+
+        const dotAnimate = esConectado ? 'animate-ping' : '';
+
+        const confianzaIcon = r.confiable
+          ? '<span class="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Confiable</span>'
+          : '<span class="inline-flex items-center gap-1 text-xs text-red-500 dark:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="15" x2="16" y2="9"/></svg>No confiable</span>';
+
+        const etiqueta = esConectado
+          ? '<span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Conectado</span>'
+          : '<span class="text-xs font-semibold text-gray-400 dark:text-gray-500">Desconectado</span>';
+
+        return `<div class="hist-card flex items-center gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-dark3/60">
+          <!-- Icono estado -->
+          <div class="relative flex-shrink-0">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center ${iconoColor}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                ${esConectado
+                  ? '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>'
+                  : '<line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>'}
+              </svg>
+            </div>
+            <!-- Dot indicador -->
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-dark3 ${dotColor}"></span>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              ${etiqueta}
+              ${confianzaIcon}
+            </div>
+            <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+              <span class="font-mono">${r.mac}</span>
+              <span>${r.ip}</span>
+              ${r.nombre ? `<span class="text-gray-700 dark:text-gray-300 font-medium">${r.nombre}</span>` : ''}
+              ${r.fabricante ? `<span>${r.fabricante}</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">${r.fecha ? r.fecha.split(' ')[0] : '—'}</p>
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">${r.fecha ? r.fecha.split(' ')[1] : ''}</p>
+          </div>
+        </div>`;
+      }).join('');
+
+      lucide.createIcons();
+      info.textContent = `${data.length} registros encontrados`;
+
+    } catch(e) {
+      cont.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">Error al cargar historial</div>`;
+    }
+  }
+
+  async function limpiarHistorial() {
+    if (!confirm('¿Eliminar todo el historial? Esta acción no se puede deshacer.')) return;
+    try {
+      const res  = await fetch('/api/historial/limpiar', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) cargarHistorial();
+    } catch {
+      alert('Error al limpiar el historial');
+    }
+  }
+
+  // ══════════════════════════════════════
+  // MARCAR CONFIABLE DESDE TABLA
+  // ══════════════════════════════════════
+  window.marcarConfiable = async (mac) => {
+    try {
+      const res  = await fetch('/api/agregar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({mac})
+      });
+      const data = await res.json();
+      if (data.success) {
+        mostrarNotificacion(`<span class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> MAC marcada como confiable</span>`, 'success');
+        setTimeout(() => location.reload(), 900);
+      }
+    } catch {
+      mostrarNotificacion('Error de conexión', 'error');
+    }
+  };
+
+  // ══════════════════════════════════════
+  // CONFIGURACIÓN
+  // ══════════════════════════════════════
+  async function abrirConfig() {
+    document.getElementById('modal-config').classList.remove('hidden');
+    try {
+      const res  = await fetch('/api/configuracion');
+      const data = await res.json();
+      document.getElementById('cfg-token').value    = data.telegram_token    || '';
+      document.getElementById('cfg-chat').value     = data.telegram_chat_id  || '';
+      document.getElementById('cfg-intervalo').value = data.intervalo_monitoreo || '120';
+    } catch(e) {
+      console.warn('No se pudo cargar config:', e);
+    }
+    lucide.createIcons();
+  }
+
+  function cerrarConfig() {
+    document.getElementById('modal-config').classList.add('hidden');
+  }
+
+  async function guardarConfig() {
+    const token    = document.getElementById('cfg-token').value.trim();
+    const chat     = document.getElementById('cfg-chat').value.trim();
+    const intervalo = parseInt(document.getElementById('cfg-intervalo').value) || 120;
+
+    try {
+      const res  = await fetch('/api/configuracion', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({telegram_token: token, telegram_chat_id: chat, intervalo_monitoreo: intervalo})
+      });
+      const data = await res.json();
+      if (data.success) {
+        mostrarNotificacion('<span class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Configuración guardada</span>', 'success');
+        cerrarConfig();
+      }
+    } catch {
+      mostrarNotificacion('Error al guardar configuración', 'error');
+    }
+    lucide.createIcons();
+  }
+
+  async function testTelegram() {
+    // Guardar primero
+    const token = document.getElementById('cfg-token').value.trim();
+    const chat  = document.getElementById('cfg-chat').value.trim();
+    if (token) await fetch('/api/configuracion', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegram_token:token,telegram_chat_id:chat})});
+
+    try {
+      const res  = await fetch('/api/telegram/test', {method: 'POST'});
+      const data = await res.json();
+      mostrarNotificacion(
+        `<span class="flex items-center gap-2"><i data-lucide="${data.success ? 'check-circle' : 'x-circle'}" class="w-4 h-4"></i> ${data.message}</span>`,
+        data.success ? 'success' : 'error'
+      );
+    } catch {
+      mostrarNotificacion('Error al probar Telegram', 'error');
+    }
+    lucide.createIcons();
+  }
+
+  function setIntervalo(val) {
+    document.getElementById('cfg-intervalo').value = val;
+  }
+
+  // Cerrar modales con Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      cerrarModal?.();
+      cerrarConfig?.();
+    }
+  });
+  </script>
 
 </body>
 </html>
