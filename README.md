@@ -106,15 +106,7 @@ http://<IP-del-servidor>:5555
 
 <img src="https://github.com/user-attachments/assets/1531c07c-71a7-4c7f-9c33-26ebbe628d6c" alt="Modo día - Acceso a la interfaz" />
 
-### Cambio de credenciales
-
-<img width="1365" height="598" alt="image" src="https://github.com/user-attachments/assets/1531c07c-71a7-4c7f-9c33-26ebbe628d6c" alt="Modo día - Cambio de credenciales" />
-
-
 ### Panel principal
-
-
-
 
 <img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c37e2962-e7cb-483f-94f5-0a429a132b20" alt="Modo día - Panel principal" />
 
