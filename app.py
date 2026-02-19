@@ -1,22 +1,20 @@
-
 from auth import *
 from flask import Flask, render_template, request, redirect, session, jsonify
 from datetime import datetime, timedelta
 import subprocess, re, os, socket, threading, time, requests, logging
 from db import get_db
 
-CACHE_INTERVALO  = 120
-HISTORIAL_DIAS   = 30
-SESSION_TIMEOUT  = 8 * 3600
+CACHE_INTERVALO   = 120
+HISTORIAL_DIAS    = 30
+DEFAULT_SESSION   = 8 * 3600
 
-CACHE_RESULTADO  = []
-_cache_lock      = threading.Lock()
-_estado_anterior = {}
+CACHE_RESULTADO   = []
+_cache_lock       = threading.Lock()
+_estado_anterior  = {}
 _intervalo_actual = CACHE_INTERVALO
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "lan_guard_secret")
-app.permanent_session_lifetime = timedelta(seconds=SESSION_TIMEOUT)
 
 iniciar_archivo_usuarios()
 
@@ -24,22 +22,7 @@ logger  = logging.getLogger("accesos")
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler("data/accesos.log")
 logger.addHandler(handler)
-
 def registrar_log(m): logger.info(m)
-
-@app.before_request
-def verificar_sesion_timeout():
-    rutas_publicas = ("/login", "/static")
-    if any(request.path.startswith(r) for r in rutas_publicas):
-        return
-    if "usuario" in session:
-        ultimo = session.get("ultimo_acceso", 0)
-        ahora  = time.time()
-        if ahora - ultimo > SESSION_TIMEOUT:
-            session.clear()
-            return redirect("/login?timeout=1")
-        session["ultimo_acceso"] = ahora
-        session.permanent = True
 
 def obtener_config(clave, defecto=""):
     db  = get_db()
@@ -49,9 +32,15 @@ def obtener_config(clave, defecto=""):
 
 def guardar_config(clave, valor):
     db = get_db()
-    db.execute("INSERT INTO configuracion(clave,valor) VALUES(?,?) ON CONFLICT(clave) DO UPDATE SET valor=excluded.valor", (clave, str(valor)))
-    db.commit()
-    db.close()
+    db.execute("INSERT INTO configuracion(clave,valor) VALUES(?,?) ON CONFLICT(clave) DO UPDATE SET valor=excluded.valor",
+               (clave, str(valor)))
+    db.commit(); db.close()
+
+def get_session_timeout():
+    try:
+        return int(obtener_config("session_timeout", str(DEFAULT_SESSION)))
+    except Exception:
+        return DEFAULT_SESSION
 
 def get_telegram_config():
     token = obtener_config("telegram_token",   os.getenv("TELEGRAM_BOT_TOKEN", ""))
@@ -65,6 +54,22 @@ def get_intervalo():
     except Exception:
         _intervalo_actual = CACHE_INTERVALO
     return _intervalo_actual
+
+@app.before_request
+def verificar_sesion_timeout():
+    rutas_publicas = ("/login", "/static")
+    if any(request.path.startswith(r) for r in rutas_publicas):
+        return
+    if "usuario" in session:
+        ultimo  = session.get("ultimo_acceso", 0)
+        ahora   = time.time()
+        timeout = get_session_timeout()
+        if ahora - ultimo > timeout:
+            session.clear()
+            return redirect("/login?timeout=1")
+        session["ultimo_acceso"] = ahora
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(seconds=timeout)
 
 @app.route("/logout")
 def logout():
@@ -86,7 +91,7 @@ def login():
             if es_usuario_por_defecto(usuario) and es_contrasena_por_defecto(usuario):
                 return redirect("/cambiar-credenciales")
             return redirect("/")
-        return render_template("login.html", error="Usuario o contrasena incorrectos")
+        return render_template("login.html", error="Usuario o contraseña incorrectos")
     return render_template("login.html", timeout=timeout)
 
 @app.route("/cambiar-credenciales", methods=["GET", "POST"])
@@ -98,16 +103,46 @@ def cambiar_credenciales():
         nueva         = request.form["nueva_contrasena"]
         confirmar     = request.form["confirmar_contrasena"]
         if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", nuevo_usuario):
-            return render_template("cambiar_credenciales.html", error="El usuario debe ser un correo valido")
+            return render_template("cambiar_credenciales.html", error="El usuario debe ser un correo válido")
         if nueva != confirmar:
-            return render_template("cambiar_credenciales.html", error="Las contrasenas no coinciden")
+            return render_template("cambiar_credenciales.html", error="Las contraseñas no coinciden")
         if not es_contrasena_segura(nueva):
-            return render_template("cambiar_credenciales.html", error="La contrasena no cumple los requisitos")
+            return render_template("cambiar_credenciales.html", error="La contraseña no cumple los requisitos")
         cambiar_usuario(session["usuario"], nuevo_usuario)
         cambiar_contrasena_usuario(nuevo_usuario, nueva)
         session["usuario"] = nuevo_usuario
         return redirect("/")
     return render_template("cambiar_credenciales.html")
+
+@app.route('/api/cambiar-credenciales', methods=['POST'])
+def api_cambiar_credenciales():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    data              = request.get_json()
+    nuevo_usuario     = data.get("nuevo_usuario", "").strip().lower()
+    nueva             = data.get("nueva_contrasena", "")
+    confirmar         = data.get("confirmar_contrasena", "")
+    contrasena_actual = data.get("contrasena_actual", "")
+
+    if not verificar_login(session["usuario"], contrasena_actual):
+        return jsonify({"success": False, "message": "La contraseña actual es incorrecta"})
+    if nuevo_usuario and not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", nuevo_usuario):
+        return jsonify({"success": False, "message": "El correo no tiene un formato válido"})
+    if nueva:
+        if nueva != confirmar:
+            return jsonify({"success": False, "message": "Las contraseñas nuevas no coinciden"})
+        if not es_contrasena_segura(nueva):
+            return jsonify({"success": False, "message": "La contraseña no cumple los requisitos de seguridad"})
+
+    usuario_actual = session["usuario"]
+    if nuevo_usuario and nuevo_usuario != usuario_actual:
+        cambiar_usuario(usuario_actual, nuevo_usuario)
+        session["usuario"] = nuevo_usuario
+        usuario_actual = nuevo_usuario
+    if nueva:
+        cambiar_contrasena_usuario(usuario_actual, nueva)
+
+    return jsonify({"success": True, "usuario": usuario_actual})
 
 def obtener_confiables():
     db   = get_db()
@@ -124,8 +159,7 @@ def obtener_nombre(mac):
 def guardar_nombre(mac, nombre):
     db = get_db()
     db.execute("INSERT INTO nombres_dispositivos(mac,nombre) VALUES(?,?) ON CONFLICT(mac) DO UPDATE SET nombre=excluded.nombre", (mac, nombre))
-    db.commit()
-    db.close()
+    db.commit(); db.close()
 
 def obtener_vendor_cache(oui):
     db  = get_db()
@@ -136,8 +170,7 @@ def obtener_vendor_cache(oui):
 def guardar_vendor_cache(oui, fabricante):
     db = get_db()
     db.execute("INSERT INTO vendor_cache(oui,fabricante) VALUES(?,?) ON CONFLICT(oui) DO UPDATE SET fabricante=excluded.fabricante", (oui, fabricante))
-    db.commit()
-    db.close()
+    db.commit(); db.close()
 
 def obtener_deteccion(mac):
     db  = get_db()
@@ -147,9 +180,9 @@ def obtener_deteccion(mac):
 
 def guardar_deteccion(mac, count, notificado, ultima):
     db = get_db()
-    db.execute("INSERT INTO detecciones_mac(mac,count,notificado,ultima_vista) VALUES(?,?,?,?) ON CONFLICT(mac) DO UPDATE SET count=excluded.count,notificado=excluded.notificado,ultima_vista=excluded.ultima_vista", (mac, count, int(notificado), ultima))
-    db.commit()
-    db.close()
+    db.execute("INSERT INTO detecciones_mac(mac,count,notificado,ultima_vista) VALUES(?,?,?,?) ON CONFLICT(mac) DO UPDATE SET count=excluded.count,notificado=excluded.notificado,ultima_vista=excluded.ultima_vista",
+               (mac, count, int(notificado), ultima))
+    db.commit(); db.close()
 
 def obtener_confiables_con_nombre():
     db   = get_db()
@@ -176,8 +209,7 @@ def guardar_historial(dispositivos, ahora):
     db = get_db()
     db.executemany("INSERT INTO historial_dispositivos(mac,ip,fabricante,confiable,nombre,visto_en,evento) VALUES(:mac,:ip,:fabricante,:confiable,:nombre,:ahora,:evento)", registros)
     db.execute("DELETE FROM historial_dispositivos WHERE visto_en<?", (ahora - HISTORIAL_DIAS * 86400,))
-    db.commit()
-    db.close()
+    db.commit(); db.close()
 
 def obtener_fabricante(mac):
     oui = mac.replace(":", "")[:6].upper()
@@ -203,9 +235,9 @@ def escanear_red():
     red        = obtener_red_local()
     ahora      = time.time()
     confiables = obtener_confiables()
-    salida = subprocess.check_output(["nmap", "-sn", "-PR", "-T3", "-n", red], timeout=60).decode()
-    ips_vivas = [linea.split()[-1] for linea in salida.splitlines() if "Nmap scan report for" in linea]
-    arp_table = {}
+    salida     = subprocess.check_output(["nmap", "-sn", "-PR", "-T3", "-n", red], timeout=60).decode()
+    ips_vivas  = [l.split()[-1] for l in salida.splitlines() if "Nmap scan report for" in l]
+    arp_table  = {}
     try:
         salida_arp = subprocess.check_output(["ip", "neigh", "show"]).decode()
         for linea in salida_arp.splitlines():
@@ -213,8 +245,7 @@ def escanear_red():
                 continue
             m = re.match(r"(\d+\.\d+\.\d+\.\d+)\s+dev\s+\S+\s+lladdr\s+([\da-f:]{17})", linea, re.I)
             if m:
-                ip_arp, mac_arp = m.groups()
-                arp_table[ip_arp] = mac_arp.lower()
+                arp_table[m.group(1)] = m.group(2).lower()
     except Exception as e:
         print(f"[!] Error leyendo ARP: {e}")
     dispositivos = []
@@ -231,7 +262,7 @@ def escanear_red():
             if not reg:
                 guardar_deteccion(mac, 1, False, ahora)
             else:
-                count      = reg["count"] + 1
+                count = reg["count"] + 1
                 notificado = reg["notificado"]
                 guardar_deteccion(mac, count, notificado, ahora)
                 if count >= 3 and not notificado:
@@ -240,92 +271,16 @@ def escanear_red():
     threading.Thread(target=guardar_historial, args=(dispositivos, ahora), daemon=True).start()
     return dispositivos
 
-@app.route('/api/puertos', methods=['POST'])
-def api_puertos():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    data = request.get_json()
-    ip   = data.get("ip", "").strip()
-    if not ip:
-        return jsonify({"success": False, "message": "IP no proporcionada"})
-    try:
-        salida  = subprocess.check_output(["nmap", "-T4", "-sT", "--top-ports", "100", "--open", "-n", ip], timeout=20).decode()
-        puertos = [{"puerto": p.split()[0], "servicio": p.split()[-1]} for p in salida.splitlines() if "/tcp" in p and "open" in p]
-        return jsonify({"success": True, "puertos": puertos})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
-@app.route('/api/historial/limpiar', methods=['POST'])
-def api_historial_limpiar():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    db = get_db()
-    db.execute("DELETE FROM historial_dispositivos")
-    db.commit()
-    db.close()
-    return jsonify({"success": True})
-
-@app.route('/api/historial')
-def api_historial():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    mac    = request.args.get("mac", "").lower()
-    evento = request.args.get("evento", "").lower()
-    limit  = min(int(request.args.get("limit", 100)), 500)
-    db     = get_db()
-    where  = []
-    params = []
-    if mac:
-        where.append("mac=?")
-        params.append(mac)
-    if evento in ("conectado", "desconectado"):
-        where.append("evento=?")
-        params.append(evento)
-    where_sql = f"WHERE {' AND '.join(where)}" if where else ""
-    params.append(limit)
-    rows = db.execute(f"SELECT mac,ip,fabricante,confiable,nombre,evento,datetime(visto_en,'unixepoch','localtime') AS fecha FROM historial_dispositivos {where_sql} ORDER BY visto_en DESC LIMIT ?", params).fetchall()
-    db.close()
-    return jsonify([dict(r) for r in rows])
-
-@app.route('/api/configuracion', methods=['GET'])
-def api_config_get():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    token, chat = get_telegram_config()
-    return jsonify({"telegram_token": token, "telegram_chat_id": chat, "intervalo_monitoreo": obtener_config("intervalo_monitoreo", str(CACHE_INTERVALO))})
-
-@app.route('/api/configuracion', methods=['POST'])
-def api_config_set():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    data = request.get_json()
-    if "telegram_token" in data:
-        guardar_config("telegram_token", data["telegram_token"].strip())
-    if "telegram_chat_id" in data:
-        guardar_config("telegram_chat_id", data["telegram_chat_id"].strip())
-    if "intervalo_monitoreo" in data:
-        try:
-            intervalo = max(30, int(data["intervalo_monitoreo"]))
-            guardar_config("intervalo_monitoreo", intervalo)
-            global _intervalo_actual
-            _intervalo_actual = intervalo
-        except Exception:
-            return jsonify({"success": False, "message": "Intervalo invalido"})
-    return jsonify({"success": True})
-
-@app.route('/api/telegram/test', methods=['POST'])
-def api_telegram_test():
-    if 'usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
+def enviar_telegram(mac, ip, fab):
     token, chat = get_telegram_config()
     if not token or not chat:
-        return jsonify({"success": False, "message": "Token o Chat ID no configurados"})
+        return
+    msg = f"🚨 NUEVO DISPOSITIVO\nIP: {ip}\nMAC: {mac}\nFAB: {fab}"
     try:
-        resp = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data={"chat_id": chat, "text": "LANGuard: conexion de prueba exitosa"}, timeout=5)
-        ok = resp.json().get("ok", False)
-        return jsonify({"success": ok, "message": "Mensaje enviado" if ok else "Error Telegram"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
+                      data={"chat_id": chat, "text": msg}, timeout=5)
+    except Exception:
+        pass
 
 def actualizar_cache():
     global CACHE_RESULTADO
@@ -347,7 +302,12 @@ def index():
         return redirect('/login')
     with _cache_lock:
         devs = list(CACHE_RESULTADO)
-    return render_template("index.html", dispositivos=devs, lista_confiables=obtener_confiables_con_nombre(), session_timeout=SESSION_TIMEOUT)
+    return render_template("index.html",
+        dispositivos=devs,
+        lista_confiables=obtener_confiables_con_nombre(),
+        session_timeout=get_session_timeout(),
+        usuario_actual=session.get("usuario", "")
+    )
 
 @app.route('/api/scan')
 def api_scan():
@@ -363,8 +323,7 @@ def api_agregar():
     mac = request.json["mac"].lower()
     db  = get_db()
     db.execute("INSERT OR IGNORE INTO mac_confiables(mac) VALUES(?)", (mac,))
-    db.commit()
-    db.close()
+    db.commit(); db.close()
     actualizar_cache()
     return jsonify({"success": True})
 
@@ -375,8 +334,7 @@ def api_eliminar():
     mac = request.json["mac"].lower()
     db  = get_db()
     db.execute("DELETE FROM mac_confiables WHERE mac=?", (mac,))
-    db.commit()
-    db.close()
+    db.commit(); db.close()
     actualizar_cache()
     return jsonify({"success": True})
 
@@ -394,15 +352,100 @@ def api_nombrar():
                 d["nombre"] = nombre
     return jsonify({"success": True, "mac": mac, "nombre": nombre})
 
-def enviar_telegram(mac, ip, fab):
+@app.route('/api/puertos', methods=['POST'])
+def api_puertos():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    ip = request.get_json().get("ip", "").strip()
+    if not ip:
+        return jsonify({"success": False, "message": "IP no proporcionada"})
+    try:
+        salida  = subprocess.check_output(["nmap", "-T4", "-sT", "--top-ports", "100", "--open", "-n", ip], timeout=20).decode()
+        puertos = [{"puerto": p.split()[0], "servicio": p.split()[-1]} for p in salida.splitlines() if "/tcp" in p and "open" in p]
+        return jsonify({"success": True, "puertos": puertos})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+@app.route('/api/historial')
+def api_historial():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    mac    = request.args.get("mac", "").lower()
+    evento = request.args.get("evento", "").lower()
+    limit  = min(int(request.args.get("limit", 100)), 500)
+    db     = get_db()
+    where  = []; params = []
+    if mac:
+        where.append("mac=?"); params.append(mac)
+    if evento in ("conectado", "desconectado"):
+        where.append("evento=?"); params.append(evento)
+    where_sql = f"WHERE {' AND '.join(where)}" if where else ""
+    params.append(limit)
+    rows = db.execute(f"SELECT mac,ip,fabricante,confiable,nombre,evento,datetime(visto_en,'unixepoch','localtime') AS fecha FROM historial_dispositivos {where_sql} ORDER BY visto_en DESC LIMIT ?", params).fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/historial/limpiar', methods=['POST'])
+def api_historial_limpiar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    db = get_db()
+    db.execute("DELETE FROM historial_dispositivos")
+    db.commit(); db.close()
+    return jsonify({"success": True})
+
+@app.route('/api/configuracion', methods=['GET'])
+def api_config_get():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    token, chat = get_telegram_config()
+    return jsonify({
+        "telegram_token":      token,
+        "telegram_chat_id":    chat,
+        "intervalo_monitoreo": obtener_config("intervalo_monitoreo", str(CACHE_INTERVALO)),
+        "session_timeout":     obtener_config("session_timeout", str(DEFAULT_SESSION))
+    })
+
+@app.route('/api/configuracion', methods=['POST'])
+def api_config_set():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    data = request.get_json()
+    if "telegram_token" in data:
+        guardar_config("telegram_token",   data["telegram_token"].strip())
+    if "telegram_chat_id" in data:
+        guardar_config("telegram_chat_id", data["telegram_chat_id"].strip())
+    if "intervalo_monitoreo" in data:
+        try:
+            iv = max(30, int(data["intervalo_monitoreo"]))
+            guardar_config("intervalo_monitoreo", iv)
+            global _intervalo_actual
+            _intervalo_actual = iv
+        except Exception:
+            return jsonify({"success": False, "message": "Intervalo inválido"})
+    if "session_timeout" in data:
+        try:
+            st = max(300, int(data["session_timeout"]))
+            guardar_config("session_timeout", st)
+            app.permanent_session_lifetime = timedelta(seconds=st)
+        except Exception:
+            return jsonify({"success": False, "message": "Tiempo de sesión inválido"})
+    return jsonify({"success": True})
+
+@app.route('/api/telegram/test', methods=['POST'])
+def api_telegram_test():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
     token, chat = get_telegram_config()
     if not token or not chat:
-        return
-    msg = f"NUEVO DISPOSITIVO\nIP: {ip}\nMAC: {mac}\nFAB: {fab}"
+        return jsonify({"success": False, "message": "Token o Chat ID no configurados"})
     try:
-        requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data={"chat_id": chat, "text": msg}, timeout=5)
-    except Exception:
-        pass
+        resp = requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
+                             data={"chat_id": chat, "text": "✅ LANGuard: conexión de prueba exitosa"}, timeout=5)
+        ok = resp.json().get("ok", False)
+        return jsonify({"success": ok, "message": "Mensaje enviado correctamente" if ok else "Error en Telegram"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 if __name__ == '__main__':
     threading.Thread(target=escaneo_background, daemon=True).start()
