@@ -115,16 +115,27 @@ http://<IP-del-servidor>:5555
 
 
 
-<img width="1365" height="598" alt="image" src="https://github.com/user-attachments/assets/1531c07c-71a7-4c7f-9c33-26ebbe628d6c" alt="Modo día - Panel principal" />
 
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c37e2962-e7cb-483f-94f5-0a429a132b20" alt="Modo día - Panel principal 2" />
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c37e2962-e7cb-483f-94f5-0a429a132b20" alt="Modo día - Panel principal" />
+
+
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/3f09da2f-808d-4aa1-a84e-1b943026d16a" alt="Modo día - Panel principal 2" />
+
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c920f453-48df-4d78-ae17-862f5933d447" alt="Modo día - Panel principal 3" />
 
 
 
 ### Modo oscuro
 
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/bc137c7f-0a03-4f8c-9745-b2a9d2de0be1" alt="Modo día - Panel principal 4" />
+
 
 ### Escaneo de puertos
+
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/9904d0cb-b8cd-4ef6-8f8e-7d9a2173c98d" alt="Modo día - Panel principal 5" />
+
+
+
 
 
 ### Registro de accesos
