@@ -40,13 +40,11 @@ Sin configuración manual de interfaces de red: LANGuard **detecta automáticame
 
 ## Instalación
 
-### 1. Configura las variables de entorno
+### 1. Configura la variables de entorno
 
 Crea un archivo `.env` en el mismo directorio:
 
 ```env
-TELEGRAM_BOT_TOKEN=tu_token_aqui
-TELEGRAM_CHAT_ID=tu_chat_id_aqui
 SECRET_KEY=genera_una_clave_segura
 ```
 
@@ -64,8 +62,6 @@ services:
     container_name: LANGuard
     image: netosvaltools/languard:latest
     environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -108,28 +104,22 @@ http://<IP-del-servidor>:5555
 
 ### Acceso a la interfaz
 
-<img src="https://github.com/user-attachments/assets/887db6a3-177d-44c0-8db7-ce110dac4148" alt="Acceso a la interfaz web" />
-<img src="https://github.com/user-attachments/assets/09ab7175-e221-406c-bebe-19f4f0694cd1" alt="Cambio de credenciales" />
+
 
 ### Panel principal
 
-<img src="https://github.com/user-attachments/assets/82411dd4-cff8-4439-8433-5a65eb53c55e" alt="Panel principal" />
 
 ### Modo oscuro
 
-<img src="https://github.com/user-attachments/assets/0eea343e-332d-4ddf-b34f-eb13ee427c1f" alt="Modo oscuro" />
 
 ### Escaneo de puertos
 
-<img src="https://github.com/user-attachments/assets/f05a1ba1-79ad-430f-b368-5495af5e48a5" alt="Escaneo de puertos" />
 
 ### Filtrado de dispositivos
 
-<img src="https://github.com/user-attachments/assets/52ebbcf2-cefd-4e25-a125-7cc095eba62f" alt="Filtrado de dispositivos" />
 
 ### Registro de accesos
 
-<img src="https://github.com/user-attachments/assets/ed1c04e6-7ef7-40ca-85c6-63bb90fddb5b" alt="Registro de accesos" />
 
 El log de accesos se almacena en:
 
@@ -143,8 +133,6 @@ El log de accesos se almacena en:
 
 | Variable | Descripción | Requerida |
 |---|---|---|
-| `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram para notificaciones | ✅ Sí |
-| `TELEGRAM_CHAT_ID` | ID del chat donde se enviarán las alertas | ✅ Sí |
 | `SECRET_KEY` | Clave secreta para cifrado de sesiones | ✅ Sí |
 
 ---
