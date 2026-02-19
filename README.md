@@ -1,6 +1,7 @@
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/ccfb8364-edbd-457c-891c-6c8926a436a5" width="120" alt="LANGuard logo" />
+
+<img src="https://github.com/user-attachments/assets/c3af8ab3-c0ed-4078-ab75-7afe2e7455dd" width="120" alt="LANGuard logo" />
 
 # LANGuard
 
