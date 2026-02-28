@@ -1,11 +1,12 @@
-FROM python:3.13-alpine
+FROM python:3.14.3-alpine3.23
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apk add --no-cache \
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache \
         nmap \
         nmap-nselibs \
-        net-tools \
         iproute2 \
         sqlite && \
     pip install --no-cache-dir --upgrade \
