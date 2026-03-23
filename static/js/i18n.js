@@ -7,10 +7,22 @@ const translations = {
     history:     "Historial",
     settings:    "Configuración",
 
+    // Etiquetas de sección sidebar
+    sectionTools: "Herramientas",
+    sectionPrefs: "Preferencias",
+
+    // Perfil
+    profileTitle:       "Perfil",
+    profileAdmin:       "Administrador",
+    profileDisplayName: "Nombre para mostrar",
+    profileNameSaved:   "Nombre actualizado",
+
     // Header
     header: "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
 
-    // Tabla
+    // Tabla dispositivos
+    devicesTitle: "Dispositivos en red",
+    devicesDesc:  "Dispositivos detectados en el último escaneo. Marca como confiables los que reconoces.",
     ip:           "IP",
     mac:          "MAC",
     name:         "Nombre",
@@ -34,21 +46,22 @@ const translations = {
     // Panel confiables
     addTrusted:     "Agregar MAC confiable",
     trustedDevices: "Dispositivos Confiables",
+    trustedSubtitle:"MACs marcadas como de confianza",
     delete:         "Eliminar",
     add:            "Agregar",
     noName:         "Sin nombre",
 
-    // Nombres
+    // Nombres de dispositivos
     guardar:              "Guardar",
     nombre_guardado:      "Nombre guardado",
     error_guardar_nombre: "Error al guardar nombre",
 
     // Notificaciones
-    adding:     "Agregando MAC...",
-    success:    "MAC agregada con éxito",
-    error:      "Error al agregar la MAC",
-    eliminando: "Eliminando MAC...",
-    eliminado:  "MAC eliminada con éxito",
+    adding:          "Agregando MAC...",
+    success:         "MAC agregada con éxito",
+    error:           "Error al agregar la MAC",
+    eliminando:      "Eliminando MAC...",
+    eliminado:       "MAC eliminada con éxito",
     connectionError: "Error de conexión",
 
     // Escaneo
@@ -63,22 +76,22 @@ const translations = {
     error_ports:    "Error al consultar puertos de {{ip}}",
 
     // Historial
-    historyTitle:    "Historial de red",
-    historySubtitle: "Solo registra conexiones y desconexiones",
-    historySearch:   "Buscar",
-    historyMac:      "Filtrar por MAC",
-    historyAll:      "Todos los eventos",
-    historyConn:     "Conectado",
-    historyDisc:     "Desconectado",
-    historyEmpty:    "Presiona Buscar para cargar el historial",
-    historyNoData:   "Sin registros",
-    historyLoading:  "Cargando...",
-    historyError:    "Error al cargar historial",
-    historyCount:    "registros encontrados",
-    historyDate:     "Fecha",
-    historyTrusted:  "Confiable",
-    historyUntrusted:"No confiable",
-    historyClear:    "Limpiar historial",
+    historyTitle:        "Historial de red",
+    historySubtitle:     "Solo registra conexiones y desconexiones",
+    historySearch:       "Buscar",
+    historyMac:          "Filtrar por MAC",
+    historyAll:          "Todos",
+    historyConn:         "Conectado",
+    historyDisc:         "Desconectado",
+    historyEmpty:        "Presiona Buscar para cargar el historial",
+    historyNoData:       "Sin registros",
+    historyLoading:      "Cargando...",
+    historyError:        "Error al cargar historial",
+    historyCount:        "registros encontrados",
+    historyDate:         "Fecha",
+    historyTrusted:      "Confiable",
+    historyUntrusted:    "No confiable",
+    historyClear:        "Limpiar historial",
     historyConnected:    "Conectado",
     historyDisconnected: "Desconectado",
     historyAutoRefresh:  "Auto-actualizar",
@@ -128,14 +141,28 @@ const translations = {
   },
 
   en: {
+    // Navigation
     scan:        "Scan",
-    logout:      "Logout",
+    logout:      "Log out",
     changeTheme: "Change theme",
     history:     "History",
     settings:    "Settings",
 
+    // Sidebar section labels
+    sectionTools: "Tools",
+    sectionPrefs: "Preferences",
+
+    // Profile
+    profileTitle:       "Profile",
+    profileAdmin:       "Administrator",
+    profileDisplayName: "Display name",
+    profileNameSaved:   "Name updated",
+
     header: "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
 
+    // Device table
+    devicesTitle: "Devices on network",
+    devicesDesc:  "Devices detected in the last scan. Mark as trusted the ones you recognize.",
     ip:           "IP",
     mac:          "MAC",
     name:         "Name",
@@ -149,58 +176,67 @@ const translations = {
     untrust_btn:  "Remove",
     view_ports:   "Ports",
 
+    // Filters
     filterName:      "Filter by name",
     filterMac:       "Filter by MAC",
     filterAll:       "All",
     filterTrusted:   "Trusted",
     filterUntrusted: "Untrusted",
 
+    // Trusted panel
     addTrusted:     "Add trusted MAC",
     trustedDevices: "Trusted Devices",
+    trustedSubtitle:"MACs marked as trusted",
     delete:         "Delete",
     add:            "Add",
     noName:         "No name",
 
+    // Device names
     guardar:              "Save",
     nombre_guardado:      "Name saved",
     error_guardar_nombre: "Error saving name",
 
-    adding:     "Adding MAC...",
-    success:    "MAC successfully added",
-    error:      "Failed to add MAC",
-    eliminando: "Removing MAC...",
-    eliminado:  "MAC successfully removed",
+    // Notifications
+    adding:          "Adding MAC...",
+    success:         "MAC successfully added",
+    error:           "Failed to add MAC",
+    eliminando:      "Removing MAC...",
+    eliminado:       "MAC successfully removed",
     connectionError: "Connection error",
 
+    // Scan
     scanning:  "Scanning network...",
     scanDone:  "Scan complete",
     scanError: "Error while scanning",
 
+    // Ports
     openPorts:      "Open Ports",
     scanning_ports: "Scanning ports on {{ip}}...",
     no_ports:       "No open ports found on {{ip}}",
     error_ports:    "Error fetching ports for {{ip}}",
 
-    historyTitle:    "Network history",
-    historySubtitle: "Records connections and disconnections only",
-    historySearch:   "Search",
-    historyMac:      "Filter by MAC",
-    historyAll:      "All events",
-    historyConn:     "Connected",
-    historyDisc:     "Disconnected",
-    historyEmpty:    "Press Search to load history",
-    historyNoData:   "No records found",
-    historyLoading:  "Loading...",
-    historyError:    "Error loading history",
-    historyCount:    "records found",
-    historyDate:     "Date",
-    historyTrusted:  "Trusted",
-    historyUntrusted:"Untrusted",
-    historyClear:    "Clear history",
+    // History
+    historyTitle:        "Network history",
+    historySubtitle:     "Records connections and disconnections only",
+    historySearch:       "Search",
+    historyMac:          "Filter by MAC",
+    historyAll:          "All",
+    historyConn:         "Connected",
+    historyDisc:         "Disconnected",
+    historyEmpty:        "Press Search to load history",
+    historyNoData:       "No records found",
+    historyLoading:      "Loading...",
+    historyError:        "Error loading history",
+    historyCount:        "records found",
+    historyDate:         "Date",
+    historyTrusted:      "Trusted",
+    historyUntrusted:    "Untrusted",
+    historyClear:        "Clear history",
     historyConnected:    "Connected",
     historyDisconnected: "Disconnected",
     historyAutoRefresh:  "Auto-refresh",
 
+    // Settings modal
     cfgTitle:         "System settings",
     cfgTelegram:      "Telegram notifications",
     cfgToken:         "Bot Token",
@@ -226,6 +262,7 @@ const translations = {
     cfgCredSaved:     "Credentials updated",
     cfgCredError:     "Error updating credentials",
 
+    // Session
     sessionLabel:    "Session:",
     sessionWarning:  "⚠ Your session will expire soon.",
     sessionKeepAlive:"Keep active",
@@ -233,6 +270,7 @@ const translations = {
     detectedDevices: "Devices:",
     host_label:      "Host",
 
+    // Login
     login_title:    "Welcome to <span class='gradient-text'>LANGuard</span>",
     login_subtitle: "Log in to continue",
     username:       "Username",
@@ -244,7 +282,7 @@ const translations = {
 };
 
 function t(key) {
-  const lang  = localStorage.getItem("lang") || "es";
+  const lang = localStorage.getItem("lang") || "es";
   return translations[lang]?.[key] ?? translations["es"]?.[key] ?? key;
 }
 
@@ -269,7 +307,7 @@ function setLanguage(lang) {
     }
   });
 
-  if (typeof actualizarLabelFiltro === "function") actualizarLabelFiltro();
+  if (typeof actualizarLabelFiltro    === "function") actualizarLabelFiltro();
   if (typeof actualizarLabelHistorial === "function") actualizarLabelHistorial();
 }
 
