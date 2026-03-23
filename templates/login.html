@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LANGuard — Iniciar sesión</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -13,144 +13,142 @@
       theme: {
         extend: {
           colors: {
-            accent:    "#f4a261",
-            highlight: "#e76f51",
-            dark1:     "#1a1b1e",
-            dark2:     "#25262b",
-            dark3:     "#2c2e33"
+            dark1: "#0c0c0f",
+            dark2: "#111118",
+            dark3: "#1a1a24"
           },
-          fontFamily: { sans: ["Inter", "sans-serif"] }
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
         }
       }
     };
-    // Aplicar tema guardado inmediatamente
     if (localStorage.getItem("modoOscuro") === "true") {
       document.documentElement.classList.add("dark");
     }
   </script>
   <style>
     @keyframes fade-up {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .fade-up { animation: fade-up .4s ease-out both; }
+    .fade-up { animation: fade-up .35s cubic-bezier(.16,1,.3,1) both; }
 
-    /* Pulso suave en el logo */
-    @keyframes breathe {
-      0%, 100% { opacity: .85; }
-      50%       { opacity: 1;   }
+    .input-field {
+      width:100%; padding:9px 12px 9px 36px;
+      border-radius:8px; font-size:13px;
+      border:1px solid #e2e8f0; background:#fff; outline:none;
+      transition:border-color .15s, box-shadow .15s;
+      font-family:"Geist", sans-serif;
     }
-    .breathe { animation: breathe 3s ease-in-out infinite; }
+    .input-field:focus { border-color:#334155; box-shadow:0 0 0 3px rgba(51,65,85,.08); }
+    .dark .input-field { background:#1a1a24; border-color:#2a2d40; color:#e2e8f0; }
+    .dark .input-field:focus { border-color:#475569; box-shadow:0 0 0 3px rgba(71,85,105,.12); }
+    .input-field::placeholder { color:#94a3b8; }
 
-    /* Shimmer en el botón */
-    .btn-shimmer { position: relative; overflow: hidden; }
-    .btn-shimmer::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.18) 50%, transparent 60%);
-      transform: translateX(-100%);
-      transition: transform .6s;
+    .btn-primary {
+      width:100%; padding:10px 16px; border-radius:8px;
+      background:#0f172a; color:#f8fafc;
+      font-size:13px; font-weight:600; cursor:pointer;
+      border:none; transition:background .15s, transform .1s;
+      font-family:"Geist", sans-serif; letter-spacing:.01em;
     }
-    .btn-shimmer:hover::after { transform: translateX(100%); }
+    .btn-primary:hover { background:#1e293b; }
+    .btn-primary:active { transform:scale(.99); }
+    .dark .btn-primary { background:#f1f5f9; color:#0f172a; }
+    .dark .btn-primary:hover { background:#e2e8f0; }
+
+    .input-icon {
+      position:absolute; left:11px; top:50%; transform:translateY(-50%);
+      width:14px; height:14px; color:#94a3b8; pointer-events:none;
+      transition:color .15s;
+    }
+    .input-group:focus-within .input-icon { color:#475569; }
+    .dark .input-group:focus-within .input-icon { color:#94a3b8; }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col bg-gray-50 dark:bg-dark1 text-gray-800 dark:text-gray-200 font-sans antialiased transition-colors duration-300">
+<body class="min-h-screen flex flex-col bg-slate-50 dark:bg-dark1 font-sans antialiased" style="font-size:13px">
 
-  <!-- Barra de color top — misma que app -->
-  <div class="h-0.5 bg-gradient-to-r from-accent to-highlight w-full flex-shrink-0"></div>
+  <!-- Top rule -->
+  <div class="h-px bg-slate-200 dark:bg-slate-800 w-full flex-shrink-0"></div>
 
-  <main class="flex-1 flex items-center justify-center px-4 py-10">
-    <div class="w-full max-w-sm fade-up">
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-[340px] fade-up">
 
-      <!-- Logo + título -->
-      <div class="flex flex-col items-center mb-8 gap-4">
-        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-dark2 shadow-md flex items-center justify-center breathe border border-gray-100 dark:border-gray-700">
-          <img src="{{ url_for('static', filename='LANGuard.png') }}" alt="LANGuard" class="w-11 h-11">
-        </div>
-        <div class="text-center">
-          <h1 class="text-2xl font-bold tracking-tight">
-            <span class="text-accent">LAN</span><span class="dark:text-white">Guard</span>
-          </h1>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Monitoreo avanzado de red LAN</p>
-        </div>
+      <!-- Wordmark -->
+      <div class="mb-8">
+        <h1 class="font-semibold text-slate-900 dark:text-white tracking-tight" style="font-size:18px;letter-spacing:-.01em">LANGuard</h1>
+        <p class="text-slate-400 dark:text-slate-500 mt-1" style="font-size:12px">Inicia sesión para continuar</p>
       </div>
 
+      <!-- Alerts -->
+      {% if error %}
+      <div class="mb-4 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/15 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-400 fade-up" style="font-size:12px">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-px flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      {% if timeout %}
+      <div class="mb-4 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 dark:bg-amber-900/15 border border-amber-200 dark:border-amber-800/60 text-amber-700 dark:text-amber-400 fade-up" style="font-size:12px">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-px flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Sesión expirada. Vuelve a iniciar sesión.</span>
+      </div>
+      {% endif %}
+
       <!-- Card -->
-      <div class="bg-white dark:bg-dark2 rounded-2xl border border-gray-200 dark:border-gray-700/60 shadow-sm px-6 py-7 space-y-5">
-
-        <!-- Error -->
-        {% if error %}
-        <div class="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs fade-up">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span>{{ error }}</span>
-        </div>
-        {% endif %}
-
-        <!-- Aviso timeout -->
-        {% if timeout %}
-        <div class="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400 text-xs fade-up">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Tu sesión expiró. Vuelve a iniciar sesión.</span>
-        </div>
-        {% endif %}
-
-        <form method="POST" class="space-y-3">
+      <div class="bg-white dark:bg-dark2 rounded-xl border border-slate-200 dark:border-slate-800/60 shadow-sm p-6">
+        <form method="POST" class="space-y-4">
 
           <!-- Usuario -->
           <div>
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Usuario</label>
-            <div class="relative group">
-              <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-accent transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1.5 font-medium" style="font-size:12px">Usuario</label>
+            <div class="input-group relative">
+              <svg xmlns="http://www.w3.org/2000/svg" class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <input type="text" name="usuario" placeholder="correo@ejemplo.com" required autofocus
-                class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 text-sm focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition" />
+                class="input-field" />
             </div>
           </div>
 
           <!-- Contraseña -->
           <div>
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Contraseña</label>
-            <div class="relative group">
-              <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-accent transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1.5 font-medium" style="font-size:12px">Contraseña</label>
+            <div class="input-group relative">
+              <svg xmlns="http://www.w3.org/2000/svg" class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <input id="pass" type="password" name="contrasena" placeholder="••••••••" required
-                class="w-full pl-9 pr-9 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark3 text-sm focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition" />
-              <button type="button" onclick="togglePass()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accent transition p-0.5">
-                <svg id="ico-eye" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg id="ico-eye-off" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                style="padding-right:36px"
+                class="input-field" />
+              <button type="button" onclick="togglePass()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5">
+                <svg id="ico-eye" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="ico-eye-off" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               </button>
             </div>
           </div>
 
-          <!-- Submit -->
-          <button type="submit"
-            class="btn-shimmer w-full bg-gradient-to-r from-accent to-highlight text-white font-semibold py-2.5 rounded-lg text-sm hover:opacity-95 active:scale-[.98] transition-all shadow-sm mt-1 flex items-center justify-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            Ingresar
-          </button>
+          <button type="submit" class="btn-primary mt-1">Ingresar</button>
 
         </form>
       </div>
 
-      <!-- Toggle tema -->
-      <div class="flex justify-center mt-5">
-        <button onclick="toggleTheme()" class="flex items-center gap-1.5 text-gray-400 hover:text-accent transition text-xs">
-          <svg id="th-moon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg id="th-sun" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <!-- Footer actions -->
+      <div class="mt-5 flex items-center justify-between">
+        <button onclick="toggleTheme()" class="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition" style="font-size:11px">
+          <svg id="th-moon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="th-sun" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <span id="th-label">Modo oscuro</span>
         </button>
+        <a href="https://github.com/Osvaldo-Net/LANGuard" target="_blank"
+          class="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition" style="font-size:11px">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
       </div>
 
     </div>
   </main>
-
-  <footer class="py-3 text-center flex-shrink-0">
-    <a href="https://github.com/Osvaldo-Net/LANGuard" target="_blank"
-      class="inline-flex items-center gap-1.5 text-gray-400 hover:text-accent transition text-xs">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      GitHub
-    </a>
-  </footer>
 
   <script>
     function togglePass() {
