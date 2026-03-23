@@ -275,7 +275,7 @@ def enviar_telegram(mac, ip, fab):
     token, chat = get_telegram_config()
     if not token or not chat:
         return
-    msg = f"🚨 NUEVO DISPOSITIVO\nIP: {ip}\nMAC: {mac}\nFAB: {fab}"
+    msg = f"?? NUEVO DISPOSITIVO\nIP: {ip}\nMAC: {mac}\nFAB: {fab}"
     try:
         requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
                       data={"chat_id": chat, "text": msg}, timeout=5)
@@ -394,6 +394,36 @@ def api_historial_limpiar():
     db.commit(); db.close()
     return jsonify({"success": True})
 
+@app.route('/api/perfil', methods=['GET'])
+def api_perfil_get():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    db  = get_db()
+    row = db.execute(
+        "SELECT nombre_display FROM usuarios WHERE usuario=?",
+        (session['usuario'],)
+    ).fetchone()
+    db.close()
+    return jsonify({
+        "usuario":        session['usuario'],
+        "nombre_display": row["nombre_display"] if row and row["nombre_display"] else ""
+    })
+
+@app.route('/api/perfil', methods=['POST'])
+def api_perfil_set():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    data   = request.get_json()
+    nombre = data.get("nombre_display", "").strip()
+    db     = get_db()
+    db.execute(
+        "UPDATE usuarios SET nombre_display=? WHERE usuario=?",
+        (nombre, session['usuario'])
+    )
+    db.commit()
+    db.close()
+    return jsonify({"success": True, "nombre_display": nombre})
+
 @app.route('/api/configuracion', methods=['GET'])
 def api_config_get():
     if 'usuario' not in session:
@@ -441,7 +471,7 @@ def api_telegram_test():
         return jsonify({"success": False, "message": "Token o Chat ID no configurados"})
     try:
         resp = requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
-                             data={"chat_id": chat, "text": "✅ LANGuard: conexión de prueba exitosa"}, timeout=5)
+                             data={"chat_id": chat, "text": "? LANGuard: conexión de prueba exitosa"}, timeout=5)
         ok = resp.json().get("ok", False)
         return jsonify({"success": ok, "message": "Mensaje enviado correctamente" if ok else "Error en Telegram"})
     except Exception as e:
