@@ -7,15 +7,17 @@ DB_PATH  = os.path.join(BASE_DIR, "data", "lan_guard.db")
 
 conn = sqlite3.connect(DB_PATH)
 cur  = conn.cursor()
+
 cur.execute("PRAGMA journal_mode=WAL")
 cur.execute("PRAGMA synchronous=NORMAL")
 
 cur.execute("""
 CREATE TABLE IF NOT EXISTS usuarios (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario    TEXT UNIQUE NOT NULL,
-    contrasena TEXT NOT NULL,
-    rol        TEXT NOT NULL
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario        TEXT UNIQUE NOT NULL,
+    contrasena     TEXT NOT NULL,
+    rol            TEXT NOT NULL,
+    nombre_display TEXT DEFAULT ''
 )
 """)
 
@@ -61,7 +63,6 @@ CREATE TABLE IF NOT EXISTS historial_dispositivos (
 )
 """)
 
-# NUEVA TABLA: configuracion dinamica (Telegram, intervalo, etc.)
 cur.execute("""
 CREATE TABLE IF NOT EXISTS configuracion (
     clave TEXT PRIMARY KEY,
@@ -69,12 +70,19 @@ CREATE TABLE IF NOT EXISTS configuracion (
 )
 """)
 
-# Migracion segura
+# ── Migraciones seguras ──────────────────────────────────────────────────────
 try:
     cur.execute("ALTER TABLE historial_dispositivos ADD COLUMN evento TEXT NOT NULL DEFAULT 'conectado'")
-    print("Columna 'evento' anadida.")
+    print("Columna 'evento' añadida a historial_dispositivos.")
 except Exception:
     pass
+
+try:
+    cur.execute("ALTER TABLE usuarios ADD COLUMN nombre_display TEXT DEFAULT ''")
+    print("Columna 'nombre_display' añadida a usuarios.")
+except Exception:
+    pass
+# ─────────────────────────────────────────────────────────────────────────────
 
 cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_mac    ON historial_dispositivos(mac)")
 cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_visto  ON historial_dispositivos(visto_en)")
@@ -82,12 +90,15 @@ cur.execute("CREATE INDEX IF NOT EXISTS idx_historial_evento ON historial_dispos
 
 USUARIO_DEFECTO    = "admin@example.com"
 CONTRASENA_DEFECTO = "admin"
+
 cur.execute("SELECT COUNT(*) FROM usuarios")
 if cur.fetchone()[0] == 0:
     hash_pwd = bcrypt.hashpw(CONTRASENA_DEFECTO.encode(), bcrypt.gensalt(12)).decode()
-    cur.execute("INSERT INTO usuarios (usuario, contrasena, rol) VALUES (?, ?, ?)",
-                (USUARIO_DEFECTO, hash_pwd, "admin"))
+    cur.execute(
+        "INSERT INTO usuarios (usuario, contrasena, rol, nombre_display) VALUES (?, ?, ?, ?)",
+        (USUARIO_DEFECTO, hash_pwd, "admin", "")
+    )
 
 conn.commit()
 conn.close()
-print("Base de datos LAN Guard inicializada correctamente.")
+print("Base de datos LANGuard inicializada correctamente.")
