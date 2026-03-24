@@ -163,5 +163,9 @@ docker compose up -d
 
 Este proyecto nació de la pasión por las redes, la ciberseguridad y el homelab. Fue construido con apoyo de herramientas de inteligencia artificial como parte de un proyecto personal, con el objetivo de crear soluciones útiles, reales y autohospedadas para quienes, como yo, disfrutan administrar su propia infraestructura en casa.
 
+## Importante 
+
+En nigun caso exponga la interfaz de administración directamente a internet, en caso de requerir acceso remoto use una VPN como wireguard, Open VPN o Tailscale.
+
 ---
 
