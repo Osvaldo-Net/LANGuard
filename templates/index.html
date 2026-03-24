@@ -194,6 +194,16 @@
     .hist-card { transition:background .1s;border-radius:8px; }
     .hist-card:hover { background:#f8fafc; }
     .dark .hist-card:hover { background:#1a1a24; }
+
+    /* Stat cards dark mode */
+    .dark .stat-card-trusted  { background:#0a1f13 !important; border-color:rgba(34,197,94,.2) !important; }
+    .dark .stat-card-trusted  .stat-icon { background:rgba(34,197,94,.12); }
+    .dark .stat-card-trusted  .stat-num  { color:#4ade80; }
+    .dark .stat-card-trusted  .stat-lbl  { color:#22c55e; opacity:.7; }
+    .dark .stat-card-untrusted{ background:#1f0a0a !important; border-color:rgba(239,68,68,.2) !important; }
+    .dark .stat-card-untrusted .stat-icon { background:rgba(239,68,68,.12); }
+    .dark .stat-card-untrusted .stat-num  { color:#f87171; }
+    .dark .stat-card-untrusted .stat-lbl  { color:#ef4444; opacity:.7; }
   </style>
 </head>
 
@@ -297,7 +307,7 @@
         <div class="w-6 h-6 rounded-full bg-slate-900 dark:bg-slate-100 flex items-center justify-center flex-shrink-0">
           <i data-lucide="user" class="w-3 h-3 text-white dark:text-slate-900"></i>
         </div>
-        <span class="truncate text-slate-600 dark:text-slate-400 flex-1" style="font-size:11px">{{ usuario_actual }}</span>
+        <span id="sidebar-user-name" class="truncate text-slate-600 dark:text-slate-400 flex-1" style="font-size:11px">{{ usuario_actual }}</span>
         <i data-lucide="chevron-right" class="w-3 h-3 text-slate-300 flex-shrink-0"></i>
       </button>
 
@@ -334,6 +344,40 @@
     </div>
 
     <div class="px-5 py-4 space-y-4 fade-in">
+
+      <!-- ── Stat cards ── -->
+      <div class="grid grid-cols-3 gap-3 stagger-1 fade-in">
+        <!-- Total -->
+        <div class="card px-4 py-3.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="monitor-dot" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <div>
+            <p id="stat-total" class="text-xl font-semibold tabular-nums text-slate-900 dark:text-white leading-none">—</p>
+            <p class="text-slate-400 dark:text-slate-500 mt-0.5" style="font-size:11px" data-i18n="statTotal">Total dispositivos</p>
+          </div>
+        </div>
+        <!-- Trusted -->
+        <div class="card stat-card-trusted px-4 py-3.5 flex items-center gap-3" style="border-color:#bbf7d0;background:#f0fdf4">
+          <div class="stat-icon w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+          </div>
+          <div>
+            <p id="stat-trusted" class="stat-num text-xl font-semibold tabular-nums leading-none" style="color:#16a34a">—</p>
+            <p class="stat-lbl mt-0.5" style="font-size:11px;color:#15803d" data-i18n="statTrusted">Confiables</p>
+          </div>
+        </div>
+        <!-- Untrusted -->
+        <div class="card stat-card-untrusted px-4 py-3.5 flex items-center gap-3" style="border-color:#fecaca;background:#fff1f2">
+          <div class="stat-icon w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-red-500"></i>
+          </div>
+          <div>
+            <p id="stat-untrusted" class="stat-num text-xl font-semibold tabular-nums leading-none" style="color:#dc2626">—</p>
+            <p class="stat-lbl mt-0.5" style="font-size:11px;color:#b91c1c" data-i18n="statUntrusted">No confiables</p>
+          </div>
+        </div>
+      </div>
 
       <!-- Device table -->
       <div class="card overflow-hidden stagger-1 fade-in">
@@ -791,14 +835,84 @@
   function cerrarPanelHistorial() { cerrarTodosPaneles(); detenerAutoRefreshHistorial(); }
   function abrirPanelConfiables() { abrirPanel('panel-confiables'); }
   function cerrarPanelConfiables(){ cerrarTodosPaneles(); }
+
+  // Load display name on page init (sidebar shows name right away)
+  (function initNombrePerfil() {
+    fetch('/api/perfil').then(r => r.json()).then(data => {
+      if (data.nombre_display) {
+        const sn = document.getElementById('sidebar-user-name');
+        if (sn) sn.textContent = data.nombre_display;
+      }
+    }).catch(() => {});
+  })();
+
+  // ── Stat cards ──────────────────────────────────────────────────────────
+  function actualizarStats() {
+    const rows  = document.querySelectorAll('.dispositivo-row');
+    const total = rows.length;
+    let trusted = 0, untrusted = 0;
+    rows.forEach(r => {
+      if (r.dataset.confianza === 'confiable') trusted++;
+      else untrusted++;
+    });
+    _setStatNum('stat-total',     total);
+    _setStatNum('stat-trusted',   trusted);
+    _setStatNum('stat-untrusted', untrusted);
+  }
+
+  // Animated counter — smoothly ticks from old value to new value
+  const _statCounters = {};
+  function _setStatNum(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const current = parseInt(el.textContent) || 0;
+    if (current === target) return;
+    if (_statCounters[id]) clearInterval(_statCounters[id]);
+    const diff  = target - current;
+    const steps = Math.min(Math.abs(diff), 12);
+    const step  = diff / steps;
+    let val = current, count = 0;
+    _statCounters[id] = setInterval(() => {
+      count++;
+      val += step;
+      el.textContent = count >= steps ? target : Math.round(val);
+      if (count >= steps) clearInterval(_statCounters[id]);
+    }, 30);
+  }
+
+  // MutationObserver — watches #tabla-dispositivos for any structural change
+  // (rows added/removed/attribute changed) and re-computes stats automatically.
+  // This fires whether the update comes from app.js, marcarConfiable, or anything else.
+  (function initStatsObserver() {
+    const tbody = document.getElementById('tabla-dispositivos');
+    if (!tbody) return;
+
+    // Run once immediately for server-rendered rows
+    actualizarStats();
+
+    const obs = new MutationObserver(() => actualizarStats());
+    obs.observe(tbody, {
+      childList:     true,   // rows added / removed
+      subtree:       true,   // catches attribute changes on child elements
+      attributes:    true,   // data-confianza attribute changes
+      attributeFilter: ['data-confianza']
+    });
+  })();
+  // ────────────────────────────────────────────────────────────────────────
+
+  function _syncNombreUI(nombre) {
+    const sn   = document.getElementById('sidebar-user-name');
+    const disp = document.getElementById('perfil-nombre-display');
+    if (sn)   sn.textContent   = nombre;
+    if (disp) disp.textContent = nombre;
+  }
+
   function abrirPerfil() {
     abrirPanel('panel-perfil');
-    // Load current display name from API
     fetch('/api/perfil').then(r => r.json()).then(data => {
       const inp = document.getElementById('cfg-display-name');
-      if (inp && data.nombre_display) inp.value = data.nombre_display;
-      const disp = document.getElementById('perfil-nombre-display');
-      if (disp && data.nombre_display) disp.textContent = data.nombre_display;
+      if (inp) inp.value = data.nombre_display || '';
+      _syncNombreUI(data.nombre_display || data.usuario);
     }).catch(() => {});
   }
 
@@ -814,9 +928,7 @@
       msg.className   = `text-xs ${data.success ? 'text-emerald-500' : 'text-red-500'}`;
       msg.classList.remove('hidden');
       if (data.success) {
-        // Update avatar display name
-        const disp = document.getElementById('perfil-nombre-display');
-        if (disp && nombre) disp.textContent = nombre;
+        _syncNombreUI(nombre || '{{ usuario_actual }}');
         setTimeout(() => msg.classList.add('hidden'), 3000);
       }
     } catch {
