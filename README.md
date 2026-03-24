@@ -11,7 +11,7 @@
 [![Languages](https://img.shields.io/badge/languages-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
 [![Version](https://img.shields.io/badge/version-3.1.0-6366f1?style=flat-square&labelColor=0f172a)](#)
 
-🇪🇸 **¿Hablas español?** Lee la documentación completa [aquí](https://github.com/Osvaldo-Net/LANGuard/blob/main/README-ES.md).
+**¿Hablas español?** Lee la documentación completa [aquí](https://github.com/Osvaldo-Net/LANGuard/blob/main/README-ES.md).
 
 </div>
 
