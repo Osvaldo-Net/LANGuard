@@ -1,22 +1,6 @@
 <div align="center">
 
 <img src="https://github.com/user-attachments/assets/c3af8ab3-c0ed-4078-ab75-7afe2e7455dd" width="120" alt="LANGuard logo" />
-dashboard
-<img width="1365" height="597" alt="image" src="https://github.com/user-attachments/assets/ae92aeed-8306-4042-8dad-c4eddc5a9c77" />
-
-Escaneo
-<img width="1365" height="591" alt="image" src="https://github.com/user-attachments/assets/6c80b50f-8801-430c-a926-f3215c7a44ef" />
-
-Historial
-<img width="1365" height="595" alt="image" src="https://github.com/user-attachments/assets/49b3677b-c60f-4978-b629-38109523c029" />
-
-
-Modo oscuro
-
-<img width="1364" height="596" alt="image" src="https://github.com/user-attachments/assets/db06cbd2-6f38-43cb-9ae1-c6770ece7d6d" />
-
-
-
 
 # LANGuard
 
@@ -27,6 +11,8 @@ Modo oscuro
 [![Languages](https://img.shields.io/badge/languages-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
 [![Version](https://img.shields.io/badge/version-3.1.0-6366f1?style=flat-square&labelColor=0f172a)](#)
 
+🇪🇸 **¿Hablas español?** Lee la documentación completa [aquí](https://github.com/Osvaldo-Net/LANGuard/blob/main/README-ES.md).
+
 </div>
 
 ---
@@ -36,6 +22,22 @@ Modo oscuro
 LANGuard is a self-hosted web application for **advanced scanning and monitoring of your local network**. It combines **Nmap** and **ARP** to identify every connected device, classify them as trusted or untrusted, and instantly alert you via **Telegram** if something suspicious shows up.
 
 No manual network interface configuration required — LANGuard **auto-detects** the network segment it runs on. All data is stored locally with **SQLite**, no cloud dependencies.
+
+---
+
+## Screenshots
+
+**Dashboard**
+![Dashboard](https://github.com/user-attachments/assets/ae92aeed-8306-4042-8dad-c4eddc5a9c77)
+
+**Scanning**
+![Scanning](https://github.com/user-attachments/assets/6c80b50f-8801-430c-a926-f3215c7a44ef)
+
+**History**
+![History](https://github.com/user-attachments/assets/49b3677b-c60f-4978-b629-38109523c029)
+
+**Dark mode**
+![Dark mode](https://github.com/user-attachments/assets/db06cbd2-6f38-43cb-9ae1-c6770ece7d6d)
 
 ---
 
@@ -60,19 +62,16 @@ No manual network interface configuration required — LANGuard **auto-detects**
 ### 1. Set environment variables
 
 Create a `.env` file in the same directory:
-
 ```env
 SECRET_KEY=your_secure_key_here
 ```
 
 Generate a secure key with:
-
 ```bash
 openssl rand -hex 32
 ```
 
 ### 2. Deploy with Docker Compose
-
 ```yaml
 services:
   languard:
@@ -89,7 +88,6 @@ services:
       - NET_ADMIN
     restart: unless-stopped
 ```
-
 ```bash
 docker compose up -d
 ```
@@ -101,7 +99,6 @@ docker compose up -d
 ## First access
 
 Open the web interface from your browser using the server's IP on port **5555**:
-
 ```
 http://<server-IP>:5555
 ```
@@ -128,7 +125,6 @@ LANGuard uses slide-in panels instead of cluttering the main view:
 ---
 
 ## Updating
-
 ```bash
 docker compose pull
 docker compose up -d
@@ -147,7 +143,6 @@ docker compose up -d
 ## Access log
 
 The access log is stored at:
-
 ```
 /app/data/accesos.log
 ```
