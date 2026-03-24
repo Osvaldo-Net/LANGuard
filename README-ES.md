@@ -23,6 +23,22 @@ Sin configuración manual de interfaces de red: LANGuard **detecta automáticame
 
 ---
 
+## Capturas de pantalla
+
+**Dashboard**
+![Dashboard](https://github.com/user-attachments/assets/ae92aeed-8306-4042-8dad-c4eddc5a9c77)
+
+**Escaneo**
+![Escaneo](https://github.com/user-attachments/assets/6c80b50f-8801-430c-a926-f3215c7a44ef)
+
+**Historial**
+![Historial](https://github.com/user-attachments/assets/49b3677b-c60f-4978-b629-38109523c029)
+
+**Modo oscuro**
+![Modo oscuro](https://github.com/user-attachments/assets/db06cbd2-6f38-43cb-9ae1-c6770ece7d6d)
+
+---
+
 ## Características
 
 | Categoría | Detalle |
@@ -44,19 +60,16 @@ Sin configuración manual de interfaces de red: LANGuard **detecta automáticame
 ### 1. Configura las variables de entorno
 
 Crea un archivo `.env` en el mismo directorio:
-
 ```env
 SECRET_KEY=tu_clave_segura_aqui
 ```
 
 Genera una `SECRET_KEY` segura con:
-
 ```bash
 openssl rand -hex 32
 ```
 
 ### 2. Despliega con Docker Compose
-
 ```yaml
 services:
   languard:
@@ -73,7 +86,6 @@ services:
       - NET_ADMIN
     restart: unless-stopped
 ```
-
 ```bash
 docker compose up -d
 ```
@@ -85,7 +97,6 @@ docker compose up -d
 ## Acceso inicial
 
 Accede desde tu navegador usando la IP del servidor en el puerto **5555**:
-
 ```
 http://<IP-del-servidor>:5555
 ```
@@ -112,7 +123,6 @@ LANGuard organiza la información en paneles deslizantes para mantener el dashbo
 ---
 
 ## Actualizar
-
 ```bash
 docker compose pull
 docker compose up -d
@@ -131,7 +141,6 @@ docker compose up -d
 ## Registro de accesos
 
 El log de accesos se almacena en:
-
 ```
 /app/data/accesos.log
 ```
@@ -149,4 +158,3 @@ El log de accesos se almacena en:
 Este proyecto nació de la pasión por las redes, la ciberseguridad y el homelab. Fue construido con apoyo de herramientas de inteligencia artificial como parte de un proyecto personal, con el objetivo de crear soluciones útiles, reales y autohospedadas para quienes, como yo, disfrutan administrar su propia infraestructura en casa.
 
 ---
-
