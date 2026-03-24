@@ -1,60 +1,61 @@
 <div align="center">
 
-
 <img src="https://github.com/user-attachments/assets/c3af8ab3-c0ed-4078-ab75-7afe2e7455dd" width="120" alt="LANGuard logo" />
 
 # LANGuard
 
-**Monitoreo y seguridad de tu red LAN, desde tu propio servidor.**
+**Network monitoring and security — self-hosted, from your own server.**
 
 [![Docker](https://img.shields.io/badge/docker-netosvaltools%2Flanguard-0ea5e9?style=flat-square&logo=docker&logoColor=white&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Docker Pulls](https://img.shields.io/docker/pulls/netosvaltools/languard?style=flat-square&color=0ea5e9&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
-[![Idiomas](https://img.shields.io/badge/idiomas-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
+[![Languages](https://img.shields.io/badge/languages-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
+[![Version](https://img.shields.io/badge/version-3.1.0-6366f1?style=flat-square&labelColor=0f172a)](#)
 
 </div>
 
 ---
 
-## ¿Qué es LANGuard?
+## What is LANGuard?
 
-LANGuard es una aplicación web autohospedada para el **escaneo y monitoreo avanzado de tu red local**. Combina el poder de **Nmap** y **ARP** para identificar cada dispositivo conectado, clasificarlos como confiables o no confiables, y alertarte al instante vía **Telegram** si detecta algo sospechoso.
+LANGuard is a self-hosted web application for **advanced scanning and monitoring of your local network**. It combines **Nmap** and **ARP** to identify every connected device, classify them as trusted or untrusted, and instantly alert you via **Telegram** if something suspicious shows up.
 
-Sin configuración manual de interfaces de red: LANGuard **detecta automáticamente** el segmento de red donde se ejecuta. Toda la información se almacena localmente con **SQLite**, sin servidores externos ni dependencias en la nube.
-
----
-
-## Características
-
-- **Detección automática de red** — Sin elegir interfaces manualmente
-- **Alertas en tiempo real vía Telegram** — Notificaciones ante dispositivos no confiables
-- **Historial de detecciones** — Seguimiento completo de eventos en tu red
-- **Nombres personalizados por dispositivo** — Identifica equipos fácilmente
-- **Filtrado avanzado** — Busca por nombre, MAC o nivel de confianza
-- **Escaneo de puertos** — Visualiza el estado de puertos por dispositivo
-- **Registro de accesos** — Log de intentos exitosos y fallidos
-- **Modo oscuro** — Interfaz adaptable a cualquier entorno
-- **Multiidioma** — Español e inglés (más idiomas próximamente)
-- **Persistencia ligera con SQLite** — Sin bases de datos externas
+No manual network interface configuration required — LANGuard **auto-detects** the network segment it runs on. All data is stored locally with **SQLite**, no cloud dependencies.
 
 ---
 
-## Instalación
+## Features
 
-### 1. Configura la variables de entorno
+| Category | Details |
+|---|---|
+| **Scanning** | Auto-detects network segment, Nmap + ARP, configurable scan interval |
+| **Dashboard** | Stat cards (total / trusted / untrusted) with live animated counters |
+| **Devices** | Custom names, manufacturer lookup, port scanning per device |
+| **Trust management** | Mark/unmark devices as trusted directly from the table or the side panel |
+| **History** | Full connection/disconnection log with auto-refresh and MAC filter |
+| **Alerts** | Real-time Telegram notifications for untrusted devices |
+| **Profile** | Display name, email and password change from the profile side panel |
+| **UI** | Dark mode, ES/EN language switch, responsive sidebar, slide-in panels |
+| **Storage** | Lightweight SQLite — no external database needed |
 
-Crea un archivo `.env` en el mismo directorio:
+---
+
+## Installation
+
+### 1. Set environment variables
+
+Create a `.env` file in the same directory:
 
 ```env
-SECRET_KEY=genera_una_clave_segura
+SECRET_KEY=your_secure_key_here
 ```
 
-Genera una `SECRET_KEY` segura con:
+Generate a secure key with:
 
 ```bash
 openssl rand -hex 32
 ```
 
-### 2. Despliega con Docker Compose
+### 2. Deploy with Docker Compose
 
 ```yaml
 services:
@@ -77,79 +78,40 @@ services:
 docker compose up -d
 ```
 
-> ⚠️ **Nota de seguridad:** `network_mode: host` es necesario para que LANGuard pueda escanear tu red local. Cámbia la `SECRET_KEY` antes de poner el servicio en producción.
+> ⚠️ `network_mode: host` is required for LAN scanning. Change `SECRET_KEY` before going to production.
 
 ---
 
-## Acceso inicial
+## First access
 
-Una vez en marcha, accede a la interfaz web desde tu navegador usando la IP del servidor en el puerto **5555**:
+Open the web interface from your browser using the server's IP on port **5555**:
 
 ```
-http://<IP-del-servidor>:5555
+http://<server-IP>:5555
 ```
 
-**Credenciales por defecto:**
+**Default credentials:**
 
-| Campo | Valor |
+| Field | Value |
 |---|---|
-| Usuario | `admin@example.com` |
-| Contraseña | `admin` |
+| Username | `admin@example.com` |
+| Password | `admin` |
 
-> ⚠️ Cambia la contraseña inmediatamente tras el primer inicio de sesión.
-
----
-
-## Capturas de pantalla
-
-### Acceso a la interfaz
-
-<img src="https://github.com/user-attachments/assets/1531c07c-71a7-4c7f-9c33-26ebbe628d6c" alt="Modo día - Acceso a la interfaz" />
-
-### Panel principal
-
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c37e2962-e7cb-483f-94f5-0a429a132b20" alt="Modo día - Panel principal" />
-
-
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/3f09da2f-808d-4aa1-a84e-1b943026d16a" alt="Modo día - Panel principal 2" />
-
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/c920f453-48df-4d78-ae17-862f5933d447" alt="Modo día - Panel principal 3" />
-
-
-
-### Modo oscuro
-
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/bc137c7f-0a03-4f8c-9745-b2a9d2de0be1" alt="Modo día - Panel principal 4" />
-
-
-### Escaneo de puertos
-
-<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/9904d0cb-b8cd-4ef6-8f8e-7d9a2173c98d" alt="Modo día - Panel principal 5" />
-
-
-
-
-
-### Registro de accesos
-
-
-El log de accesos se almacena en:
-
-```
-/app/accesos.log
-```
+> ⚠️ Change your password immediately after the first login.
 
 ---
 
-## Variables de entorno
+## Side panels
 
-| Variable | Descripción | Requerida |
-|---|---|---|
-| `SECRET_KEY` | Clave secreta para cifrado de sesiones | ✅ Sí |
+LANGuard uses slide-in panels instead of cluttering the main view:
+
+- **History** — connection/disconnection timeline, filterable by MAC and event type
+- **Trusted Devices** — full list with inline name editing, add/remove without reload
+- **Profile** — display name, credentials (email + password), session info
 
 ---
 
-## Actualizar
+## Updating
 
 ```bash
 docker compose pull
@@ -158,14 +120,32 @@ docker compose up -d
 
 ---
 
+## Environment variables
 
-## Nota del desarrollador
-
-Este proyecto nació de la pasión por las redes, la ciberseguridad y el homelab. Fue construido con apoyo de herramientas de inteligencia artificial como parte de un proyecto personal, con el objetivo de crear soluciones útiles, reales y autohospedadas para quienes, como yo, disfrutan administrar su propia infraestructura en casa.
-
-## Importante 
-
-En nigun caso exponga la interfaz de administración directamente a internet, en caso de requerir acceso remoto use una VPN como wireguard, Open VPN o Tailscale.
+| Variable | Description | Required |
+|---|---|---|
+| `SECRET_KEY` | Secret key for session encryption | ✅ Yes |
 
 ---
 
+## Access log
+
+The access log is stored at:
+
+```
+/app/data/accesos.log
+```
+
+---
+
+## Security note
+
+**Never expose the admin interface directly to the internet.** If you need remote access, use a VPN such as WireGuard, OpenVPN, or Tailscale.
+
+---
+
+## Developer note
+
+This project was born from a passion for networking, cybersecurity, and homelabs. Built with the help of AI tools as a personal project, with the goal of creating useful, real, self-hosted solutions for those who — like me — enjoy running their own home infrastructure.
+
+---
