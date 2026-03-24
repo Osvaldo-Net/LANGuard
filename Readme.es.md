@@ -150,6 +150,3 @@ Este proyecto nació de la pasión por las redes, la ciberseguridad y el homelab
 
 ---
 
-<div align="center">
-  <sub>Hecho con ❤️ para la comunidad homelab</sub>
-</div>
