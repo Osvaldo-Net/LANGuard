@@ -20,6 +20,11 @@ const translations = {
     // Header
     header: "Escaneo avanzado de red LAN: <span class='text-accent'>detecta accesos no autorizados</span> y evalúa la <span class='text-highlight'>confianza</span> de cada dispositivo conectado.",
 
+    // Tarjetas de estadísticas
+    statTotal:    "Total dispositivos",
+    statTrusted:  "Confiables",
+    statUntrusted:"No confiables",
+
     // Tabla dispositivos
     devicesTitle: "Dispositivos en red",
     devicesDesc:  "Dispositivos detectados en el último escaneo. Marca como confiables los que reconoces.",
@@ -159,6 +164,11 @@ const translations = {
     profileNameSaved:   "Name updated",
 
     header: "Advanced LAN scan: <span class='text-accent'>detect unauthorized access</span> and assess the <span class='text-highlight'>trust level</span> of each connected device.",
+
+    // Stat cards
+    statTotal:    "Total devices",
+    statTrusted:  "Trusted",
+    statUntrusted:"Untrusted",
 
     // Device table
     devicesTitle: "Devices on network",
