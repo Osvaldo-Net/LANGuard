@@ -9,7 +9,7 @@
 [![Docker](https://img.shields.io/badge/docker-netosvaltools%2Flanguard-0ea5e9?style=flat-square&logo=docker&logoColor=white&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Docker Pulls](https://img.shields.io/docker/pulls/netosvaltools/languard?style=flat-square&color=0ea5e9&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Idiomas](https://img.shields.io/badge/idiomas-ES%20%7C%20EN-10b981?style=flat-square&labelColor=0f172a)](#)
-[![Versión](https://img.shields.io/badge/versión-3.1.0-6366f1?style=flat-square&labelColor=0f172a)](#)
+[![Versión](https://img.shields.io/badge/versión-3.1.1-6366f1?style=flat-square&labelColor=0f172a)](#)
 
 </div>
 
