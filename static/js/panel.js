@@ -123,8 +123,8 @@ function actualizarStats() {
 function _syncNombreUI(nombre) {
   const sn   = document.getElementById("sidebar-user-name");
   const disp = document.getElementById("perfil-nombre-display");
-  if (sn)   sn.textContent   = nombre;
-  if (disp) disp.textContent = nombre;
+  if (sn)   sn.textContent   = nombre; // safe: textContent
+  if (disp) disp.textContent = nombre; // safe: textContent
 }
 
 // Load display name immediately on page load
@@ -136,7 +136,7 @@ function abrirPerfil() {
   abrirPanel("panel-perfil");
   fetch("/api/perfil").then(r => r.json()).then(data => {
     const inp = document.getElementById("cfg-display-name");
-    if (inp) inp.value = data.nombre_display || "";
+    if (inp) inp.value = data.nombre_display || ""; // safe: .value
     _syncNombreUI(data.nombre_display || data.usuario);
   }).catch(() => {});
 }
@@ -149,7 +149,7 @@ async function guardarNombrePerfil() {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre_display: nombre })
     }).then(r => r.json());
-    msg.textContent = data.success ? `✓ ${t("profileNameSaved")}` : `✗ ${t("cfgError")}`;
+    msg.textContent = data.success ? `✓ ${t("profileNameSaved")}` : `✗ ${t("cfgError")}`; // safe: textContent
     msg.className   = `text-xs ${data.success ? "text-emerald-500" : "text-red-500"}`;
     msg.classList.remove("hidden");
     if (data.success) {
@@ -157,7 +157,7 @@ async function guardarNombrePerfil() {
       setTimeout(() => msg.classList.add("hidden"), 3000);
     }
   } catch {
-    msg.textContent = `✗ ${t("cfgError")}`;
+    msg.textContent = `✗ ${t("cfgError")}`; // safe: textContent
     msg.className = "text-xs text-red-500";
     msg.classList.remove("hidden");
   }
@@ -223,6 +223,8 @@ async function cargarHistorial() {
       return;
     }
 
+    // FIX: all server-returned values (mac, ip, nombre, fabricante, fecha)
+    // are escaped with esc() before interpolation into innerHTML.
     cont.innerHTML = data.map(r => {
       const esConn   = r.evento === "conectado";
       const iconBg   = esConn ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600" : "bg-slate-100 dark:bg-slate-800 text-slate-400";
@@ -232,6 +234,10 @@ async function cargarHistorial() {
       const chip     = r.confiable
         ? `<span class="badge badge-green" style="font-size:10px;padding:1px 6px">${t("historyTrusted")}</span>`
         : `<span class="badge badge-red"   style="font-size:10px;padding:1px 6px">${t("historyUntrusted")}</span>`;
+
+      // Split fecha safely — it comes from DB (datetime string), still escape it
+      const fechaParts = r.fecha ? esc(r.fecha).split(" ") : ["—", ""];
+
       return `<div class="hist-card flex items-center gap-2.5 p-2.5 border border-slate-100 dark:border-slate-800/40 bg-white dark:bg-dark3/40">
         <div class="relative flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${iconBg}">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -246,14 +252,14 @@ async function cargarHistorial() {
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-1.5 flex-wrap">${evLabel} ${chip}</div>
           <div class="flex flex-wrap gap-x-2 text-slate-400 dark:text-slate-500 mt-0.5" style="font-size:10px">
-            <span class="font-mono">${r.mac}</span><span>${r.ip}</span>
-            ${r.nombre     ? `<span class="text-slate-600 dark:text-slate-300 font-medium">${r.nombre}</span>` : ""}
-            ${r.fabricante ? `<span>${r.fabricante}</span>` : ""}
+            <span class="font-mono">${esc(r.mac)}</span><span>${esc(r.ip)}</span>
+            ${r.nombre     ? `<span class="text-slate-600 dark:text-slate-300 font-medium">${esc(r.nombre)}</span>` : ""}
+            ${r.fabricante ? `<span>${esc(r.fabricante)}</span>` : ""}
           </div>
         </div>
         <div class="text-right flex-shrink-0" style="font-size:10px">
-          <p class="text-slate-400">${r.fecha ? r.fecha.split(" ")[0] : "—"}</p>
-          <p class="font-medium text-slate-500">${r.fecha ? r.fecha.split(" ")[1] : ""}</p>
+          <p class="text-slate-400">${fechaParts[0]}</p>
+          <p class="font-medium text-slate-500">${fechaParts[1] || ""}</p>
         </div>
       </div>`;
     }).join("");
@@ -276,25 +282,35 @@ document.getElementById("hist-mac")?.addEventListener("input", () => {
 });
 
 // ── Editar nombre en panel confiables ────────────────────────────────────────
+// FIX alert #32: replaced innerHTML-based editing with DOM API to prevent
+// the device name (user-controlled via API) from being reinterpreted as HTML.
 window.editarNombreConfiable = mac => {
-  const li = document.querySelector(`#lista-macs li[data-mac="${mac.toLowerCase()}"]`);
+  const li = document.querySelector(`#lista-macs li[data-mac="${esc(mac.toLowerCase())}"]`);
   if (!li) return;
   const sp = li.querySelector(".nombre-confiable");
   if (!sp) return;
   const actual = sp.textContent.trim();
   const sid    = mac.replace(/:/g, "");
 
-  sp.outerHTML = `<input id="inp-c-${sid}" class="input-base flex-1 min-w-0" style="padding:4px 6px;font-size:11px" value="${(actual === t("noName") || actual === "Sin nombre" || actual === "No name") ? "" : actual}" placeholder="${t("noName")}">`;
-  const inp = document.getElementById(`inp-c-${sid}`);
-  if (!inp) return;
-  inp.focus(); inp.select();
+  // Build input using DOM API — no innerHTML with user data
+  const inp = document.createElement("input");
+  inp.id = `inp-c-${sid}`;
+  inp.className = "input-base flex-1 min-w-0";
+  inp.style.cssText = "padding:4px 6px;font-size:11px";
+  inp.placeholder = t("noName");
+  // Set value safely via property, not innerHTML
+  inp.value = (actual === t("noName") || actual === "Sin nombre" || actual === "No name") ? "" : actual;
+
+  sp.replaceWith(inp);
+  inp.focus();
+  inp.select();
 
   let _saved = false;
 
   const restoreSpan = nombre => {
     const p = document.createElement("p");
     p.className = "nombre-confiable font-medium text-slate-700 dark:text-slate-200 text-xs truncate";
-    p.textContent = nombre;
+    p.textContent = nombre; // safe: textContent, never innerHTML
     inp.replaceWith(p);
   };
 
@@ -308,8 +324,12 @@ window.editarNombreConfiable = mac => {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mac, nombre })
       }).then(r => r.json());
       if (d.success) {
-        const tr = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"]`);
-        if (tr) { tr.dataset.nombre = nombre.toLowerCase(); const sp2 = tr.querySelector("td:nth-child(3) span"); if (sp2) sp2.textContent = nombre; }
+        const tr = document.querySelector(`tr[data-mac="${esc(mac.toLowerCase())}"]`);
+        if (tr) {
+          tr.dataset.nombre = nombre.toLowerCase();
+          const sp2 = tr.querySelector("td:nth-child(3) span");
+          if (sp2) sp2.textContent = nombre; // safe: textContent
+        }
         mostrarNotificacion(`✓ ${t("nombre_guardado")}`, "success");
       } else {
         mostrarNotificacion(`✗ ${t("error_guardar_nombre")}`, "error");
@@ -377,7 +397,7 @@ async function guardarCredenciales() {
   const confirm = document.getElementById("cfg-confirm-pass").value;
   const msg     = document.getElementById("cfg-cred-msg");
   if (!actual) {
-    msg.textContent = t("cfgCurrentPass") + " requerida";
+    msg.textContent = t("cfgCurrentPass") + " requerida"; // safe: textContent
     msg.className = "text-xs text-red-500";
     msg.classList.remove("hidden"); return;
   }
@@ -386,12 +406,13 @@ async function guardarCredenciales() {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contrasena_actual: actual, nuevo_usuario: email, nueva_contrasena: newPass, confirmar_contrasena: confirm })
     }).then(r => r.json());
+    // Use textContent — data.message comes from server, not user input, but still safer
     msg.textContent = data.success ? `✓ ${t("cfgCredSaved")}` : `✗ ${data.message || t("cfgCredError")}`;
     msg.className = `text-xs ${data.success ? "text-emerald-500" : "text-red-500"}`;
     msg.classList.remove("hidden");
     if (data.success) setTimeout(() => msg.classList.add("hidden"), 3000);
   } catch {
-    msg.textContent = `✗ ${t("cfgCredError")}`;
+    msg.textContent = `✗ ${t("cfgCredError")}`; // safe: textContent
     msg.className = "text-xs text-red-500";
     msg.classList.remove("hidden");
   }
@@ -416,9 +437,10 @@ window.marcarConfiable = async (mac, hacerConfiable, btn) => {
         ? `<span class="badge badge-green"><span class="relative flex w-1.5 h-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span><span data-i18n="trusted">${t("trusted")}</span></span>`
         : `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
     }
+    // FIX: mac is escaped when injected into onclick attributes
     btn.outerHTML = hacerConfiable
-      ? `<button onclick="marcarConfiable('${mac}',false,this)" class="btn-action btn-untrust"><i data-lucide="shield-off" class="w-3 h-3"></i> <span data-i18n="untrust_btn">${t("untrust_btn")}</span></button>`
-      : `<button onclick="marcarConfiable('${mac}',true,this)"  class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
+      ? `<button onclick="marcarConfiable('${esc(mac)}',false,this)" class="btn-action btn-untrust"><i data-lucide="shield-off" class="w-3 h-3"></i> <span data-i18n="untrust_btn">${t("untrust_btn")}</span></button>`
+      : `<button onclick="marcarConfiable('${esc(mac)}',true,this)"  class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
     if (typeof lucide !== "undefined") lucide.createIcons();
     mostrarNotificacion(hacerConfiable ? `✓ ${t("success")}` : `✓ ${t("eliminado")}`, "success");
 
@@ -428,19 +450,20 @@ window.marcarConfiable = async (mac, hacerConfiable, btn) => {
       const li = document.createElement("li");
       li.dataset.mac = mac.toLowerCase();
       li.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 dark:border-slate-800/40 bg-white dark:bg-dark3/30 hover:border-slate-200 dark:hover:border-slate-700/60 transition group";
+      // FIX: mac escaped in onclick attributes and display text
       li.innerHTML = `<span class="relative flex w-1.5 h-1.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-1.5">
             <p class="nombre-confiable font-medium text-slate-700 dark:text-slate-200 text-xs truncate">${t("noName")}</p>
-            <button onclick="editarNombreConfiable('${mac}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+            <button onclick="editarNombreConfiable('${esc(mac)}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0"><i data-lucide="pencil" class="w-3 h-3"></i></button>
           </div>
-          <p class="font-mono text-slate-400" style="font-size:10px">${mac}</p>
+          <p class="font-mono text-slate-400" style="font-size:10px">${esc(mac)}</p>
         </div>
-        <button onclick="eliminarMAC('${mac}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+        <button onclick="eliminarMAC('${esc(mac)}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
       lista.appendChild(li);
       if (typeof lucide !== "undefined") lucide.createIcons();
     } else if (!hacerConfiable && lista) {
-      lista.querySelector(`li[data-mac="${mac.toLowerCase()}"]`)?.remove();
+      lista.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`)?.remove();
     }
   } catch { mostrarNotificacion(`✗ ${t("connectionError")}`, "error"); }
 };
