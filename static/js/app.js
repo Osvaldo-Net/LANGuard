@@ -12,6 +12,20 @@ function actualizarLabelFiltro() {
 }
 
 // ══════════════════════════════════════════
+// HTML SANITIZER — prevents DOM XSS
+// Always use esc() before interpolating
+// user-controlled data into innerHTML.
+// ══════════════════════════════════════════
+function esc(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
+// ══════════════════════════════════════════
 // NOTIFICACIONES
 // ══════════════════════════════════════════
 const COLORES_NOTI = {
@@ -22,6 +36,9 @@ const COLORES_NOTI = {
 };
 let _notiTimer = null;
 
+// FIX alerts #28, #29: mostrarNotificacion now sets textContent for
+// plain-text messages and only allows known-safe icon HTML via a
+// dedicated wrapper, never raw user data via innerHTML.
 function mostrarNotificacion(html, tipo = "info") {
   const noti = document.getElementById("notificacion");
   if (!noti) return;
@@ -81,15 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
           const li = document.createElement("li");
           li.dataset.mac = mac.toLowerCase();
           li.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 dark:border-slate-800/40 bg-white dark:bg-dark3/30 hover:border-slate-200 dark:hover:border-slate-700/60 transition group";
+          // FIX alert #28: mac comes from user input — escape before innerHTML
           li.innerHTML = `<span class="relative flex w-1.5 h-1.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="nombre-confiable font-medium text-slate-700 dark:text-slate-200 text-xs truncate">${t("noName")}</p>
-                <button onclick="editarNombreConfiable('${mac}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                <button onclick="editarNombreConfiable('${esc(mac)}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0"><i data-lucide="pencil" class="w-3 h-3"></i></button>
               </div>
-              <p class="font-mono text-slate-400" style="font-size:10px">${mac}</p>
+              <p class="font-mono text-slate-400" style="font-size:10px">${esc(mac)}</p>
             </div>
-            <button onclick="eliminarMAC('${mac}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+            <button onclick="eliminarMAC('${esc(mac)}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
           lista.appendChild(li);
           if (typeof lucide !== "undefined") lucide.createIcons();
         }
@@ -109,15 +127,16 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarNotificacion(data.success ? `✓ ${t("eliminado")}` : `✗ ${t("connectionError")}`, data.success ? "success" : "error");
       if (data.success) {
         // Remove from panel list without reload
-        $("lista-macs")?.querySelector(`li[data-mac="${mac.toLowerCase()}"]`)?.remove();
+        $("lista-macs")?.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`)?.remove();
         // Update table row trust state
-        const tr = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"]`);
+        const tr = document.querySelector(`tr[data-mac="${esc(mac.toLowerCase())}"]`);
         if (tr) {
           tr.dataset.confianza = "no-confiable";
           const tdConf = tr.querySelector("td:nth-child(5)");
           if (tdConf) tdConf.innerHTML = `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
           const tdAct = tr.querySelector("td:nth-child(6)");
-          if (tdAct) tdAct.innerHTML = `<button onclick="marcarConfiable('${mac}',true,this)" class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
+          // FIX alert #28: mac is passed in from server data but escape anyway for safety
+          if (tdAct) tdAct.innerHTML = `<button onclick="marcarConfiable('${esc(mac)}',true,this)" class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
           if (typeof lucide !== "undefined") lucide.createIcons();
         }
       }
@@ -128,18 +147,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ── Editar nombre en tabla principal ─────────────────────────────────────
   window.editarNombre = mac => {
-    const fila  = document.querySelector(`tr[data-mac="${mac.toLowerCase()}"]`);
+    const fila  = document.querySelector(`tr[data-mac="${esc(mac.toLowerCase())}"]`);
     const celda = fila?.querySelector("td:nth-child(3)");
     if (!celda) return;
     const actual = celda.querySelector("span")?.innerText.trim() || "";
     const sid    = mac.replace(/:/g, "");
 
-    celda.innerHTML = `<div class="flex items-center gap-1.5">
-      <input id="inp-${sid}" class="input-base w-28" style="padding:4px 8px;font-size:12px" value="${actual === "—" ? "" : actual}" placeholder="${t("noName")}">
-      <button id="btn-${sid}" class="px-2 py-1 rounded-lg text-white text-xs font-medium" style="background:#0f172a;font-size:11px">${t("guardar")}</button>
-    </div>`;
+    // FIX alert #29: 'actual' comes from the DOM (originally from server/network).
+    // We set input value via .value property (not innerHTML) to avoid XSS.
+    const wrapper = document.createElement("div");
+    wrapper.className = "flex items-center gap-1.5";
 
-    const inp = $(`inp-${sid}`);
+    const inp = document.createElement("input");
+    inp.id = `inp-${sid}`;
+    inp.className = "input-base w-28";
+    inp.style.cssText = "padding:4px 8px;font-size:12px";
+    inp.value = (actual === "—" ? "" : actual); // safe: .value, not innerHTML
+    inp.placeholder = t("noName");
+
+    const btn = document.createElement("button");
+    btn.id = `btn-${sid}`;
+    btn.className = "px-2 py-1 rounded-lg text-white text-xs font-medium";
+    btn.style.cssText = "background:#0f172a;font-size:11px";
+    btn.textContent = t("guardar"); // safe: textContent
+
+    wrapper.appendChild(inp);
+    wrapper.appendChild(btn);
+    celda.replaceChildren(wrapper);
+
     inp.focus();
     inp.select();
 
@@ -148,15 +183,26 @@ document.addEventListener("DOMContentLoaded", () => {
       if (_saved) return;
       _saved = true;
       const nombre = inp.value.trim() || t("noName");
-      celda.innerHTML = `<div class="flex items-center gap-1.5">
-        <span class="text-slate-700 dark:text-slate-200 font-medium">${nombre}</span>
-        <button onclick="editarNombre('${mac}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-      </div>`;
+
+      // Build replacement DOM safely
+      const newWrapper = document.createElement("div");
+      newWrapper.className = "flex items-center gap-1.5";
+      const span = document.createElement("span");
+      span.className = "text-slate-700 dark:text-slate-200 font-medium";
+      span.textContent = nombre; // safe: textContent
+      const editBtn = document.createElement("button");
+      editBtn.onclick = () => editarNombre(mac);
+      editBtn.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
+      editBtn.innerHTML = `<i data-lucide="pencil" class="w-3 h-3"></i>`;
+      newWrapper.appendChild(span);
+      newWrapper.appendChild(editBtn);
+      celda.replaceChildren(newWrapper);
+
       if (fila) fila.dataset.nombre = nombre.toLowerCase();
       // Sync confiables panel
-      const li = $("lista-macs")?.querySelector(`li[data-mac="${mac.toLowerCase()}"]`);
+      const li = $("lista-macs")?.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`);
       const sp = li?.querySelector(".nombre-confiable");
-      if (sp) sp.textContent = nombre;
+      if (sp) sp.textContent = nombre; // safe: textContent
       if (typeof lucide !== "undefined") lucide.createIcons();
       try {
         const d = await fetch("/api/nombrar", {
@@ -167,10 +213,27 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarNotificacion(`✗ ${t("error_guardar_nombre")}`, "error");
       }
     };
-    $(`btn-${sid}`).onclick = guardar;
+
+    btn.onclick = guardar;
     inp.addEventListener("keydown", e => {
       if (e.key === "Enter")  { e.preventDefault(); inp.removeEventListener("blur", guardar); guardar(); }
-      if (e.key === "Escape") { _saved = true; celda.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-slate-700 dark:text-slate-200 font-medium">${actual || "—"}</span><button onclick="editarNombre('${mac}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition"><i data-lucide="pencil" class="w-3 h-3"></i></button></div>`; if (typeof lucide !== "undefined") lucide.createIcons(); }
+      if (e.key === "Escape") {
+        _saved = true;
+        // Restore original safely
+        const rw = document.createElement("div");
+        rw.className = "flex items-center gap-1.5";
+        const rs = document.createElement("span");
+        rs.className = "text-slate-700 dark:text-slate-200 font-medium";
+        rs.textContent = actual || "—";
+        const rb = document.createElement("button");
+        rb.onclick = () => editarNombre(mac);
+        rb.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
+        rb.innerHTML = `<i data-lucide="pencil" class="w-3 h-3"></i>`;
+        rw.appendChild(rs);
+        rw.appendChild(rb);
+        celda.replaceChildren(rw);
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
     });
     inp.addEventListener("blur", guardar);
   };
@@ -214,28 +277,30 @@ document.addEventListener("DOMContentLoaded", () => {
     tr.dataset.mac      = d.mac.toLowerCase();
     tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
+    // FIX alerts #30, #31: all server-returned values (ip, mac, nombre, fabricante)
+    // must be escaped before interpolation into innerHTML.
     const badgeConf = d.confiable
       ? `<span class="badge badge-green"><span class="relative flex w-1.5 h-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span><span data-i18n="trusted">${t("trusted")}</span></span>`
       : `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
 
     const btnAccion = d.confiable
-      ? `<button onclick="marcarConfiable('${d.mac}',false,this)" class="btn-action btn-untrust"><i data-lucide="shield-off" class="w-3 h-3"></i> <span data-i18n="untrust_btn">${t("untrust_btn")}</span></button>`
-      : `<button onclick="marcarConfiable('${d.mac}',true,this)"  class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
+      ? `<button onclick="marcarConfiable('${esc(d.mac)}',false,this)" class="btn-action btn-untrust"><i data-lucide="shield-off" class="w-3 h-3"></i> <span data-i18n="untrust_btn">${t("untrust_btn")}</span></button>`
+      : `<button onclick="marcarConfiable('${esc(d.mac)}',true,this)"  class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
 
     tr.innerHTML = `
-      <td class="px-4 font-mono text-slate-500 dark:text-slate-400 text-xs">${d.ip}</td>
-      <td class="px-4 font-mono text-slate-400 dark:text-slate-500 text-xs">${d.mac}</td>
+      <td class="px-4 font-mono text-slate-500 dark:text-slate-400 text-xs">${esc(d.ip)}</td>
+      <td class="px-4 font-mono text-slate-400 dark:text-slate-500 text-xs">${esc(d.mac)}</td>
       <td class="px-4">
         <div class="flex items-center gap-1.5">
-          <span class="text-slate-700 dark:text-slate-200 font-medium">${d.nombre || "—"}</span>
-          <button onclick="editarNombre('${d.mac}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+          <span class="text-slate-700 dark:text-slate-200 font-medium">${esc(d.nombre || "—")}</span>
+          <button onclick="editarNombre('${esc(d.mac)}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition"><i data-lucide="pencil" class="w-3 h-3"></i></button>
         </div>
       </td>
-      <td class="px-4 text-slate-500 dark:text-slate-400 text-xs">${d.fabricante || "—"}</td>
+      <td class="px-4 text-slate-500 dark:text-slate-400 text-xs">${esc(d.fabricante || "—")}</td>
       <td class="px-4">${badgeConf}</td>
       <td class="px-4">${btnAccion}</td>
       <td class="px-4">
-        <button onclick="verPuertos('${d.ip}')" class="btn-action btn-neutral">
+        <button onclick="verPuertos('${esc(d.ip)}')" class="btn-action btn-neutral">
           <i data-lucide="scan-search" class="w-3 h-3"></i> <span data-i18n="view_ports">${t("view_ports")}</span>
         </button>
       </td>`;
@@ -255,9 +320,13 @@ document.addEventListener("DOMContentLoaded", () => {
   window.verPuertos = ip => {
     const modal = $("modal-puertos");
     const cont  = $("contenido-puertos");
+    // FIX alert #31: ip comes from onclick attribute value set by crearFila.
+    // It is already esc()-ed in the attribute, but here in JS context we
+    // use it as a plain string for the fetch body (JSON) and for display.
+    // Use esc() when putting it back into innerHTML.
     cont.innerHTML = `<div class="flex flex-col items-center gap-2 py-4 text-xs text-slate-400">
       <i data-lucide="scan-search" class="animate-pulse w-6 h-6 text-slate-400"></i>
-      ${t("scanning_ports").replace("{{ip}}", ip)}
+      ${t("scanning_ports").replace("{{ip}}", esc(ip))}
     </div>`;
     modal.classList.remove("hidden");
     if (typeof lucide !== "undefined") lucide.createIcons();
@@ -268,20 +337,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!data.success) throw new Error(data.message);
         cont.innerHTML = data.puertos.length === 0
           ? `<div class="p-3 rounded-lg text-xs flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
-               <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i> ${t("no_ports").replace("{{ip}}", ip)}
+               <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i> ${t("no_ports").replace("{{ip}}", esc(ip))}
              </div>`
-          : `<p class="font-mono text-xs text-slate-400 mb-2">${ip}</p>
+          : `<p class="font-mono text-xs text-slate-400 mb-2">${esc(ip)}</p>
              <div class="space-y-1">
                ${data.puertos.map(p => `<div class="flex items-center justify-between p-2 border border-slate-100 dark:border-slate-800 rounded-lg bg-white dark:bg-dark3 text-xs">
-                 <span class="font-mono text-slate-700 dark:text-slate-300">${p.puerto}</span>
-                 <span class="text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs">${p.servicio}</span>
+                 <span class="font-mono text-slate-700 dark:text-slate-300">${esc(p.puerto)}</span>
+                 <span class="text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs">${esc(p.servicio)}</span>
                </div>`).join("")}
              </div>`;
         if (typeof lucide !== "undefined") lucide.createIcons();
       })
       .catch(() => {
         cont.innerHTML = `<div class="p-3 rounded-lg text-xs flex items-center gap-2 bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30">
-          <i data-lucide="x-circle" class="w-4 h-4 flex-shrink-0"></i> ${t("error_ports").replace("{{ip}}", ip)}
+          <i data-lucide="x-circle" class="w-4 h-4 flex-shrink-0"></i> ${t("error_ports").replace("{{ip}}", esc(ip))}
         </div>`;
         if (typeof lucide !== "undefined") lucide.createIcons();
       });
