@@ -359,12 +359,20 @@ def api_puertos():
     ip = request.get_json().get("ip", "").strip()
     if not ip:
         return jsonify({"success": False, "message": "IP no proporcionada"})
+    # FIX alert #22: validate IP format before passing to subprocess,
+    # and never expose the raw exception message to the client.
+    if not re.match(r"^\d{1,3}(\.\d{1,3}){3}$", ip):
+        return jsonify({"success": False, "message": "IP no válida"})
     try:
         salida  = subprocess.check_output(["nmap", "-T4", "-sT", "--top-ports", "100", "--open", "-n", ip], timeout=20).decode()
         puertos = [{"puerto": p.split()[0], "servicio": p.split()[-1]} for p in salida.splitlines() if "/tcp" in p and "open" in p]
         return jsonify({"success": True, "puertos": puertos})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "message": "El escaneo tardó demasiado"})
+    except Exception:
+        # Do NOT expose exception details to the client (alert #22)
+        logging.getLogger("accesos").warning("Error en escaneo de puertos para IP %s", ip)
+        return jsonify({"success": False, "message": "Error al escanear puertos"})
 
 @app.route('/api/historial')
 def api_historial():
@@ -474,8 +482,9 @@ def api_telegram_test():
                              data={"chat_id": chat, "text": "? LANGuard: conexión de prueba exitosa"}, timeout=5)
         ok = resp.json().get("ok", False)
         return jsonify({"success": ok, "message": "Mensaje enviado correctamente" if ok else "Error en Telegram"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+    except Exception:
+        # FIX alert #23: do not expose exception details to the client
+        return jsonify({"success": False, "message": "No se pudo conectar con Telegram"})
 
 if __name__ == '__main__':
     threading.Thread(target=escaneo_background, daemon=True).start()
