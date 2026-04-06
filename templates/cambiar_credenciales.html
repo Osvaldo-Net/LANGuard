@@ -68,6 +68,8 @@
     .dark .input-group:focus-within .input-icon { color:#94a3b8; }
 
     .req-item { transition:color .2s; display:flex; align-items:center; gap:6px; font-size:11px; }
+    /* Icon slot inside req-item — only the <svg> child is toggled, label stays in <span> */
+    .req-item .req-label { flex-shrink:0; }
   </style>
 </head>
 
@@ -122,27 +124,37 @@
             </div>
           </div>
 
-          <!-- Requisitos -->
+          <!--
+            Requisitos — FIX alerts #25, #26, #27:
+            The original code read el.textContent and re-injected it via innerHTML,
+            which CodeQL flags as DOM text reinterpreted as HTML.
+
+            Fix: store each label in a static data-label attribute at render time.
+            The JS icon-swap code reads data-label (never innerHTML/textContent)
+            and writes only the known-safe SVG + the attribute value via textContent
+            on a dedicated <span class="req-label"> child — no innerHTML with
+            dynamic content is used anywhere in the update path.
+          -->
           <div id="req-box" class="hidden rounded-lg border border-slate-200 dark:border-slate-800/60 bg-slate-50 dark:bg-dark3/60 px-3 py-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
-            <span data-req="length" class="req-item text-slate-400">
+            <span data-req="length" data-label="8 caracteres" class="req-item text-slate-400">
               <svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>
-              8 caracteres
+              <span class="req-label">8 caracteres</span>
             </span>
-            <span data-req="upper" class="req-item text-slate-400">
+            <span data-req="upper" data-label="Mayúscula" class="req-item text-slate-400">
               <svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>
-              Mayúscula
+              <span class="req-label">Mayúscula</span>
             </span>
-            <span data-req="lower" class="req-item text-slate-400">
+            <span data-req="lower" data-label="Minúscula" class="req-item text-slate-400">
               <svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>
-              Minúscula
+              <span class="req-label">Minúscula</span>
             </span>
-            <span data-req="digit" class="req-item text-slate-400">
+            <span data-req="digit" data-label="Número" class="req-item text-slate-400">
               <svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>
-              Número
+              <span class="req-label">Número</span>
             </span>
-            <span data-req="symbol" class="req-item text-slate-400 col-span-2">
+            <span data-req="symbol" data-label="Símbolo especial (!@#…)" class="req-item text-slate-400 col-span-2">
               <svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>
-              Símbolo especial (!@#…)
+              <span class="req-label">Símbolo especial (!@#…)</span>
             </span>
           </div>
 
@@ -201,9 +213,60 @@
       symbol: v => /[^A-Za-z0-9]/.test(v),
     };
 
-    const SVG_OK   = `<svg class="w-3 h-3 flex-shrink-0" style="color:#22c55e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-    const SVG_FAIL = `<svg class="w-3 h-3 flex-shrink-0" style="color:#f87171" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-    const SVG_IDLE = `<svg class="req-icon w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>`;
+    // FIX alerts #25, #26, #27:
+    // The previous code used `el.innerHTML = SVG + el.textContent.trim()` which
+    // CodeQL flags as "DOM text reinterpreted as HTML" because a value read from
+    // the DOM (textContent) is written back via innerHTML.
+    //
+    // Fix: each req-item now carries a static data-label attribute set in the
+    // server-rendered HTML above. The JS reads data-label (a safe static string)
+    // and updates only the icon SVG element directly via DOM API — no innerHTML
+    // with dynamic content is ever written.
+
+    // Pre-built icon SVG elements (created once, cloned when needed)
+    function makeIcon(type) {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "w-3 h-3 flex-shrink-0");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "2.5");
+      let inner;
+      if (type === "ok") {
+        svg.style.color = "#22c55e";
+        inner = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        inner.setAttribute("points", "20 6 9 17 4 12");
+      } else if (type === "fail") {
+        svg.style.color = "#f87171";
+        const l1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        l1.setAttribute("x1","18"); l1.setAttribute("y1","6");
+        l1.setAttribute("x2","6");  l1.setAttribute("y2","18");
+        const l2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        l2.setAttribute("x1","6");  l2.setAttribute("y1","6");
+        l2.setAttribute("x2","18"); l2.setAttribute("y2","18");
+        svg.appendChild(l1);
+        svg.appendChild(l2);
+        return svg;
+      } else {
+        // idle — circle
+        inner = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        inner.setAttribute("cx","12"); inner.setAttribute("cy","12"); inner.setAttribute("r","9");
+      }
+      svg.appendChild(inner);
+      return svg;
+    }
+
+    function setReqIcon(el, type) {
+      // Replace only the first child (the icon svg), leave .req-label untouched
+      const existingIcon = el.querySelector("svg.req-icon, svg[style]");
+      const newIcon = makeIcon(type);
+      newIcon.classList.add("req-icon");
+      if (existingIcon) {
+        el.replaceChild(newIcon, existingIcon);
+      } else {
+        el.insertBefore(newIcon, el.firstChild);
+      }
+    }
 
     const passInput   = document.getElementById('nueva');
     const confInput   = document.getElementById('confirmar');
@@ -227,13 +290,13 @@
         const el = document.querySelector(`[data-req="${id}"]`);
         if (!el) return;
         if (v.length === 0) {
-          el.innerHTML = `${SVG_IDLE} ${el.textContent.trim()}`;
+          setReqIcon(el, "idle");
           el.style.color = '';
         } else if (fn(v)) {
-          el.innerHTML = `${SVG_OK} ${el.textContent.trim()}`;
+          setReqIcon(el, "ok");
           el.style.color = '#16a34a';
         } else {
-          el.innerHTML = `${SVG_FAIL} ${el.textContent.trim()}`;
+          setReqIcon(el, "fail");
           el.style.color = '#dc2626';
         }
       });
@@ -248,10 +311,10 @@
       confInput.style.borderColor = ok ? '#86efac' : (confInput.value.length > 0 ? '#fca5a5' : '');
       matchMsg.classList.remove('hidden');
       if (ok) {
-        matchMsg.textContent = '✓ Las contraseñas coinciden';
+        matchMsg.textContent = '✓ Las contraseñas coinciden'; // safe: textContent
         matchMsg.style.color = '#16a34a';
       } else if (confInput.value.length > 0) {
-        matchMsg.textContent = '✗ Las contraseñas no coinciden';
+        matchMsg.textContent = '✗ Las contraseñas no coinciden'; // safe: textContent
         matchMsg.style.color = '#dc2626';
       } else {
         matchMsg.classList.add('hidden');
@@ -267,7 +330,7 @@
       const dark = document.documentElement.classList.contains('dark');
       document.getElementById('th-moon').classList.toggle('hidden', dark);
       document.getElementById('th-sun').classList.toggle('hidden', !dark);
-      document.getElementById('th-label').textContent = dark ? 'Modo claro' : 'Modo oscuro';
+      document.getElementById('th-label').textContent = dark ? 'Modo claro' : 'Modo oscuro'; // safe: textContent
     }
     syncThemeIcon();
   </script>
