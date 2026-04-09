@@ -1,0 +1,14 @@
+services:
+  LANGuard:
+    container_name: LANGuard
+    build: .
+    environment:
+      #openssl rand -hex 32
+      SECRET_KEY: "123456789123456789123456789"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data:/app/data
+    network_mode: "host"
+    cap_add:
+      - NET_RAW
+    restart: unless-stopped
