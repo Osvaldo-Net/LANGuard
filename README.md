@@ -21,7 +21,7 @@
 
 LANGuard is a self-hosted web application for **advanced scanning and monitoring of your local network**. It combines **Nmap** and **ARP** to identify every connected device, classify them as trusted or untrusted, and instantly alert you via **Telegram** if something suspicious shows up.
 
-No manual network interface configuration required — LANGuard **auto-detects** the network segment it runs on. All data is stored locally with **SQLite**, no cloud dependencies.
+No manual network interface configuration required, LANGuard **auto-detects** the network segment it runs on. All data is stored locally with **SQLite**, no cloud dependencies.
 
 ---
 
