@@ -157,6 +157,6 @@ The access log is stored at:
 
 ## Developer note
 
-This project was born from a passion for networking, cybersecurity, and homelabs. Built with the help of AI tools as a personal project, with the goal of creating useful, real, self-hosted solutions for those who — like me — enjoy running their own home infrastructure.
+This project was born from a passion for networking, cybersecurity, and homelabs. Built with the help of AI tools as a personal project, with the goal of creating useful, real, self-hosted solutions for those who like me enjoy running their own home infrastructure.
 
 ---
