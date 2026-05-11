@@ -1,5 +1,4 @@
 FROM python:3.14.4-alpine3.23
-
 ENV PYTHONUNBUFFERED=1
 
 RUN apk update && \
@@ -14,11 +13,13 @@ RUN apk update && \
         "werkzeug>=3.1.6" \
         "pip>=25.4" \
         requests \
-        bcrypt
+        bcrypt \
+        flask-wtf \
+        flask-limiter \
+        flask-talisman
 
 WORKDIR /app
 COPY . .
 RUN mkdir -p /app/data
-
 EXPOSE 5555
 CMD ["sh", "-c", "python init_db.py && python app.py"]
