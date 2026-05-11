@@ -91,7 +91,9 @@ const _statCounters = {};
 function _setStatNum(id, target) {
   const el = document.getElementById(id);
   if (!el) return;
-  const current = parseInt(el.textContent) || 0;
+  // Use null check so '—' (NaN) always triggers an update to 0
+  const raw = parseInt(el.textContent);
+  const current = isNaN(raw) ? null : raw;
   if (current === target) return;
   if (_statCounters[id]) clearInterval(_statCounters[id]);
   const diff  = target - current;
