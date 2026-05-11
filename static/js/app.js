@@ -1,17 +1,4 @@
 // ══════════════════════════════════════════
-// FILTRO CONFIANZA
-// ══════════════════════════════════════════
-let filtroConfianza    = "";
-let filtroConfianzaKey = "filterAll";
-
-function actualizarLabelFiltro() {
-  const label = document.getElementById("trustLabel");
-  if (!label) return;
-  label.textContent = t(filtroConfianzaKey);
-  label.setAttribute("data-i18n", filtroConfianzaKey);
-}
-
-// ══════════════════════════════════════════
 // HTML SANITIZER — prevents DOM XSS
 // Always use esc() before interpolating
 // user-controlled data into innerHTML.
@@ -26,6 +13,45 @@ function esc(str) {
 }
 
 // ══════════════════════════════════════════
+// CSRF — FIX #3
+// Lee el token del meta tag generado por
+// Flask-WTF: <meta name="csrf-token" ...>
+// y lo adjunta a todos los fetch POST.
+// ══════════════════════════════════════════
+function getCsrfToken() {
+  return document.querySelector('meta[name="csrf-token"]')?.content || "";
+}
+
+/**
+ * postJSON — wrapper de fetch con CSRF y Content-Type JSON
+ * Úsalo en lugar de fetch() directo para todos los POST.
+ */
+async function postJSON(url, body) {
+  const res = await fetch(url, {
+    method:  "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken":  getCsrfToken()   // FIX #3: token CSRF en cada POST
+    },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ══════════════════════════════════════════
+// FILTRO CONFIANZA
+// ══════════════════════════════════════════
+let filtroConfianza    = "";
+let filtroConfianzaKey = "filterAll";
+
+function actualizarLabelFiltro() {
+  const label = document.getElementById("trustLabel");
+  if (!label) return;
+  label.textContent = t(filtroConfianzaKey);
+  label.setAttribute("data-i18n", filtroConfianzaKey);
+}
+
+// ══════════════════════════════════════════
 // NOTIFICACIONES
 // ══════════════════════════════════════════
 const COLORES_NOTI = {
@@ -36,9 +62,6 @@ const COLORES_NOTI = {
 };
 let _notiTimer = null;
 
-// FIX alerts #28, #29: mostrarNotificacion now sets textContent for
-// plain-text messages and only allows known-safe icon HTML via a
-// dedicated wrapper, never raw user data via innerHTML.
 function mostrarNotificacion(html, tipo = "info") {
   const noti = document.getElementById("notificacion");
   if (!noti) return;
@@ -86,28 +109,37 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!mac) return;
     mostrarNotificacion(`<span class="flex items-center gap-1.5"><i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> ${t("adding")}</span>`);
     try {
-      const data = await fetch("/api/agregar", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mac })
-      }).then(r => r.json());
-      mostrarNotificacion(data.success ? `✓ ${t("success")}` : `✗ ${t("error")}`, data.success ? "success" : "error");
+      // FIX #3: usando postJSON que incluye X-CSRFToken automáticamente
+      const data = await postJSON("/api/agregar", { mac });
+      mostrarNotificacion(
+        data.success ? `✓ ${t("success")}` : `✗ ${esc(data.message || t("error"))}`,
+        data.success ? "success" : "error"
+      );
       if (data.success) {
         $("input-mac").value = "";
-        // Add to panel list without reload
         const lista = $("lista-macs");
         if (lista) {
           const li = document.createElement("li");
           li.dataset.mac = mac.toLowerCase();
           li.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 dark:border-slate-800/40 bg-white dark:bg-dark3/30 hover:border-slate-200 dark:hover:border-slate-700/60 transition group";
-          // FIX alert #28: mac comes from user input — escape before innerHTML
-          li.innerHTML = `<span class="relative flex w-1.5 h-1.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span>
+          // FIX: mac viene de input del usuario — escapar antes de innerHTML
+          li.innerHTML = `
+            <span class="relative flex w-1.5 h-1.5 flex-shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span>
+            </span>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="nombre-confiable font-medium text-slate-700 dark:text-slate-200 text-xs truncate">${t("noName")}</p>
-                <button onclick="editarNombreConfiable('${esc(mac)}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                <button onclick="editarNombreConfiable('${esc(mac)}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition flex-shrink-0">
+                  <i data-lucide="pencil" class="w-3 h-3"></i>
+                </button>
               </div>
               <p class="font-mono text-slate-400" style="font-size:10px">${esc(mac)}</p>
             </div>
-            <button onclick="eliminarMAC('${esc(mac)}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+            <button onclick="eliminarMAC('${esc(mac)}')" class="text-slate-300 hover:text-red-500 transition p-1 flex-shrink-0">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>`;
           lista.appendChild(li);
           if (typeof lucide !== "undefined") lucide.createIcons();
         }
@@ -121,24 +153,39 @@ document.addEventListener("DOMContentLoaded", () => {
   window.eliminarMAC = async mac => {
     mostrarNotificacion(`<span class="flex items-center gap-1.5"><i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> ${t("eliminando")}</span>`);
     try {
-      const data = await fetch("/api/eliminar", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mac })
-      }).then(r => r.json());
-      mostrarNotificacion(data.success ? `✓ ${t("eliminado")}` : `✗ ${t("connectionError")}`, data.success ? "success" : "error");
+      // FIX #3: postJSON incluye CSRF
+      const data = await postJSON("/api/eliminar", { mac });
+      mostrarNotificacion(
+        data.success ? `✓ ${t("eliminado")}` : `✗ ${t("connectionError")}`,
+        data.success ? "success" : "error"
+      );
       if (data.success) {
-        // Remove from panel list without reload
         $("lista-macs")?.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`)?.remove();
-        // Update table row trust state
         const tr = document.querySelector(`tr[data-mac="${esc(mac.toLowerCase())}"]`);
         if (tr) {
           tr.dataset.confianza = "no-confiable";
           const tdConf = tr.querySelector("td:nth-child(5)");
           if (tdConf) tdConf.innerHTML = `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
           const tdAct = tr.querySelector("td:nth-child(6)");
-          // FIX alert #28: mac is passed in from server data but escape anyway for safety
           if (tdAct) tdAct.innerHTML = `<button onclick="marcarConfiable('${esc(mac)}',true,this)" class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
           if (typeof lucide !== "undefined") lucide.createIcons();
         }
+      }
+    } catch {
+      mostrarNotificacion(`✗ ${t("connectionError")}`, "error");
+    }
+  };
+
+  // ── Marcar confiable / no confiable ──────────────────────────────────────
+  window.marcarConfiable = async (mac, confiable, btn) => {
+    try {
+      // FIX #3: postJSON incluye CSRF
+      const endpoint = confiable ? "/api/agregar" : "/api/eliminar";
+      const data = await postJSON(endpoint, { mac });
+      if (data.success) {
+        // Trigger actualización de tabla
+        const devs = await fetch("/api/scan").then(r => r.json());
+        if (Array.isArray(devs)) actualizarTabla(devs);
       }
     } catch {
       mostrarNotificacion(`✗ ${t("connectionError")}`, "error");
@@ -153,8 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const actual = celda.querySelector("span")?.innerText.trim() || "";
     const sid    = mac.replace(/:/g, "");
 
-    // FIX alert #29: 'actual' comes from the DOM (originally from server/network).
-    // We set input value via .value property (not innerHTML) to avoid XSS.
     const wrapper = document.createElement("div");
     wrapper.className = "flex items-center gap-1.5";
 
@@ -162,19 +207,19 @@ document.addEventListener("DOMContentLoaded", () => {
     inp.id = `inp-${sid}`;
     inp.className = "input-base w-28";
     inp.style.cssText = "padding:4px 8px;font-size:12px";
-    inp.value = (actual === "—" ? "" : actual); // safe: .value, not innerHTML
+    inp.value = (actual === "—" ? "" : actual); // seguro: .value, no innerHTML
     inp.placeholder = t("noName");
+    inp.maxLength = 64; // FIX #4: límite de longitud consistente con backend
 
     const btn = document.createElement("button");
     btn.id = `btn-${sid}`;
     btn.className = "px-2 py-1 rounded-lg text-white text-xs font-medium";
     btn.style.cssText = "background:#0f172a;font-size:11px";
-    btn.textContent = t("guardar"); // safe: textContent
+    btn.textContent = t("guardar"); // seguro: textContent
 
     wrapper.appendChild(inp);
     wrapper.appendChild(btn);
     celda.replaceChildren(wrapper);
-
     inp.focus();
     inp.select();
 
@@ -182,14 +227,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const guardar = async () => {
       if (_saved) return;
       _saved = true;
-      const nombre = inp.value.trim() || t("noName");
+      const nombre = inp.value.trim().slice(0, 64) || t("noName"); // FIX #4: trim en cliente también
 
-      // Build replacement DOM safely
       const newWrapper = document.createElement("div");
       newWrapper.className = "flex items-center gap-1.5";
       const span = document.createElement("span");
       span.className = "text-slate-700 dark:text-slate-200 font-medium";
-      span.textContent = nombre; // safe: textContent
+      span.textContent = nombre; // seguro: textContent
       const editBtn = document.createElement("button");
       editBtn.onclick = () => editarNombre(mac);
       editBtn.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
@@ -199,16 +243,18 @@ document.addEventListener("DOMContentLoaded", () => {
       celda.replaceChildren(newWrapper);
 
       if (fila) fila.dataset.nombre = nombre.toLowerCase();
-      // Sync confiables panel
       const li = $("lista-macs")?.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`);
       const sp = li?.querySelector(".nombre-confiable");
-      if (sp) sp.textContent = nombre; // safe: textContent
+      if (sp) sp.textContent = nombre; // seguro: textContent
       if (typeof lucide !== "undefined") lucide.createIcons();
+
       try {
-        const d = await fetch("/api/nombrar", {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mac, nombre })
-        }).then(r => r.json());
-        mostrarNotificacion(d.success ? `✓ ${t("nombre_guardado")}` : `✗ ${t("error_guardar_nombre")}`, d.success ? "success" : "error");
+        // FIX #3: postJSON incluye CSRF
+        const d = await postJSON("/api/nombrar", { mac, nombre });
+        mostrarNotificacion(
+          d.success ? `✓ ${t("nombre_guardado")}` : `✗ ${t("error_guardar_nombre")}`,
+          d.success ? "success" : "error"
+        );
       } catch {
         mostrarNotificacion(`✗ ${t("error_guardar_nombre")}`, "error");
       }
@@ -219,12 +265,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.key === "Enter")  { e.preventDefault(); inp.removeEventListener("blur", guardar); guardar(); }
       if (e.key === "Escape") {
         _saved = true;
-        // Restore original safely
         const rw = document.createElement("div");
         rw.className = "flex items-center gap-1.5";
         const rs = document.createElement("span");
         rs.className = "text-slate-700 dark:text-slate-200 font-medium";
-        rs.textContent = actual || "—";
+        rs.textContent = actual || "—"; // seguro: textContent
         const rb = document.createElement("button");
         rb.onclick = () => editarNombre(mac);
         rb.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
@@ -273,12 +318,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function crearFila(d) {
     const tr = document.createElement("tr");
     tr.className = "dev-row hover:bg-slate-50/80 dark:hover:bg-dark3/40 dispositivo-row transition";
-    tr.dataset.nombre   = (d.nombre || "").toLowerCase();
-    tr.dataset.mac      = d.mac.toLowerCase();
+    tr.dataset.nombre    = (d.nombre || "").toLowerCase();
+    tr.dataset.mac       = d.mac.toLowerCase();
     tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
-    // FIX alerts #30, #31: all server-returned values (ip, mac, nombre, fabricante)
-    // must be escaped before interpolation into innerHTML.
+    // Todos los valores del servidor se escapan antes de entrar a innerHTML
     const badgeConf = d.confiable
       ? `<span class="badge badge-green"><span class="relative flex w-1.5 h-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span><span data-i18n="trusted">${t("trusted")}</span></span>`
       : `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
@@ -293,7 +337,9 @@ document.addEventListener("DOMContentLoaded", () => {
       <td class="px-4">
         <div class="flex items-center gap-1.5">
           <span class="text-slate-700 dark:text-slate-200 font-medium">${esc(d.nombre || "—")}</span>
-          <button onclick="editarNombre('${esc(d.mac)}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+          <button onclick="editarNombre('${esc(d.mac)}')" class="text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition">
+            <i data-lucide="pencil" class="w-3 h-3"></i>
+          </button>
         </div>
       </td>
       <td class="px-4 text-slate-500 dark:text-slate-400 text-xs">${esc(d.fabricante || "—")}</td>
@@ -309,7 +355,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function actualizarTabla(devs) {
     const tbody = $("tabla-dispositivos");
-    const frag  = document.createDocumentFragment();
+    if (!tbody) return;
+    const frag = document.createDocumentFragment();
     devs.forEach(d => frag.appendChild(crearFila(d)));
     tbody.replaceChildren(frag);
     if (typeof lucide !== "undefined") lucide.createIcons();
@@ -320,10 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.verPuertos = ip => {
     const modal = $("modal-puertos");
     const cont  = $("contenido-puertos");
-    // FIX alert #31: ip comes from onclick attribute value set by crearFila.
-    // It is already esc()-ed in the attribute, but here in JS context we
-    // use it as a plain string for the fetch body (JSON) and for display.
-    // Use esc() when putting it back into innerHTML.
     cont.innerHTML = `<div class="flex flex-col items-center gap-2 py-4 text-xs text-slate-400">
       <i data-lucide="scan-search" class="animate-pulse w-6 h-6 text-slate-400"></i>
       ${t("scanning_ports").replace("{{ip}}", esc(ip))}
@@ -331,8 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("hidden");
     if (typeof lucide !== "undefined") lucide.createIcons();
 
-    fetch("/api/puertos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ip }) })
-      .then(r => r.json())
+    // FIX #3: postJSON incluye CSRF
+    postJSON("/api/puertos", { ip })
       .then(data => {
         if (!data.success) throw new Error(data.message);
         cont.innerHTML = data.puertos.length === 0
@@ -341,10 +384,12 @@ document.addEventListener("DOMContentLoaded", () => {
              </div>`
           : `<p class="font-mono text-xs text-slate-400 mb-2">${esc(ip)}</p>
              <div class="space-y-1">
-               ${data.puertos.map(p => `<div class="flex items-center justify-between p-2 border border-slate-100 dark:border-slate-800 rounded-lg bg-white dark:bg-dark3 text-xs">
-                 <span class="font-mono text-slate-700 dark:text-slate-300">${esc(p.puerto)}</span>
-                 <span class="text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs">${esc(p.servicio)}</span>
-               </div>`).join("")}
+               ${data.puertos.map(p =>
+                 `<div class="flex items-center justify-between p-2 border border-slate-100 dark:border-slate-800 rounded-lg bg-white dark:bg-dark3 text-xs">
+                   <span class="font-mono text-slate-700 dark:text-slate-300">${esc(p.puerto)}</span>
+                   <span class="text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs">${esc(p.servicio)}</span>
+                  </div>`
+               ).join("")}
              </div>`;
         if (typeof lucide !== "undefined") lucide.createIcons();
       })
