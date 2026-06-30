@@ -402,14 +402,21 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ── Idioma ───────────────────────────────────────────────────────────────
-  $("langBtn")?.addEventListener("click", () => $("langMenu")?.classList.toggle("hidden"));
-  window.setLang = (lang, country, label) => {
-    $("langFlag").className = `fi fi-${country} w-3.5 h-2.5 rounded-sm flex-shrink-0`;
-    $("langLabel").textContent = label;
-    $("langMenu")?.classList.add("hidden");
-    setLanguage(lang);
-  };
-
+ 
+ $("langBtn")?.addEventListener("click", () => $("langMenu")?.classList.toggle("hidden"));
+ 
+window.setLang = async lang => {
+  await setLanguage(lang);                         // i18n.js aplica al DOM
+  const info = SUPPORTED_LANGS[lang];
+  if (info) {
+    const flag  = $("langFlag");
+    const label = $("langLabel");
+    if (flag)  flag.className  = `fi fi-${info.country} w-3.5 h-2.5 rounded-sm flex-shrink-0`;
+    if (label) label.textContent = info.label;
+  }
+  $("langMenu")?.classList.add("hidden");
+};
+ 
   // ── Filtro confianza ─────────────────────────────────────────────────────
   $("trustBtn")?.addEventListener("click", () => $("trustMenu")?.classList.toggle("hidden"));
 
