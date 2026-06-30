@@ -42,15 +42,10 @@
           <td class="px-4">
             {% if d.confiable %}
             <span class="badge badge-green">
-              <span class="relative flex w-1.5 h-1.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span>
-              </span>
               <span data-i18n="trusted">Confiable</span>
             </span>
             {% else %}
             <span class="badge badge-red">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
               <span data-i18n="untrusted">No confiable</span>
             </span>
             {% endif %}
