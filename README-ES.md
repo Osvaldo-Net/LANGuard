@@ -75,6 +75,7 @@ services:
   languard:
     container_name: LANGuard
     image: netosvaltools/languard:latest
+    # image: netosvaltools/languard:v3.1.4
     environment:
       SECRET_KEY: ${SECRET_KEY}
     volumes:
