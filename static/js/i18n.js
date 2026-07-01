@@ -7,7 +7,8 @@
 
 const SUPPORTED_LANGS = {
   es: { flag: "fi-es", label: "Español",  country: "es" },
-  en: { flag: "fi-us", label: "English",  country: "us" }
+  en: { flag: "fi-us", label: "English",  country: "us" },
+  fr: { flag: "fi-fr", label: "Français", country: "fr" } 
 };
 
 // Cache en memoria para no repetir fetch
