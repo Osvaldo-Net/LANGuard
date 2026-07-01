@@ -4,7 +4,7 @@
 
 # LANGuard
 
-**Network monitoring and security — self-hosted, from your own server.**
+**Network monitoring and security self-hosted, from your own server.**
 
 [![Docker](https://img.shields.io/badge/docker-netosvaltools%2Flanguard-0ea5e9?style=flat-square&logo=docker&logoColor=white&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
 [![Docker Pulls](https://img.shields.io/docker/pulls/netosvaltools/languard?style=flat-square&color=0ea5e9&labelColor=0f172a)](https://hub.docker.com/r/netosvaltools/languard)
@@ -118,9 +118,9 @@ http://<server-IP>:5555
 
 LANGuard uses slide-in panels instead of cluttering the main view:
 
-- **History** — connection/disconnection timeline, filterable by MAC and event type
-- **Trusted Devices** — full list with inline name editing, add/remove without reload
-- **Profile** — display name, credentials (email + password), session info
+- **History**: connection/disconnection timeline, filterable by MAC and event type
+- **Trusted Devices**: full list with inline name editing, add/remove without reload
+- **Profile**: display name, credentials (email + password), session info
 
 ---
 
