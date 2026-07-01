@@ -2,42 +2,35 @@
 <div class="stats-grid stagger-1 fade-in">
 
   <!-- Total -->
-  <div class="card px-4 py-3.5">
-    <div class="stat-card-inner flex items-center gap-3">
-      <div class="stat-icon-wrap w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="monitor-dot" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
-      </div>
-      <div>
-        <p id="stat-total" class="text-xl font-semibold tabular-nums text-slate-900 dark:text-white leading-none">0</p>
-        <p class="text-slate-400 dark:text-slate-500 mt-0.5" style="font-size:11px" data-i18n="statTotal">Total dispositivos</p>
-      </div>
+  <div class="card px-5 py-4" style="position:relative;overflow:hidden">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-slate-400 dark:text-slate-500 font-medium uppercase tracking-widest" style="font-size:11px" data-i18n="statTotal">Total</span>
+      <i data-lucide="laptop" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
     </div>
+    <p id="stat-total" class="tabular-nums font-semibold text-slate-900 dark:text-white leading-none mb-1.5" style="font-size:36px">0</p>
+    <p class="text-slate-400 dark:text-slate-500" style="font-size:12px">Dispositivos en red</p>
   </div>
 
   <!-- Trusted -->
-  <div class="card stat-card-trusted px-4 py-3.5" style="border-color:#bbf7d0;background:#f0fdf4">
-    <div class="stat-card-inner flex items-center gap-3">
-      <div class="stat-icon stat-icon-wrap w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-      </div>
-      <div>
-        <p id="stat-trusted" class="stat-num text-xl font-semibold tabular-nums leading-none" style="color:#16a34a">0</p>
-        <p class="stat-lbl mt-0.5" style="font-size:11px;color:#15803d" data-i18n="statTrusted">Confiables</p>
-      </div>
+  <div class="card px-5 py-4" style="position:relative;overflow:hidden;border-color:rgba(34,197,94,.25)">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:rgba(34,197,94,.5)"></div>
+    <div class="flex items-center justify-between mb-4">
+      <span class="font-medium uppercase tracking-widest" style="font-size:11px;color:#16a34a" data-i18n="statTrusted">Confiables</span>
+      <i data-lucide="shield-check" class="w-4 h-4" style="color:#16a34a"></i>
     </div>
+    <p id="stat-trusted" class="tabular-nums font-semibold leading-none mb-1.5" style="font-size:36px;color:#16a34a">0</p>
+    <p class="text-slate-400 dark:text-slate-500" style="font-size:12px">Verificados por ti</p>
   </div>
 
   <!-- Untrusted -->
-  <div class="card stat-card-untrusted px-4 py-3.5" style="border-color:#fecaca;background:#fff1f2">
-    <div class="stat-card-inner flex items-center gap-3">
-      <div class="stat-icon stat-icon-wrap w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-red-500"></i>
-      </div>
-      <div>
-        <p id="stat-untrusted" class="stat-num text-xl font-semibold tabular-nums leading-none" style="color:#dc2626">0</p>
-        <p class="stat-lbl mt-0.5" style="font-size:11px;color:#b91c1c" data-i18n="statUntrusted">No confiables</p>
-      </div>
+  <div class="card px-5 py-4" style="position:relative;overflow:hidden;border-color:rgba(239,68,68,.25)">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:rgba(239,68,68,.5)"></div>
+    <div class="flex items-center justify-between mb-4">
+      <span class="font-medium uppercase tracking-widest" style="font-size:11px;color:#dc2626" data-i18n="statUntrusted">Sin verificar</span>
+      <i data-lucide="shield-alert" class="w-4 h-4" style="color:#dc2626"></i>
     </div>
+    <p id="stat-untrusted" class="tabular-nums font-semibold leading-none mb-1.5" style="font-size:36px;color:#dc2626">0</p>
+    <p class="text-slate-400 dark:text-slate-500" style="font-size:12px">Requieren revisión</p>
   </div>
 
 </div>
