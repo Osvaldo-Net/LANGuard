@@ -15,6 +15,9 @@
   "statTotal": "Total dispositivos",
   "statTrusted": "Confiables",
   "statUntrusted": "No confiables",
+  "statTotalDesc":    "Dispositivos en red",
+  "statTrustedDesc":  "Verificados por ti",
+  "statUntrustedDesc":"Requieren revisión"
 
   "devicesTitle": "Dispositivos en red",
   "devicesDesc": "Dispositivos detectados en el último escaneo. Marca como confiables los que reconoces.",
