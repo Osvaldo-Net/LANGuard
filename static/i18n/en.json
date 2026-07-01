@@ -17,7 +17,7 @@
   "statUntrusted": "Untrusted",
   "statTotalDesc":    "Devices on network",
   "statTrustedDesc":  "Verified by you",
-  "statUntrustedDesc":"Need review"
+  "statUntrustedDesc":"Need review",
 
   "devicesTitle": "Devices on network",
   "devicesDesc": "Devices detected in the last scan. Mark as trusted the ones you recognize.",
