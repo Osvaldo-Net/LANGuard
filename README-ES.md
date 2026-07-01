@@ -116,9 +116,9 @@ http://<IP-del-servidor>:5555
 
 LANGuard organiza la información en paneles deslizantes para mantener el dashboard limpio:
 
-- **Historial** — línea de tiempo de conexiones y desconexiones, filtrable por MAC y tipo de evento
-- **Dispositivos Confiables** — lista completa con edición de nombre en línea, agregar/eliminar sin recargar la página
-- **Perfil** — nombre para mostrar, credenciales (correo + contraseña) e información de sesión
+- **Historial**: línea de tiempo de conexiones y desconexiones, filtrable por MAC y tipo de evento
+- **Dispositivos Confiables**: lista completa con edición de nombre en línea, agregar/eliminar sin recargar la página
+- **Perfil**: nombre para mostrar, credenciales (correo + contraseña) e información de sesión
 
 ---
 
