@@ -76,7 +76,7 @@ openssl rand -hex 32
 services:
   languard:
     container_name: LANGuard
-    image: netosvaltools/languard:latest
+    image: netosvaltools/languard:latest or (v3.1.4)
     environment:
       SECRET_KEY: ${SECRET_KEY}
     volumes:
