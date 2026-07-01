@@ -12,26 +12,16 @@ function esc(str) {
     .replace(/'/g, "&#x27;");
 }
 
-// ══════════════════════════════════════════
-// CSRF — FIX #3
-// Lee el token del meta tag generado por
-// Flask-WTF: <meta name="csrf-token" ...>
-// y lo adjunta a todos los fetch POST.
-// ══════════════════════════════════════════
 function getCsrfToken() {
   return document.querySelector('meta[name="csrf-token"]')?.content || "";
 }
 
-/**
- * postJSON — wrapper de fetch con CSRF y Content-Type JSON
- * Úsalo en lugar de fetch() directo para todos los POST.
- */
 async function postJSON(url, body) {
   const res = await fetch(url, {
     method:  "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken":  getCsrfToken()   // FIX #3: token CSRF en cada POST
+      "X-CSRFToken":  getCsrfToken()
     },
     body: JSON.stringify(body)
   });
@@ -109,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!mac) return;
     mostrarNotificacion(`<span class="flex items-center gap-1.5"><i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> ${t("adding")}</span>`);
     try {
-      // FIX #3: usando postJSON que incluye X-CSRFToken automáticamente
       const data = await postJSON("/api/agregar", { mac });
       mostrarNotificacion(
         data.success ? `✓ ${t("success")}` : `✗ ${esc(data.message || t("error"))}`,
@@ -122,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const li = document.createElement("li");
           li.dataset.mac = mac.toLowerCase();
           li.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-100 dark:border-slate-800/40 bg-white dark:bg-dark3/30 hover:border-slate-200 dark:hover:border-slate-700/60 transition group";
-          // FIX: mac viene de input del usuario — escapar antes de innerHTML
           li.innerHTML = `
             <span class="relative flex w-1.5 h-1.5 flex-shrink-0">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -153,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.eliminarMAC = async mac => {
     mostrarNotificacion(`<span class="flex items-center gap-1.5"><i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> ${t("eliminando")}</span>`);
     try {
-      // FIX #3: postJSON incluye CSRF
       const data = await postJSON("/api/eliminar", { mac });
       mostrarNotificacion(
         data.success ? `✓ ${t("eliminado")}` : `✗ ${t("connectionError")}`,
@@ -165,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tr) {
           tr.dataset.confianza = "no-confiable";
           const tdConf = tr.querySelector("td:nth-child(5)");
-          if (tdConf) tdConf.innerHTML = `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
+          if (tdConf) tdConf.innerHTML = `<span class="badge badge-red"><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
           const tdAct = tr.querySelector("td:nth-child(6)");
           if (tdAct) tdAct.innerHTML = `<button onclick="marcarConfiable('${esc(mac)}',true,this)" class="btn-action btn-trust"><i data-lucide="shield-check" class="w-3 h-3"></i> <span data-i18n="trust_btn">${t("trust_btn")}</span></button>`;
           if (typeof lucide !== "undefined") lucide.createIcons();
@@ -179,11 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Marcar confiable / no confiable ──────────────────────────────────────
   window.marcarConfiable = async (mac, confiable, btn) => {
     try {
-      // FIX #3: postJSON incluye CSRF
       const endpoint = confiable ? "/api/agregar" : "/api/eliminar";
       const data = await postJSON(endpoint, { mac });
       if (data.success) {
-        // Trigger actualización de tabla
         const devs = await fetch("/api/scan").then(r => r.json());
         if (Array.isArray(devs)) actualizarTabla(devs);
       }
@@ -207,15 +192,15 @@ document.addEventListener("DOMContentLoaded", () => {
     inp.id = `inp-${sid}`;
     inp.className = "input-base w-28";
     inp.style.cssText = "padding:4px 8px;font-size:12px";
-    inp.value = (actual === "—" ? "" : actual); // seguro: .value, no innerHTML
+    inp.value = (actual === "—" ? "" : actual);
     inp.placeholder = t("noName");
-    inp.maxLength = 64; // FIX #4: límite de longitud consistente con backend
+    inp.maxLength = 64;
 
     const btn = document.createElement("button");
     btn.id = `btn-${sid}`;
     btn.className = "px-2 py-1 rounded-lg text-white text-xs font-medium";
     btn.style.cssText = "background:#0f172a;font-size:11px";
-    btn.textContent = t("guardar"); // seguro: textContent
+    btn.textContent = t("guardar");
 
     wrapper.appendChild(inp);
     wrapper.appendChild(btn);
@@ -227,13 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const guardar = async () => {
       if (_saved) return;
       _saved = true;
-      const nombre = inp.value.trim().slice(0, 64) || t("noName"); // FIX #4: trim en cliente también
+      const nombre = inp.value.trim().slice(0, 64) || t("noName");
 
       const newWrapper = document.createElement("div");
       newWrapper.className = "flex items-center gap-1.5";
       const span = document.createElement("span");
       span.className = "text-slate-700 dark:text-slate-200 font-medium";
-      span.textContent = nombre; // seguro: textContent
+      span.textContent = nombre;
       const editBtn = document.createElement("button");
       editBtn.onclick = () => editarNombre(mac);
       editBtn.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
@@ -245,11 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (fila) fila.dataset.nombre = nombre.toLowerCase();
       const li = $("lista-macs")?.querySelector(`li[data-mac="${esc(mac.toLowerCase())}"]`);
       const sp = li?.querySelector(".nombre-confiable");
-      if (sp) sp.textContent = nombre; // seguro: textContent
+      if (sp) sp.textContent = nombre;
       if (typeof lucide !== "undefined") lucide.createIcons();
 
       try {
-        // FIX #3: postJSON incluye CSRF
         const d = await postJSON("/api/nombrar", { mac, nombre });
         mostrarNotificacion(
           d.success ? `✓ ${t("nombre_guardado")}` : `✗ ${t("error_guardar_nombre")}`,
@@ -269,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
         rw.className = "flex items-center gap-1.5";
         const rs = document.createElement("span");
         rs.className = "text-slate-700 dark:text-slate-200 font-medium";
-        rs.textContent = actual || "—"; // seguro: textContent
+        rs.textContent = actual || "—";
         const rb = document.createElement("button");
         rb.onclick = () => editarNombre(mac);
         rb.className = "text-slate-300 hover:text-slate-600 dark:hover:text-slate-300 transition";
@@ -322,10 +306,9 @@ document.addEventListener("DOMContentLoaded", () => {
     tr.dataset.mac       = d.mac.toLowerCase();
     tr.dataset.confianza = d.confiable ? "confiable" : "no-confiable";
 
-    // Todos los valores del servidor se escapan antes de entrar a innerHTML
     const badgeConf = d.confiable
-      ? `<span class="badge badge-green"><span class="relative flex w-1.5 h-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-500"></span></span><span data-i18n="trusted">${t("trusted")}</span></span>`
-      : `<span class="badge badge-red"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
+      ? `<span class="badge badge-green"><span data-i18n="trusted">${t("trusted")}</span></span>`
+      : `<span class="badge badge-red"><span data-i18n="untrusted">${t("untrusted")}</span></span>`;
 
     const btnAccion = d.confiable
       ? `<button onclick="marcarConfiable('${esc(d.mac)}',false,this)" class="btn-action btn-untrust"><i data-lucide="shield-off" class="w-3 h-3"></i> <span data-i18n="untrust_btn">${t("untrust_btn")}</span></button>`
@@ -374,7 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("hidden");
     if (typeof lucide !== "undefined") lucide.createIcons();
 
-    // FIX #3: postJSON incluye CSRF
     postJSON("/api/puertos", { ip })
       .then(data => {
         if (!data.success) throw new Error(data.message);
@@ -402,21 +384,20 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ── Idioma ───────────────────────────────────────────────────────────────
- 
- $("langBtn")?.addEventListener("click", () => $("langMenu")?.classList.toggle("hidden"));
- 
-window.setLang = async lang => {
-  await setLanguage(lang);                         // i18n.js aplica al DOM
-  const info = SUPPORTED_LANGS[lang];
-  if (info) {
-    const flag  = $("langFlag");
-    const label = $("langLabel");
-    if (flag)  flag.className  = `fi fi-${info.country} w-3.5 h-2.5 rounded-sm flex-shrink-0`;
-    if (label) label.textContent = info.label;
-  }
-  $("langMenu")?.classList.add("hidden");
-};
- 
+  $("langBtn")?.addEventListener("click", () => $("langMenu")?.classList.toggle("hidden"));
+
+  window.setLang = async lang => {
+    await setLanguage(lang);
+    const info = SUPPORTED_LANGS[lang];
+    if (info) {
+      const flag  = $("langFlag");
+      const label = $("langLabel");
+      if (flag)  flag.className    = `fi fi-${info.country} w-3.5 h-2.5 rounded-sm flex-shrink-0`;
+      if (label) label.textContent = info.label;
+    }
+    $("langMenu")?.classList.add("hidden");
+  };
+
   // ── Filtro confianza ─────────────────────────────────────────────────────
   $("trustBtn")?.addEventListener("click", () => $("trustMenu")?.classList.toggle("hidden"));
 
